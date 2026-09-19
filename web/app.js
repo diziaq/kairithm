@@ -2,8 +2,9 @@
 
 import { api } from "./api.js";
 import { clear, el, make, showScreen } from "./dom.js";
+import { initBrowse, openBrowse } from "./browse.js";
 import { initSetup } from "./setup.js";
-import { initInterview, openInterview, stopInterviewTimers } from "./interview.js";
+import { initInterview, jumpTo, openInterview, stopInterviewTimers } from "./interview.js";
 import { initSummary, openSummary } from "./summary.js";
 
 let bank = null;
@@ -116,6 +117,30 @@ async function goHome() {
   showScreen("home");
 }
 
+async function ensureBank() {
+  if (!bank) bank = await api.bank();
+  return bank;
+}
+
+// Opened from home it reads; opened from an interview it picks. The interviewer is never
+// confined to the questions the tool planned.
+async function goBrowse(sessionId) {
+  stopInterviewTimers();
+  setHash(sessionId ? `#pick=${encodeURIComponent(sessionId)}` : "#browse");
+  await ensureBank();
+  showScreen("browse");
+  await openBrowse(bank, {
+    onPick: sessionId
+      ? async (questionId) => {
+          setHash(`#session=${encodeURIComponent(sessionId)}`);
+          showScreen("interview");
+          await jumpTo(questionId, "picked by hand");
+        }
+      : null,
+    onClose: sessionId ? () => goInterview(sessionId) : goHome,
+  });
+}
+
 function goSetup() {
   setHash("#new");
   initSetup(bank, { onStarted: goInterview, onCancel: goHome });
@@ -126,7 +151,7 @@ async function goInterview(sessionId) {
   const state = await api.getSession(sessionId);
   setHash(`#session=${encodeURIComponent(sessionId)}`);
   showScreen("interview");
-  await openInterview(sessionId, state, { onFinish: goSummary });
+  await openInterview(sessionId, state, { onFinish: goSummary, onBrowse: goBrowse });
 }
 
 async function goSummary(sessionId) {
@@ -140,10 +165,13 @@ async function openFromHash() {
   const hash = window.location.hash;
   const session = hash.match(/^#session=(.+)$/);
   const summary = hash.match(/^#summary=(.+)$/);
+  const pick = hash.match(/^#pick=(.+)$/);
   if (session) return goInterview(decodeURIComponent(session[1]));
   if (summary) return goSummary(decodeURIComponent(summary[1]));
+  if (pick) return goBrowse(decodeURIComponent(pick[1]));
+  if (hash === "#browse") return goBrowse(null);
   if (hash === "#new") {
-    bank = await api.bank();
+    await ensureBank();
     return goSetup();
   }
   return goHome();
@@ -151,7 +179,9 @@ async function openFromHash() {
 
 function start() {
   el("btn-new-session").addEventListener("click", goSetup);
-  initInterview({ onFinish: goSummary });
+  el("btn-browse-bank").addEventListener("click", () => goBrowse(null));
+  initBrowse();
+  initInterview({ onFinish: goSummary, onBrowse: goBrowse });
   initSummary({ onHome: goHome, onBack: goInterview });
   openFromHash().catch(async (error) => {
     // A stale link in the address bar must not leave a blank page.

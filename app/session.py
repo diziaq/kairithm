@@ -145,6 +145,19 @@ class Session:
     def served_ids(self) -> list[str]:
         return [item["qid"] for item in self.items]
 
+    def answered_ids(self) -> list[str]:
+        """Cards that carry a band or a skip.
+
+        Distinct from `served_ids`, which in a non-adaptive mode is the whole planned queue from
+        the first second. Suggestions key off this one: a card sitting further down the plan is
+        a perfectly good thing to offer next, and jumping to it just moves the position.
+        """
+        return [
+            item["qid"]
+            for item in self.items
+            if (self.answer_for(item["qid"]).get("band") or self.answer_for(item["qid"]).get("skipped"))
+        ]
+
     def item_level(self, item: dict[str, Any], bank: Bank) -> str | None:
         question = bank.get(item["qid"])
         if question is not None:

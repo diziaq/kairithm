@@ -40,12 +40,22 @@ export function renderSimpleMarkdown(container, text) {
 
 // Most interviewer guidance arrives as an array of bullets, already split by the loader.
 // No parsing needed here, and nothing becomes markup.
-export function renderBullets(container, items) {
-  clear(container);
+//
+// Returns null for an empty list rather than an empty <ul>, so a caller can decide whether the
+// whole block is worth showing.
+export function bulletList(items) {
   const list = make("ul");
   for (const item of items || []) list.appendChild(make("li", { text: item }));
-  if (list.childNodes.length > 0) container.appendChild(list);
-  return list.childNodes.length > 0;
+  return list.childNodes.length > 0 ? list : null;
+}
+
+// Replaces the container's contents. Where several lists go into one container — the answer
+// bands, each under its own heading — append `bulletList` directly instead.
+export function renderBullets(container, items) {
+  clear(container);
+  const list = bulletList(items);
+  if (list) container.appendChild(list);
+  return Boolean(list);
 }
 
 export function formatClock(totalSeconds) {

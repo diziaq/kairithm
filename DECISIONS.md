@@ -77,6 +77,42 @@ one directory per interview, holding the session file and the scorecard, under `
 Renaming it would cost the session-id pattern and the resolved-path containment check, which are
 two of the four reasons this tool is safe without a password, and buys nothing.
 
+### The charts are hand-built SVG, and there are three of them
+
+The browser code has no dependencies and no build step, and that is the reason it can be edited
+and reloaded. Three chart forms do not justify giving that up, so they are built with
+`createElementNS` like everything else is built with `createElement`.
+
+Each form was picked from the job its data does rather than from what looks impressive:
+
+| Data | Form | Why not something else |
+|---|---|---|
+| One headline value on a fixed scale | Hero figure + a position track | A one-bar bar chart is the classic way to miss the point |
+| How far each topic sat from its level | Diverging bars, blue/red, gray at zero | The job is polarity, not magnitude |
+| Answers per level/band pair | Heatmap, one hue, more-is-darker | Categorical colour here would burn the free channel on nothing |
+
+The diverging pair was validated against this application's own surfaces rather than eyeballed:
+colour-blind separation dE 23.8 light / 25.7 dark, normal-vision dE 31.6 / 31.9, both poles over
+3:1 contrast in both modes. The dark-mode sequential ramp is re-stepped for the dark surface, not
+flipped, so the "near zero" end recedes towards the background in both modes.
+
+Every chart carries a table with the same figures next to it. A value that can only be reached by
+hovering is not reachable at all on a phone, on a printout, or by keyboard.
+
+### Suggestions key off what was answered, not what was queued
+
+The first version excluded every card in the session from the suggestion list. In adaptive mode
+that is the same thing, because cards are served one at a time. In every other mode the whole
+pool is queued from the first second, so the panel was permanently empty — the feature that
+matters most in the brief, silently dead in four of five modes.
+
+Suggestions now exclude the cards that carry a band or a skip, plus wherever the interviewer is
+standing. A card further down the plan is a perfectly good thing to offer next, and jumping to it
+just moves the position.
+
+The list also widens to the nearest level when the calibrated one is exhausted. "Always visible"
+is not satisfied by a panel that empties two-thirds of the way through a pool.
+
 ### Questions are ordered by relatedness, in every mode
 
 An interview that jumps from Java concurrency to SAP RFC to Spring transactions costs the

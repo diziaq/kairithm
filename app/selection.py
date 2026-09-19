@@ -36,6 +36,7 @@ class PoolFilters:
     include_tags: tuple[str, ...] = ()
     exclude_tags: tuple[str, ...] = ()
     levels: tuple[str, ...] = ()
+    search: str = ""
     limit: int | None = None
     manual_ids: tuple[str, ...] = ()
     exclude_ids: tuple[str, ...] = ()
@@ -49,10 +50,25 @@ class PoolFilters:
             include_tags=tuple(raw.get("include_tags") or ()),
             exclude_tags=tuple(raw.get("exclude_tags") or ()),
             levels=levels,
+            search=str(raw.get("search") or "").strip(),
             limit=raw.get("limit") if raw.get("limit") not in (None, "", 0) else None,
             manual_ids=tuple(raw.get("manual_ids") or ()),
             exclude_ids=tuple(raw.get("exclude_ids") or ()),
         )
+
+
+def matches_search(question: Question, terms: list[str]) -> bool:
+    """Every term has to appear somewhere in the card's own words.
+
+    The question text is searched, so an interviewer can find a card by something they remember
+    hearing themselves say. The interviewer-only guidance is not: this is used by the browse
+    screen, which is open while a candidate may be looking.
+    """
+    haystack = " ".join(
+        [question.id, question.title, question.question, question.category, question.topic,
+         *question.tags]
+    ).lower()
+    return all(term in haystack for term in terms)
 
 
 def build_pool(bank: Bank, filters: PoolFilters) -> list[Question]:
@@ -69,6 +85,7 @@ def build_pool(bank: Bank, filters: PoolFilters) -> list[Question]:
     include = set(filters.include_tags)
     exclude = set(filters.exclude_tags)
     levels = set(filters.levels)
+    terms = filters.search.lower().split()
 
     matched: list[Question] = []
     for question in bank.questions.values():
@@ -84,6 +101,8 @@ def build_pool(bank: Bank, filters: PoolFilters) -> list[Question]:
         if include and not (tags & include):
             continue
         if exclude and (tags & exclude):
+            continue
+        if terms and not matches_search(question, terms):
             continue
         matched.append(question)
 
@@ -199,20 +218,28 @@ def suggest(
                 offer(target_id, kind, f"{kind} than {current.title!r}")
 
     candidates = pool if pool is not None else list(bank.questions.values())
-    at_target = [q for q in candidates if q.level == target_level and q.id not in served]
+    remaining = [q for q in candidates if q.id not in served]
 
     # Offer the nearest cards first, so following a suggestion keeps the conversation in one
     # place. After a weak answer the same-topic ones move to the back: the point is to stop
     # confirming the same failure, not to leave the subject altogether.
     linked = link_map(bank)
-    ordered = nearest_of(current, at_target, linked)
+    ordered = nearest_of(current, remaining, linked)
     if calibration and calibration.change_topic and current is not None:
         away = [q for q in ordered if q.topic != current.topic]
         ordered = away + [q for q in ordered if q.topic == current.topic]
 
+    # The target level leads, then the level next to it, and so on. This sort is stable, so the
+    # relatedness order above survives inside each level. Running out of cards at the exact
+    # target is not a reason to offer nothing: the list has to stay useful all the way to the
+    # end of the pool.
+    target_ordinal = LEVEL_ORDINAL[target_level]
+    ordered.sort(key=lambda q: abs(LEVEL_ORDINAL[q.level] - target_ordinal))
+
     for question in ordered:
-        note = explain(current, question, linked) if current else f"{question.topic}"
-        offer(question.id, "level", f"{target_level} — {note}")
+        note = explain(current, question, linked) if current else question.topic
+        at = question.level if question.level == target_level else f"{question.level}, nearest to {target_level}"
+        offer(question.id, "level", f"{at} — {note}")
 
     return out[:limit]
 

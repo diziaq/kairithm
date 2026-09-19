@@ -73,6 +73,41 @@ def test_filters_by_category_topic_tag_and_level():
     assert [q.id for q in build_pool(bank, PoolFilters(include_tags=("slow",)))] == ["b"]
 
 
+def test_search_matches_the_title_the_question_text_the_topic_and_the_tags():
+    bank = make_bank(
+        question("a", "mid", topic="concurrency", tags=("jmm",)),
+        question("b", "mid", category="kafka", topic="delivery", tags=("ordering",)),
+    )
+    for term, expected in [
+        ("concurrency", ["a"]),
+        ("jmm", ["a"]),
+        ("kafka", ["b"]),
+        ("ordering", ["b"]),
+        ("ask", ["a", "b"]),          # the question text of both
+        ("CONCURRENCY", ["a"]),       # case-insensitive
+    ]:
+        pool = build_pool(bank, PoolFilters(search=term))
+        assert [q.id for q in pool] == expected, term
+
+
+def test_every_search_term_has_to_match():
+    bank = make_bank(
+        question("a", "mid", category="java", topic="concurrency"),
+        question("b", "mid", category="kafka", topic="concurrency"),
+    )
+    assert [q.id for q in build_pool(bank, PoolFilters(search="java concurrency"))] == ["a"]
+    assert build_pool(bank, PoolFilters(search="java delivery")) == []
+
+
+def test_search_combines_with_the_other_filters():
+    bank = make_bank(
+        question("a", "junior", topic="concurrency"),
+        question("b", "senior", topic="concurrency"),
+    )
+    pool = build_pool(bank, PoolFilters(search="concurrency", levels=("senior",)))
+    assert [q.id for q in pool] == ["b"]
+
+
 def test_an_unknown_level_in_the_filter_is_dropped_rather_than_matching_nothing():
     filters = PoolFilters.from_dict({"levels": ["mid", "principal"]})
     assert filters.levels == ("mid",)

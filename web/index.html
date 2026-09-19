@@ -21,6 +21,7 @@
   <div id="bank-problems" class="panel warn hidden"></div>
   <div class="row">
     <button id="btn-new-session" class="primary">New session</button>
+    <button id="btn-browse-bank">Browse the bank</button>
   </div>
   <h2>Sessions</h2>
   <div id="session-list" class="panel"></div>
@@ -102,6 +103,45 @@
   </div>
 </section>
 
+<section id="screen-browse" class="screen hidden">
+  <div class="row">
+    <h1 id="browse-title">Browse the bank</h1>
+    <span class="grow"></span>
+    <button id="btn-browse-close">Back</button>
+  </div>
+
+  <!-- One filter row above everything it scopes. -->
+  <div id="browse-filters" class="panel">
+    <input id="in-search" type="search" placeholder="Search titles, question text, topics and tags"
+           autocomplete="off">
+    <div class="filter-row">
+      <span class="filter-label">Category</span>
+      <div id="browse-categories" class="chiplist"></div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Level</span>
+      <div id="browse-levels" class="chiplist"></div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Topic</span>
+      <div id="browse-topics" class="chiplist"></div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Tag</span>
+      <div id="browse-tags" class="chiplist"></div>
+    </div>
+    <div class="row">
+      <button id="btn-browse-clear">Clear filters</button>
+      <span id="browse-count" class="hint"></span>
+    </div>
+  </div>
+
+  <div class="browse-grid">
+    <ol id="browse-list" class="browse-list"></ol>
+    <div id="browse-preview" class="panel"></div>
+  </div>
+</section>
+
 <section id="screen-interview" class="screen hidden">
   <div id="ask-card">
     <p id="ask-meta" class="hint"></p>
@@ -120,6 +160,25 @@
       Assign a band, or skip the question, before moving on.
     </p>
     <textarea id="note" rows="5" placeholder="Evidence note — what the candidate actually said (autosaves)"></textarea>
+  </div>
+
+  <div id="nav-zone">
+    <div id="calibration-bar">
+      <span class="nav-heading">Calibration</span>
+      <strong id="calibration-now">mid</strong>
+      <span id="calibration-why" class="hint"></span>
+      <span class="grow"></span>
+      <label>Set by hand
+        <select id="in-calibration"></select>
+      </label>
+    </div>
+    <div class="nav-heading-row">
+      <span class="nav-heading">Suggested next</span>
+      <span class="hint">always optional &mdash; nothing moves until you click</span>
+      <span class="grow"></span>
+      <button id="btn-browse-jump" class="linky">Pick any question&hellip;</button>
+    </div>
+    <ul id="suggestions"></ul>
   </div>
 
   <div id="statusbar">

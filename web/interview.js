@@ -8,6 +8,7 @@ import {
   formatClock,
   isTypingTarget,
   make,
+  bulletList,
   renderBullets,
   renderSimpleMarkdown,
   setSaveState,
@@ -22,6 +23,17 @@ const BAND_LABELS = [
   ["senior", "Senior — the mechanism, behaviour under load"],
   ["lead", "Lead — chooses from constraints, names the cost"],
 ];
+
+// The levels a question can be pitched at. Fixed vocabulary, like the bands above.
+const LEVELS = ["junior", "mid", "senior", "lead"];
+
+const SUGGESTION_LABELS = {
+  deeper: "deeper",
+  shallower: "shallower",
+  related: "related",
+  prerequisite: "first",
+  level: "at level",
+};
 
 const HINTS_KEY = "interview-runner.hints-visible";
 const NOTE_DEBOUNCE_MS = 500;
@@ -43,6 +55,7 @@ const view = {
   pushTimer: null,
   pendingNote: null,
   onFinish: () => {},
+  onBrowse: () => {},
 };
 
 function hintsVisibleFromStorage() {
@@ -168,6 +181,9 @@ async function save(patch) {
     renderStatus();
     renderSkippedDock();
     setSaveState("saved");
+    // The suggestion list is derived from the band that was just assigned, so it is refetched
+    // rather than guessed at in the browser.
+    refreshNav();
   } catch {
     setSaveState("error");
   }
@@ -216,8 +232,10 @@ function renderHints(question) {
       const names = Object.keys(bands);
       if (names.length === 0) return false;
       for (const name of names) {
+        const list = bulletList(bands[name]);
+        if (!list) continue;
         body.appendChild(make("p", { className: "band-name", text: name }));
-        renderBullets(body, bands[name]);
+        body.appendChild(list);
       }
       return true;
     })
@@ -331,6 +349,76 @@ function renderStatus() {
   el("next-gate").classList.toggle("hidden", !gated);
 }
 
+// --- calibration and suggestions ----------------------------------------------------------------
+//
+// Everything in this zone is advisory. Nothing here moves the interview until the interviewer
+// clicks, and every card in the bank stays reachable through "Pick any question".
+
+async function refreshNav() {
+  let payload;
+  try {
+    payload = await api.suggestions(view.sessionId);
+  } catch {
+    return; // A failed suggestion fetch must never interrupt an interview in progress.
+  }
+  view.state = { ...view.state, calibration: payload.calibration };
+  renderCalibration(payload.calibration);
+  renderSuggestions(payload.suggestions);
+}
+
+function renderCalibration(calibration) {
+  el("calibration-now").textContent = calibration.target_level;
+  el("calibration-why").textContent = calibration.override
+    ? "set by hand"
+    : (calibration.latest && calibration.latest.advice) || "no band assigned yet";
+  el("in-calibration").value = calibration.override || "";
+}
+
+function renderSuggestions(suggestions) {
+  const list = el("suggestions");
+  clear(list);
+  if (!suggestions || suggestions.length === 0) {
+    list.appendChild(
+      make("li", { className: "hint", text: "Nothing left to suggest from this pool." })
+    );
+    return;
+  }
+  for (const suggestion of suggestions) {
+    const open = make("button", {
+      className: "suggestion",
+      attrs: { type: "button", title: suggestion.reason },
+      children: [
+        make("span", {
+          className: `suggestion-kind kind-${suggestion.kind}`,
+          text: SUGGESTION_LABELS[suggestion.kind] || suggestion.kind,
+        }),
+        make("span", { className: "suggestion-title", text: suggestion.title }),
+        make("span", {
+          className: "suggestion-meta",
+          text: `${suggestion.level} · ${suggestion.topic}`,
+        }),
+      ],
+    });
+    open.addEventListener("click", () => jumpTo(suggestion.id, `suggested: ${suggestion.reason}`));
+    list.appendChild(make("li", { children: [open] }));
+  }
+}
+
+export async function jumpTo(questionId, reason) {
+  await flushPending();
+  view.state = await api.jump(view.sessionId, questionId, reason);
+  await loadPosition(view.state.position);
+}
+
+async function setCalibration(level) {
+  try {
+    view.state = await api.setCalibration(view.sessionId, level || null);
+    await refreshNav();
+  } catch {
+    setSaveState("error");
+  }
+}
+
 // --- the skipped dock ------------------------------------------------------------------------
 //
 // A skipped question is parked, not discarded. Nothing re-serves it, and it is one click away
@@ -405,6 +493,7 @@ async function loadPosition(index) {
   renderQuestion();
   renderStatus();
   renderSkippedDock();
+  refreshNav();
   tick();
 }
 
@@ -504,6 +593,7 @@ export async function openInterview(sessionId, state, handlers) {
   view.sessionId = sessionId;
   view.state = state;
   view.onFinish = handlers.onFinish;
+  if (handlers.onBrowse) view.onBrowse = handlers.onBrowse;
   view.hintsVisible = hintsVisibleFromStorage();
   view.followUpsVisible = false;
   await loadPosition(state.position || 0);
@@ -530,6 +620,16 @@ export function initInterview(handlers) {
   el("btn-prev").addEventListener("click", () => goTo(view.index - 1));
   el("btn-hints").addEventListener("click", () => toggleHints());
   el("btn-skipped").addEventListener("click", () => toggleSkippedPopup());
+
+  const override = el("in-calibration");
+  clear(override);
+  override.appendChild(make("option", { text: "follow the bands", attrs: { value: "" } }));
+  for (const level of LEVELS) {
+    override.appendChild(make("option", { text: level, attrs: { value: level } }));
+  }
+  override.addEventListener("change", (event) => setCalibration(event.target.value));
+
+  el("btn-browse-jump").addEventListener("click", () => handlers.onBrowse(view.sessionId));
   el("btn-finish").addEventListener("click", async () => {
     await flushPending();
     stopInterviewTimers();

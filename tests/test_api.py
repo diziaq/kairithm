@@ -797,3 +797,55 @@ def test_a_weak_answer_moves_off_the_topic_but_not_out_of_the_neighbourhood(clie
     second = state["items"][1]
     assert second["question"]["topic"] != first["question"]["topic"]
     assert "moved off" in second["reason"]
+
+
+# --- browse ------------------------------------------------------------------------------------
+
+
+def test_the_preview_endpoint_searches_the_bank(client):
+    payload = client.post(
+        "/api/bank/preview", json={"filters": {"search": "delivery"}}, headers=JSON
+    ).json()
+    assert [q["id"] for q in payload["questions"]] == [
+        "kafka-delivery-lead-01",
+        "kafka-delivery-senior-01",
+    ]
+
+
+def test_search_narrows_with_every_term(client):
+    one = client.post(
+        "/api/bank/preview", json={"filters": {"search": "java"}}, headers=JSON
+    ).json()
+    two = client.post(
+        "/api/bank/preview", json={"filters": {"search": "java collections"}}, headers=JSON
+    ).json()
+    assert one["count"] > two["count"] == 1
+
+
+# --- suggestions are useful in every mode ---------------------------------------------------------
+
+
+def test_a_sequential_session_is_still_offered_somewhere_to_go(client):
+    """The whole pool is queued from the first second, so "served" cannot mean "queued"."""
+    session = make_session(client, mode="sequential", filters={"categories": ["java"]})
+    payload = client.get(f"/api/sessions/{session['id']}/suggestions").json()
+
+    assert payload["suggestions"], "a planned queue is not a reason to offer nothing"
+    current = session["items"][session["position"]]["qid"]
+    assert all(s["id"] != current for s in payload["suggestions"]), "never the current card"
+
+
+def test_a_card_already_answered_is_not_suggested_again(client):
+    session = make_session(client, mode="sequential", filters={"categories": ["java"]})
+    session_id = session["id"]
+    band(client, session_id, "java-coll-mid-01", "mid")
+    client.patch(
+        f"/api/sessions/{session_id}/answers/java-conc-mid-01",
+        json={"skipped": True},
+        headers=JSON,
+    )
+
+    offered = {s["id"] for s in client.get(f"/api/sessions/{session_id}/suggestions").json()["suggestions"]}
+    assert "java-coll-mid-01" not in offered, "already banded"
+    assert "java-conc-mid-01" not in offered, "already skipped"
+    assert offered, "the rest of the queue is still on offer"

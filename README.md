@@ -98,6 +98,18 @@ command. It names the file, the card id and the field for each problem.
 The bank is read again on every request. Edit a file, reload the browser, and the change is
 live. The tool never writes to `bank/`.
 
+## Browse the bank
+
+**Browse the bank** on the home screen lists every card with one filter row above it: free-text
+search over titles, question text, topics and tags, then category, level, topic and tag chips.
+Picking a card opens a preview.
+
+The preview keeps the two audiences apart on purpose. The `## Ask` text sits in its own bordered
+card under **Read this aloud**; everything else — what it tests, what to listen for, the signals,
+the bands, the follow-ups with their `probes:` lines, the notes and sources — is fenced into a
+block headed *Interviewer only, never read any of this out*. At the bottom, every card this one
+connects to is one click away.
+
 ## Selection modes
 
 Stage 1 builds the pool: categories, topics, levels, tags to include or exclude, a cap on the
@@ -174,6 +186,25 @@ served card records the target level and the reason, and both appear in the scor
 Stage 3 picks the pacing: untimed, a budget per question, or a budget for the whole session. A
 question over its budget turns the card border red. The tool never advances on its own.
 
+## During the interview
+
+Under the note field sits the navigation zone. Nothing in it moves the interview until you click.
+
+**The calibration** is on the left: the level the tool would pitch the next question at, with the
+reason underneath. It follows the bands you assign, and the dropdown beside it overrides that by
+hand for the rest of the session — or hands control back with *follow the bands*.
+
+**Suggested next** is a row of cards, best first. Links out of the current question come first, in
+whatever order the calibration asks for — after an answer below the level asked that is
+`shallower`, after one above it that is `deeper` — then cards at the calibrated level, nearest
+first by relatedness. Each carries the reason it is being offered. The list never goes empty
+while the pool has cards left: if nothing remains at the calibrated level it widens to the
+nearest one.
+
+**Pick any question** opens the browse screen as a picker, so the whole bank stays reachable
+whether or not it was in the pool. Jumping to a card that was already served moves the position
+rather than asking it twice, and nothing recorded is lost either way.
+
 ## Keyboard
 
 | Key | Action |
@@ -222,8 +253,16 @@ question order, position, ratings, notes and times.
 
 ## Output
 
-Ending an interview opens a summary screen showing the range, the hot spots and every question
-asked. Nothing is written until you press **Save & close**. That writes three files into
+Ending an interview opens a summary screen: the range with its position on the 0-100 scale, a
+diverging bar chart of how far each topic sat above or below the level its questions were set to,
+a heatmap of where the answers landed, and then the whole thing openable down to each category,
+topic and question with the note taken at the time.
+
+The charts are hand-built SVG — the browser code still has no dependencies and no build step.
+Every one of them has a table beside it holding the same figures, so nothing is reachable only by
+hovering. The diverging blue/red pair was checked against this application's own light and dark
+surfaces rather than assumed: worst-case colour-blind separation dE 23.8 light and 25.7 dark,
+normal-vision dE 31.6 and 31.9, both poles clearing 3:1 contrast. Nothing is written until you press **Save & close**. That writes three files into
 `sessions/<date>_<time>_<candidate>_<role>/`:
 
 - `summary.md`, one page about the candidate;
@@ -333,8 +372,11 @@ app/selection.py    pool building, ordering, adaptive picking, suggestions
 app/scoring.py      the 0-100 range and the per-area profile
 app/session.py      session state
 app/report.py       scorecard rendering
+app/affinity.py     relatedness between cards, and the walk that turns a pool into blocks
 app/main.py         routes and the two security middlewares
 web/                the browser code: plain HTML, CSS and ES modules, no build step
+web/browse.js       browsing the bank, and previewing one card
+web/charts.js       the three SVG chart forms on the summary screen
 bank/               the question bank, one file per card
 docs/               the card format reference
 sessions/           one directory per interview

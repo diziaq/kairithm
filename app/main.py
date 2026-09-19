@@ -216,12 +216,17 @@ def create_app(port: int = config.DEFAULT_PORT) -> FastAPI:
 
         latest, source, per_topic = session.replay_calibration(bank)
         target = session.target_level(bank)
+        # Exclude what has actually been answered, plus wherever the interviewer is standing —
+        # not the whole planned queue, or a sequential session would never be offered anything.
+        done = session.answered_ids()
+        if current is not None:
+            done = [*done, current.id]
         suggestions = suggest(
             bank=bank,
             current=current,
             calibration=latest,
             target_level=target,
-            served_ids=session.served_ids(),
+            served_ids=done,
             pool=session.pool(bank) or None,
         )
         return {
