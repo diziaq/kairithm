@@ -306,3 +306,116 @@ def render_scorecard(session: Session, bank: Bank) -> str:
 
 def scorecard_filename(session: Session) -> str:
     return f"scorecard-{slugify(display_name(session), 'candidate')}.md"
+
+
+# --- the executive summary -------------------------------------------------------------------
+#
+# One page about the candidate and nothing else. No mode, no seed, no timings, no per-question
+# walkthrough: how the interview was run belongs in scorecard.md. Every statement here is a
+# restatement of bands the interviewer assigned.
+
+
+def _area(observations: list, name: str) -> str:
+    """Label a topic with the category it came from."""
+    for observation in observations:
+        if observation.topic == name:
+            return f"{observation.category} / {name}"
+    return name
+
+
+def _gap_phrase(mean_gap: float) -> str:
+    """How far the bands sat from the level the questions were set to, in words."""
+    if mean_gap == 0:
+        return "at the level asked"
+    size = abs(mean_gap)
+    amount = f"{size:.0f}" if size == int(size) else f"{size:.1f}"
+    return (
+        f"{amount} {'band' if size == 1 else 'bands'} "
+        f"{'above' if mean_gap > 0 else 'below'} the level asked"
+    )
+
+
+def render_summary(session: Session, bank: Bank) -> str:
+    observations = session.observations(bank)
+    overall = score(observations)
+
+    out: list[str] = [f"# {display_name(session)} — executive summary", ""]
+
+    if overall.value is None:
+        out += ["No answer carries a band. Nothing was established about the candidate.", ""]
+        return "\n".join(out)
+
+    role = session.data.get("role")
+    categories = sorted({o.category for o in observations})
+    held = [o for o in observations if o.gap >= 0]
+    deepest = max(observations, key=lambda o: BAND_POINTS[o.band])
+    counts = {band: sum(1 for o in observations if o.band == band) for band in BANDS}
+
+    out += [
+        f"**{overall.value} / 100 — answers read as {overall.label}.**"
+        + (f" Interviewed for {role}." if role else ""),
+        "",
+        f"Evidence: {overall.rated} banded answer(s) across {len(categories)} "
+        f"categor{'y' if len(categories) == 1 else 'ies'} ({', '.join(categories)}). "
+        f"Confidence **{overall.confidence}**.",
+        "",
+        "## Answer quality",
+        "",
+        f"- Met or beat the level asked on **{len(held)} of {overall.rated}** questions.",
+        f"- Deepest answer: **{deepest.band}** on a {deepest.level} question "
+        f"({deepest.category} / {deepest.topic}).",
+        "- Bands assigned: "
+        + ", ".join(f"{band} ×{counts[band]}" for band in BANDS if counts[band])
+        + ".",
+        "",
+    ]
+
+    topics = by_topic(observations)
+    spots = hot_spots(topics)
+
+    if spots["strong"]:
+        out += ["## Strong", ""]
+        for row in spots["strong"]:
+            out.append(
+                f"- **{_area(observations, row.name)}** — reached {row.deepest_band}, "
+                f"{_gap_phrase(row.mean_gap)} ({row.asked} asked)."
+            )
+        out.append("")
+
+    if spots["weak"]:
+        out += ["## Weak", ""]
+        for row in spots["weak"]:
+            out.append(
+                f"- **{_area(observations, row.name)}** — reached {row.deepest_band}, "
+                f"{_gap_phrase(row.mean_gap)} ({row.asked} asked)."
+            )
+        out.append("")
+
+    if spots["at_bar"]:
+        out += [
+            "## At the level asked",
+            "",
+            ", ".join(f"**{_area(observations, row.name)}**" for row in spots["at_bar"]) + ".",
+            "",
+        ]
+
+    untested = sorted(
+        {
+            bank.get(qid).category
+            for qid in session.data.get("pool_ids") or []
+            if bank.get(qid)
+        }
+        - set(categories)
+    )
+    if untested:
+        out += ["## Not established", "", f"No banded evidence in: {', '.join(untested)}.", ""]
+
+    written = (session.data.get("finish") or {}).get("summary", "").strip()
+    if written:
+        out += ["## Interviewer", "", quote(written), ""]
+
+    return "\n".join(out)
+
+
+def summary_filename(session: Session) -> str:
+    return f"summary-{slugify(display_name(session), 'candidate')}.md"

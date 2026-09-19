@@ -82,6 +82,10 @@ class Session:
         return session_dir(self.id) / "scorecard.md"
 
     @property
+    def summary_path(self) -> Path:
+        return session_dir(self.id) / "summary.md"
+
+    @property
     def mode(self) -> str:
         return self.data["mode"]
 

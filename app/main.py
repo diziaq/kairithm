@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from . import config
 from .bank import Bank, load_bank
 from .levels import BANDS, LEVELS
-from .report import render_scorecard, scorecard_filename
+from .report import render_scorecard, render_summary, scorecard_filename, summary_filename
 from .scoring import band_matrix, by_category, by_topic, hot_spots, score
 from .selection import ADAPTIVE, PoolFilters, build_pool, suggest
 from .session import (
@@ -352,13 +352,18 @@ def create_app(port: int = config.DEFAULT_PORT) -> FastAPI:
         }
         session.data["finished_utc"] = utc_now()
         markdown = render_scorecard(session, bank)
+        brief = render_summary(session, bank)
         write_text_atomic(session.scorecard_path, markdown)
+        write_text_atomic(session.summary_path, brief)
         session.save()
         return {
             "id": session.id,
             "path": str(session.scorecard_path),
+            "summary_path": str(session.summary_path),
             "download_name": scorecard_filename(session),
+            "summary_download_name": summary_filename(session),
             "markdown": markdown,
+            "summary_markdown": brief,
         }
 
     @app.get("/api/sessions/{session_id}/scorecard")
@@ -369,6 +374,18 @@ def create_app(port: int = config.DEFAULT_PORT) -> FastAPI:
             session.scorecard_path.read_text(encoding="utf-8")
             if session.scorecard_path.is_file()
             else render_scorecard(session, bank)
+        )
+        return PlainTextResponse(markdown, media_type="text/markdown; charset=utf-8")
+
+    @app.get("/api/sessions/{session_id}/executive-summary")
+    def api_executive_summary(session_id: str) -> PlainTextResponse:
+        """One page about the candidate. No mode, no seed, no timings."""
+        session = get_session(session_id)
+        bank = read_bank()
+        markdown = (
+            session.summary_path.read_text(encoding="utf-8")
+            if session.summary_path.is_file()
+            else render_summary(session, bank)
         )
         return PlainTextResponse(markdown, media_type="text/markdown; charset=utf-8")
 

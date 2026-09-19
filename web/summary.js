@@ -198,6 +198,16 @@ async function patchAndRedraw(qid, patch) {
   }
 }
 
+function download(markdown, name) {
+  const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = make("a", { attrs: { href: url, download: name } });
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
 async function saveAndClose() {
   el("finish-error").textContent = "";
   try {
@@ -208,20 +218,16 @@ async function saveAndClose() {
       follow_up_areas: el("in-followup-areas").value,
       anonymise: el("in-anonymise").checked,
     });
-    el("finish-path").textContent = `Written to ${result.path}`;
-    el("finish-preview").textContent = result.markdown;
+    el("finish-path").textContent =
+      `Written to ${result.summary_path} and ${result.path}. The executive summary is below.`;
+    // The short one is what gets read first, so it is the one on screen.
+    el("finish-preview").textContent = result.summary_markdown;
     el("finish-result").classList.remove("hidden");
     el("btn-save-close").disabled = true;
 
-    el("btn-download").onclick = () => {
-      const blob = new Blob([result.markdown], { type: "text/markdown;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const link = make("a", { attrs: { href: url, download: result.download_name } });
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(url);
-    };
+    el("btn-download-summary").onclick = () =>
+      download(result.summary_markdown, result.summary_download_name);
+    el("btn-download").onclick = () => download(result.markdown, result.download_name);
   } catch (error) {
     el("finish-error").textContent = error.message;
   }

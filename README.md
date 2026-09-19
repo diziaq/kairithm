@@ -171,16 +171,57 @@ question order, position, ratings, notes and times.
 ## Output
 
 Ending an interview opens a summary screen showing the range, the hot spots and every question
-asked. Nothing is written until you press **Save & close**. That writes two files into
+asked. Nothing is written until you press **Save & close**. That writes three files into
 `sessions/<date>_<time>_<candidate>_<role>/`:
 
-- `scorecard.md`, ready to paste into a hiring thread;
+- `summary.md`, one page about the candidate;
+- `scorecard.md`, the full record;
 - `session.json`, the full state, including per-question times, follow-ups used, the seed, and the
   reason each card was served.
 
-The **anonymise** tick replaces the candidate name with initials in `scorecard.md`.
+The **anonymise** tick replaces the candidate name with initials in both Markdown files.
 
-The scorecard keeps facts and conclusions apart structurally. Everything above
+### summary.md
+
+The one to send first. Clear statements about the candidate and nothing else — the range, how
+many questions were met or beaten, the deepest answer, the strong and weak areas, and what was
+never established. No mode, no seed, no timings, no per-question walkthrough: how the interview
+was run is not evidence about the person. Where the interviewer wrote a summary, it is quoted at
+the end and attributed.
+
+```markdown
+# A Petrov — executive summary
+
+**62 / 100 — answers read as mid.** Interviewed for Senior Java.
+
+Evidence: 9 banded answer(s) across 3 categories (java, kafka, spring). Confidence **good**.
+
+## Answer quality
+
+- Met or beat the level asked on **6 of 9** questions.
+- Deepest answer: **senior** on a senior question (kafka / delivery-semantics).
+- Bands assigned: junior ×2, mid ×4, senior ×3.
+
+## Strong
+
+- **kafka / delivery-semantics** — reached senior, 1 band above the level asked (3 asked).
+
+## Weak
+
+- **spring / transactions** — reached junior, 2 bands below the level asked (2 asked).
+
+## Not established
+
+No banded evidence in: microservices, sap-jco.
+```
+
+### scorecard.md
+
+The full record: metadata, the range with every input row behind it, the band distribution, the
+hot spots, then every question asked with the text as it was asked, the band, the follow-ups used
+and the evidence notes.
+
+It keeps facts and conclusions apart structurally. Everything above
 `## Assessment (interviewer)` is either something you recorded or arithmetic over it. Everything
 under it is your own prose, and the tool never writes into that section.
 

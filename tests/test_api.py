@@ -628,3 +628,48 @@ def test_reloading_mid_interview_restores_the_session_exactly(client):
     assert after["items"][1]["answer"]["band"] == "weak"
     assert after["calibration"] == before["calibration"]
     assert [i["qid"] for i in after["items"]] == [i["qid"] for i in before["items"]]
+
+
+# --- the executive summary ------------------------------------------------------------------
+
+
+def test_finish_writes_an_executive_summary_beside_the_scorecard(client, tmp_path):
+    session = make_session(client)
+    band(client, session["id"], "java-conc-junior-01", "senior")
+    band(client, session["id"], "java-conc-senior-01", "junior")
+    response = client.post(
+        f"/api/sessions/{session['id']}/finish",
+        json={"summary": "Reasons well at the code level."},
+        headers=JSON,
+    )
+    payload = response.json()
+
+    written = tmp_path / "sessions" / session["id"] / "summary.md"
+    assert written.is_file()
+    text = written.read_text(encoding="utf-8")
+    assert text == payload["summary_markdown"]
+    assert payload["summary_download_name"] == "summary-a-petrov.md"
+    assert text.startswith("# A Petrov — executive summary")
+
+
+def test_the_executive_summary_is_about_the_candidate_not_the_interview(client, tmp_path):
+    session = make_session(client)
+    band(client, session["id"], "java-conc-junior-01", "senior")
+    band(client, session["id"], "java-conc-senior-01", "junior")
+    client.post(f"/api/sessions/{session['id']}/finish", json={}, headers=JSON)
+    text = (tmp_path / "sessions" / session["id"] / "summary.md").read_text()
+
+    assert "## Answer quality" in text
+    assert "Met or beat the level asked on" in text
+    for noise in ("Seed", "## Evidence", "sequential", "pool"):
+        assert noise not in text
+
+
+def test_the_executive_summary_is_served_before_the_interview_is_finished(client):
+    session = make_session(client)
+    band(client, session["id"], "java-conc-junior-01", "mid")
+    response = client.get(f"/api/sessions/{session['id']}/executive-summary")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/markdown")
+    assert "executive summary" in response.text
