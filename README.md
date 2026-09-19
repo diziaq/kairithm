@@ -10,18 +10,21 @@ files you edit and commit.
 ## Run it
 
 ```bash
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-.venv/bin/python run.py
+./init.sh          # creates .venv and installs the dependencies
+./run.sh           # starts the tool and prints the address to open
 ```
 
-The command prints the address to open, by default `http://127.0.0.1:8765/`. Use `--port` to change
-the port.
+The address is `http://127.0.0.1:8765/` unless you change it. `run.sh` passes its arguments to the
+server, so `./run.sh --port 9000` works. Both scripts work from any directory and `init.sh` can be
+run again at any time.
+
+Python 3.11 or newer is required. Set `PYTHON` if the interpreter is not on the path as `python3`,
+for example `PYTHON=/usr/local/bin/python3.12 ./init.sh`.
 
 To run the tests:
 
 ```bash
-.venv/bin/pip install -r requirements-dev.txt
+./init.sh --dev
 .venv/bin/python -m pytest tests/ -q
 ```
 
@@ -152,6 +155,8 @@ remove any of them.
 ## Layout
 
 ```
+init.sh             creates the virtual environment and installs the dependencies
+run.sh              starts the tool
 run.py              entry point
 app/config.py       paths, port, the host allow list
 app/storage.py      atomic writes and path containment

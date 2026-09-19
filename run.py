@@ -22,12 +22,12 @@ def main() -> int:
     ensure_sessions_root()
 
     bank = load_bank()
-    print(f"bank: {len(bank.questions)} questions in {len(bank.topics)} topics")
+    print(f"bank: {len(bank.questions)} questions in {len(bank.topics)} topics", flush=True)
     for warning in bank.warnings:
-        print(f"  bank warning: {warning.path}: {warning.problem}", file=sys.stderr)
+        print(f"  bank warning: {warning.path}: {warning.problem}", file=sys.stderr, flush=True)
 
     url = f"http://{config.HOST}:{args.port}/"
-    print(f"open {url}")
+    print(f"open {url}", flush=True)
     uvicorn.run(create_app(args.port), host=config.HOST, port=args.port, log_level="warning")
     return 0
 
