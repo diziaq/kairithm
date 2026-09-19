@@ -77,6 +77,44 @@ one directory per interview, holding the session file and the scorecard, under `
 Renaming it would cost the session-id pattern and the resolved-path containment check, which are
 two of the four reasons this tool is safe without a password, and buys nothing.
 
+### Questions are ordered by relatedness, in every mode
+
+An interview that jumps from Java concurrency to SAP RFC to Spring transactions costs the
+candidate a context switch on every question and costs the interviewer the thread. Every mode
+except manual now walks the pool nearest-first, so the session arrives in blocks.
+
+Considered and rejected: a hand-authored ordering per category. It would have to be maintained by
+hand across ninety cards, and it would go stale the moment a card was added. The bank already
+carries four signals of relatedness — topic, category, explicit links and tags — so the walk uses
+those. Nothing new has to be written on a card for it to slot into the right place.
+
+The weights are in `app/affinity.py` with the reasoning next to them. The one that matters: same
+topic scores higher than a cross-category link, so a topic is always finished before the run
+leaves it.
+
+Adaptive picks the nearest card at the target level rather than, as it did first, the card in a
+topic the session had not covered. That earlier rule was the opposite of what is wanted: it
+deliberately jumped subjects. The one case where the run does leave a topic is when the
+calibration says so after an answer two or more bands below the question — and even then it takes
+the nearest exit, not an unrelated card.
+
+Manual mode is untouched. Re-sorting an order somebody picked by hand would throw the work away.
+
+### Next is gated on a band or a skip
+
+Moving on without recording anything loses the evidence silently, and afterwards nobody can tell
+a bad answer from a question that was never really asked. `Next` is disabled until the
+interviewer has either assigned a band or skipped.
+
+Skip is deliberately not a sixth band. It is the interviewer's decision to move on and says
+nothing about the candidate, so it is coloured as a warning, never enters the range or the
+profile, and is never counted as a zero. Assigning a band clears a skip, because a band says the
+question was answered after all; without that the two flags could both be set and the band would
+be dropped from the evidence without a word.
+
+Skipped questions are parked rather than discarded: nothing re-serves them, and a counter at the
+bottom right of the interview screen opens the list so any of them can be returned to on purpose.
+
 ### Adaptive back-navigation keeps every question already asked
 
 The brief says that going back and changing a rating "re-derives the remaining queue". Taken

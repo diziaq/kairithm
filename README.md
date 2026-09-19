@@ -103,13 +103,48 @@ live. The tool never writes to `bank/`.
 Stage 1 builds the pool: categories, topics, levels, tags to include or exclude, a cap on the
 count, and an optional hand-picked list. Stage 2 picks the order:
 
-| Mode | What it does |
+| Mode | Where the run opens, and how ties break |
 |---|---|
-| Sequential | The `order` field, then the id. The same every time. |
-| Random | Shuffled with a seed. The seed is written to the session, so the run can be repeated. |
-| Level ascending | Junior first, lead last. Ties are broken by the seed. |
+| Sequential | The lowest `order` field, then the id. The same every time. |
+| Random | A seeded shuffle. The seed is written to the session, so the run can be repeated. |
+| Level ascending | Junior first, lead last, in blocks within each level. |
 | Adaptive | The next card follows the band you just assigned. See below. |
-| Manual | The exact order ticked in stage 1. |
+| Manual | The exact order ticked in stage 1, untouched. |
+
+### Questions arrive in blocks
+
+Every mode except manual walks the pool by **relatedness**, so a session reads as a chain
+instead of hopping between subjects. Open on Java concurrency and the next card is another Java
+concurrency question, then the rest of Java, then whichever category is nearest — not SAP, then
+Spring, then back to Java.
+
+Nothing extra has to be authored for this. Four signals already in the bank are combined:
+
+| Signal | Weight |
+|---|---|
+| Same topic | 0.8 |
+| Same category | 0.5 |
+| An explicit `links:` entry, any kind | 0.9 |
+| Shared tags, by overlap | 0 to 0.35 |
+
+They stack, and two consequences are deliberate. A same-topic card scores 1.3 and so beats a
+cross-category link at 0.9, which means a topic is finished before the run leaves it. A `deeper`
+link inside a topic scores 2.2 and wins outright, so an authored progression is followed exactly.
+
+The mode decides only where the walk opens and how two equally related cards are separated, so
+each mode still behaves like itself. Level ascending walks one chain per level and starts each
+one next to where the previous level finished, so the run climbs and stays in blocks at the same
+time. Every card records the reason it came next, and those reasons appear in the scorecard:
+
+```
+opens on java / concurrency
+same topic, concurrency
+concurrency → collections, still java
+java → kafka via correctness
+```
+
+Tags are what connect areas nothing else joins, so tag cards with the ideas they share —
+`idempotency`, `correctness`, `transactions` — not only with their technology.
 
 ### Bands, levels and the calibration
 
@@ -144,7 +179,7 @@ question over its budget turns the card border red. The tool never advances on i
 | Key | Action |
 |---|---|
 | `1` to `5` | Assign the band: weak, junior, mid, senior, lead |
-| `0` | Mark the question skipped |
+| `0` | Skip the question |
 | `n` or `→` | Next question |
 | `p` or `←` | Previous question |
 | `f` | Show or hide the follow-ups |
@@ -157,6 +192,23 @@ Shortcuts do nothing while the cursor is in a text field.
 Press `h` before you share your screen. It removes the whole interviewer zone, and the server stops
 sending the hint text at all. The setting is remembered, so a page reload does not put the answer
 key back on screen.
+
+## Skipping, and why Next is gated
+
+**Next does nothing until you have either assigned a band or skipped the question.** Walking past
+a question without recording anything loses the evidence silently, and an hour later nobody can
+tell whether it went badly or was never really asked.
+
+Skip is the other way out, and it is a different kind of statement. A band is a judgement about
+the answer; **a skip is your decision to move on and records nothing about the candidate**. It is
+coloured as a warning rather than as a sixth band, it never enters the range or the profile, and
+it is never counted as a zero. Skipped questions are listed in the scorecard under
+"Gaps — no evidence collected".
+
+A skipped question is parked, not discarded. Nothing re-serves it on its own — adaptive mode will
+not bring it back, and the running order steps past it. A counter appears at the bottom right of
+the interview screen; click it for the list, and click any entry to go back to that question. It
+is still a live question: assign a band and the skip clears.
 
 ## Saving and recovery
 

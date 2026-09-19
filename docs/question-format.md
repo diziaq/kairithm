@@ -34,7 +34,7 @@ sections are also what the interview screen renders directly.
 | `category` | enum | yes | `general`, `java`, `spring`, `microservices`, `kafka`, `sap-jco`. Must match the directory. |
 | `topic` | string | yes | Narrower area inside the category: `concurrency`, `transactions`, `delivery-semantics`. |
 | `level` | enum | yes | `junior`, `mid`, `senior`, `lead`. The seniority **the question** aims at. |
-| `tags` | list | no | Free-form, for filtering. |
+| `tags` | list | no | Free-form. Used for filtering, and to chain related cards — see below. |
 | `time_estimate_min` | integer | no | Rough minutes. Drives the pacing display. |
 | `order` | integer | no | Position in sequential mode. Cards without it sort last. |
 | `links` | mapping | no | See [Links](#links). |
@@ -63,6 +63,16 @@ schema did not anticipate without being rejected.
 
 Bullet sections are read as bullets. A line indented under a bullet continues it. A section
 written as a paragraph instead becomes a single item rather than an error.
+
+### Tags carry weight
+
+Tags are not only a filter. The tool serves questions in blocks by relatedness, and a shared tag
+is the only signal that connects two cards in different categories. Tag a card with the ideas it
+shares — `idempotency`, `correctness`, `transactions`, `retries` — and not only with its
+technology, or the run will jump from the end of one category to an unrelated one.
+
+Explicit `links:` are stronger than any tag. Same topic is stronger still, so a topic is always
+finished before the run moves on.
 
 ---
 

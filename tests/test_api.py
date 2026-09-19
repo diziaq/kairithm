@@ -673,3 +673,127 @@ def test_the_executive_summary_is_served_before_the_interview_is_finished(client
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/markdown")
     assert "executive summary" in response.text
+
+
+# --- skipping -------------------------------------------------------------------------------
+
+
+def test_a_skip_records_nothing_about_the_candidate(client):
+    session = make_session(client)
+    client.patch(
+        f"/api/sessions/{session['id']}/answers/java-conc-senior-01",
+        json={"skipped": True, "note": "ran out of time"},
+        headers=JSON,
+    )
+    state = client.get(f"/api/sessions/{session['id']}").json()
+
+    assert state["calibration"]["latest"] is None, "a skip must not move the calibration"
+    assert state["calibration"]["target_level"] == "mid", "still the starting level"
+
+    summary = client.get(f"/api/sessions/{session['id']}/summary").json()
+    assert summary["score"]["value"] is None, "a skip is not evidence, not even a zero"
+    assert summary["observations"] == []
+
+
+def test_a_skip_next_to_a_band_leaves_the_band_alone(client):
+    session = make_session(client)
+    band(client, session["id"], "java-conc-junior-01", "senior")
+    client.patch(
+        f"/api/sessions/{session['id']}/answers/java-conc-senior-01",
+        json={"skipped": True},
+        headers=JSON,
+    )
+    summary = client.get(f"/api/sessions/{session['id']}/summary").json()
+
+    assert [o["qid"] for o in summary["observations"]] == ["java-conc-junior-01"]
+    assert summary["score"]["rated"] == 1
+
+
+def test_a_skipped_card_is_never_served_again_by_itself(client):
+    session = make_session(
+        client, mode="adaptive", start_level="mid", filters={"categories": ["java", "kafka"]}
+    )
+    session_id = session["id"]
+    skipped = session["items"][0]["qid"]
+    client.patch(
+        f"/api/sessions/{session_id}/answers/{skipped}", json={"skipped": True}, headers=JSON
+    )
+
+    for _ in range(4):
+        client.post(f"/api/sessions/{session_id}/next", json={}, headers=JSON)
+
+    served_ids = [item["qid"] for item in client.get(f"/api/sessions/{session_id}").json()["items"]]
+    assert served_ids.count(skipped) == 1, "parked, not put back in the queue"
+
+
+def test_a_skipped_card_can_still_be_returned_to_on_purpose(client):
+    session = make_session(client)
+    session_id = session["id"]
+    target = session["items"][2]["qid"]
+    client.patch(
+        f"/api/sessions/{session_id}/answers/{target}", json={"skipped": True}, headers=JSON
+    )
+
+    state = client.post(
+        f"/api/sessions/{session_id}/jump", json={"question_id": target}, headers=JSON
+    ).json()
+    assert state["position"] == 2
+
+    # And it can be banded after all, which clears the skip.
+    band(client, session_id, target, "mid")
+    answer = client.get(f"/api/sessions/{session_id}").json()["items"][2]["answer"]
+    assert answer["band"] == "mid"
+    assert answer["skipped"] is False
+
+
+# --- blocks ----------------------------------------------------------------------------------
+
+
+def blocks(state):
+    """How many times the served order leaves a category and comes back."""
+    categories = [item["question"]["category"] for item in state["items"]]
+    return sum(1 for a, b in zip(categories, categories[1:]) if a != b)
+
+
+def test_a_session_arrives_in_one_block_per_category(client):
+    for mode in ("sequential", "random", "level_asc"):
+        session = make_session(client, mode=mode, filters={}, seed=99)
+        assert blocks(session) == 1, f"{mode} split a category in two"
+        assert len(session["items"]) == 6
+
+
+def test_the_reason_each_card_came_next_is_recorded(client):
+    session = make_session(client, mode="sequential", filters={})
+    reasons = [item["reason"] for item in session["items"]]
+
+    assert reasons[0].startswith("opens on")
+    assert all(reasons)
+    assert any("same topic" in reason for reason in reasons)
+
+
+def test_adaptive_keeps_the_conversation_in_one_place(client):
+    session = make_session(
+        client, mode="adaptive", start_level="mid", filters={}, seed=5
+    )
+    session_id = session["id"]
+    first = session["items"][0]
+    band(client, session_id, first["qid"], "mid")
+    state = client.post(f"/api/sessions/{session_id}/next", json={}, headers=JSON).json()
+
+    second = state["items"][1]
+    assert second["question"]["category"] == first["question"]["category"]
+    assert "same topic" in second["reason"] or "still" in second["reason"]
+
+
+def test_a_weak_answer_moves_off_the_topic_but_not_out_of_the_neighbourhood(client):
+    session = make_session(
+        client, mode="adaptive", start_level="senior", filters={}, seed=5
+    )
+    session_id = session["id"]
+    first = session["items"][0]
+    band(client, session_id, first["qid"], "weak")
+    state = client.post(f"/api/sessions/{session_id}/next", json={}, headers=JSON).json()
+
+    second = state["items"][1]
+    assert second["question"]["topic"] != first["question"]["topic"]
+    assert "moved off" in second["reason"]

@@ -203,14 +203,59 @@ fieldset label.check input { width: auto; }
 .range strong { font-size: 1.9rem; letter-spacing: -.02em; }
 details { margin: .6rem 0; font-size: .85rem; }
 details summary { cursor: pointer; color: var(--accent); font-size: .82rem; }
-
-#capture { margin: 1rem 0; }
 .ratings { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .6rem; }
 .ratings button { text-align: left; }
 .ratings button .k { font-family: var(--mono); color: var(--ink-3); margin-right: .4rem; }
 .ratings button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
 .ratings button[aria-pressed="true"] .k { color: #fff; }
-.ratings button.skip[aria-pressed="true"] { background: var(--ink-3); border-color: var(--ink-3); }
+
+/* Skip is not a band. It is the interviewer's decision to move on, and it records nothing about
+   the candidate, so it never looks like one of the five judgements next to it. */
+.ratings button.skip { border-color: var(--warn); color: var(--warn); margin-left: .6rem; }
+.ratings button.skip .k { color: var(--warn); }
+.ratings button.skip:hover { border-color: var(--warn); background: var(--ask-bg); }
+.ratings button.skip[aria-pressed="true"] { background: var(--warn); border-color: var(--warn); color: #fff; }
+.ratings button.skip[aria-pressed="true"] .k { color: #fff; }
+
+.gate {
+  margin: .1rem 0 .6rem;
+  font-size: .82rem;
+  color: var(--warn);
+}
+
+/* Parked questions, one click away for the rest of the session. */
+#skipped-dock { position: fixed; right: 1.2rem; bottom: 1.2rem; z-index: 20; }
+#btn-skipped {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  margin-left: auto;
+  padding: .4rem .7rem;
+  border-color: var(--warn);
+  color: var(--warn);
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgb(0 0 0 / .18);
+}
+#btn-skipped .glyph { font-size: 1.05rem; line-height: 1; }
+#btn-skipped .badge {
+  background: var(--warn);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0 .4rem;
+  font-size: .75rem;
+  font-weight: 700;
+}
+#skipped-popup {
+  width: min(24rem, calc(100vw - 2.4rem));
+  margin-bottom: .5rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgb(0 0 0 / .22);
+}
+#skipped-popup ul { margin: .4rem 0 0; padding-left: 1.1rem; font-size: .85rem; }
+#skipped-popup li { margin: .3rem 0; }
+
+#capture { margin: 1rem 0; }
 
 #statusbar {
   display: flex;

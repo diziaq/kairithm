@@ -14,6 +14,7 @@ import random
 from dataclasses import dataclass
 from typing import Any
 
+from .affinity import chain, explain, link_map, nearest_of
 from .bank import Bank, Question
 from .levels import LEVEL_ORDINAL, LEVELS, LINK_KINDS, Calibration
 
@@ -98,8 +99,12 @@ def _sequential_key(question: Question) -> tuple[int, int, str, str]:
     return (has_order, question.order or 0, question.category, question.id)
 
 
-def order_pool(pool: list[Question], mode: str, seed: int) -> list[Question]:
-    """Return the served order for a non-adaptive mode.
+def order_pool(pool: list[Question], mode: str, seed: int, bank: Bank) -> list[tuple[Question, str]]:
+    """Return the served order for a non-adaptive mode, each card with the reason it came next.
+
+    Every mode except manual walks the pool by relatedness, so the session arrives in blocks
+    instead of hopping between categories. The mode only decides where the walk starts and how
+    equally related cards are broken apart.
 
     Adaptive returns an empty list. It has no fixed order, because each card is chosen from the
     band the interviewer assigned to the one before it.
@@ -107,17 +112,35 @@ def order_pool(pool: list[Question], mode: str, seed: int) -> list[Question]:
     if mode == ADAPTIVE:
         return []
     if mode == MANUAL:
-        return list(pool)
+        # Hand-picked and hand-ordered. Re-sorting it would throw away the work.
+        return [(question, "manual order") for question in pool]
+
     if mode == SEQUENTIAL:
-        return sorted(pool, key=_sequential_key)
+        return chain(bank, pool, _sequential_key)
+
     if mode == RANDOM:
         shuffled = sorted(pool, key=_sequential_key)
         random.Random(seed).shuffle(shuffled)
-        return shuffled
+        position = {question.id: index for index, question in enumerate(shuffled)}
+        return chain(bank, pool, lambda question: position[question.id])
+
     if mode == LEVEL_ASC:
+        # One chain per level, each starting next to where the previous level finished, so the
+        # run still climbs while staying in blocks.
         shuffled = sorted(pool, key=_sequential_key)
         random.Random(seed).shuffle(shuffled)
-        return sorted(shuffled, key=lambda q: LEVEL_ORDINAL[q.level])
+        position = {question.id: index for index, question in enumerate(shuffled)}
+        out: list[tuple[Question, str]] = []
+        anchor: Question | None = None
+        for level in LEVELS:
+            band = [question for question in pool if question.level == level]
+            if not band:
+                continue
+            walked = chain(bank, band, lambda question: position[question.id], anchor=anchor)
+            out += [(question, f"{level}: {reason}") for question, reason in walked]
+            anchor = walked[-1][0]
+        return out
+
     raise ValueError(f"unknown order mode: {mode}")
 
 
@@ -151,8 +174,8 @@ def suggest(
 
     Order of preference:
     1. links out of the current card, in the order the calibration asks for;
-    2. cards at the target level in a topic this session has not touched;
-    3. cards at the target level anywhere in the pool.
+    2. cards at the target level, nearest to the current one first, so following a suggestion
+       keeps the conversation in one place.
 
     Nothing is filtered out for being a poor fit — the interviewer can pick any card in the bank
     at any time from the browser. This list only decides what is one click away.
@@ -176,36 +199,42 @@ def suggest(
                 offer(target_id, kind, f"{kind} than {current.title!r}")
 
     candidates = pool if pool is not None else list(bank.questions.values())
-    covered_topics = {bank.get(qid).topic for qid in served if bank.get(qid)}
-
     at_target = [q for q in candidates if q.level == target_level and q.id not in served]
-    fresh_topic = [q for q in at_target if q.topic not in covered_topics]
-    if calibration and calibration.change_topic:
-        ordered = fresh_topic + [q for q in at_target if q.topic in covered_topics]
-    else:
-        ordered = at_target
+
+    # Offer the nearest cards first, so following a suggestion keeps the conversation in one
+    # place. After a weak answer the same-topic ones move to the back: the point is to stop
+    # confirming the same failure, not to leave the subject altogether.
+    linked = link_map(bank)
+    ordered = nearest_of(current, at_target, linked)
+    if calibration and calibration.change_topic and current is not None:
+        away = [q for q in ordered if q.topic != current.topic]
+        ordered = away + [q for q in ordered if q.topic == current.topic]
+
     for question in ordered:
-        note = "topic not covered yet" if question.topic not in covered_topics else "same topic"
-        offer(question.id, "level", f"{target_level} in {question.topic} — {note}")
+        note = explain(current, question, linked) if current else f"{question.topic}"
+        offer(question.id, "level", f"{target_level} — {note}")
 
     return out[:limit]
 
 
 def choose_adaptive(
+    bank: Bank,
     pool: list[Question],
     served_ids: list[str],
     target_level: str,
     seed: int,
-    covered_topics: set[str],
+    change_topic: bool = False,
 ) -> tuple[Question, str] | None:
     """Pick the card adaptive mode serves next, and say why it was picked.
 
     The rules, in order:
     1. never repeat a card inside one session;
     2. prefer the target level, then the nearest level that still has cards;
-    3. inside that level, prefer a topic this session has not covered, so the mode does not
-       tunnel into one subject;
-    4. break the remaining tie with the session seed, so the run repeats exactly.
+    3. inside that level, take the card most related to the one just asked, so the interview
+       stays in a block instead of hopping between categories;
+    4. when the calibration asks for a topic change, leave the current topic but take the
+       nearest thing outside it rather than an unrelated card;
+    5. break the remaining tie with the session seed, so the run repeats exactly.
     """
     remaining = [q for q in pool if q.id not in served_ids]
     if not remaining:
@@ -219,12 +248,25 @@ def choose_adaptive(
     level = levels[0]
     at_level = [q for q in remaining if q.level == level]
 
-    fresh = [q for q in at_level if q.topic not in covered_topics]
-    candidates = fresh or at_level
+    current = bank.get(served_ids[-1]) if served_ids else None
+    candidates = at_level
+    moved_on = False
+    if change_topic and current is not None:
+        elsewhere = [q for q in at_level if q.topic != current.topic]
+        if elsewhere:
+            candidates = elsewhere
+            moved_on = True
 
+    # The seed only decides between cards the affinity walk cannot separate.
     picker = random.Random(f"{seed}:{len(served_ids)}")
-    chosen = picker.choice(sorted(candidates, key=lambda q: q.id))
+    shuffled = sorted(candidates, key=lambda q: q.id)
+    picker.shuffle(shuffled)
+    chosen = nearest_of(current, shuffled, link_map(bank))[0]
 
     where = "target level" if level == target_level else f"nearest level to target {target_level}"
-    topic = ", topic not covered yet" if fresh else ""
-    return chosen, f"{where} {level}{topic}"
+    if current is None:
+        return chosen, f"{where} {level}, opens on {chosen.category} / {chosen.topic}"
+    note = explain(current, chosen, link_map(bank))
+    if moved_on:
+        note = f"moved off {current.topic}: {note}"
+    return chosen, f"{where} {level}, {note}"

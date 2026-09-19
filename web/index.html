@@ -116,6 +116,9 @@
       The band describes what you heard. It is not a score, and nothing assigns it but you.
     </p>
     <div id="band-row" class="ratings"></div>
+    <p id="next-gate" class="gate hidden">
+      Assign a band, or skip the question, before moving on.
+    </p>
     <textarea id="note" rows="5" placeholder="Evidence note — what the candidate actually said (autosaves)"></textarea>
   </div>
 
@@ -132,6 +135,22 @@
     <button id="btn-hints">Hints off</button>
     <button id="btn-finish">End interview</button>
   </div>
+  <div id="skipped-dock" class="hidden">
+    <div id="skipped-popup" class="panel hidden" role="dialog" aria-label="Skipped questions">
+      <h3>Skipped</h3>
+      <p class="hint">
+        Your decision, not evidence about the candidate. Nothing here counts towards the range,
+        and none of it comes back on its own.
+      </p>
+      <ul id="skipped-list"></ul>
+    </div>
+    <button id="btn-skipped" type="button" aria-expanded="false" aria-controls="skipped-popup"
+            title="Questions you skipped">
+      <span class="glyph" aria-hidden="true">&#8856;</span>
+      <span id="skipped-count" class="badge">0</span>
+    </button>
+  </div>
+
   <p class="hint shortcuts">
     <kbd>1</kbd>&ndash;<kbd>5</kbd> band &middot; <kbd>0</kbd> skip &middot;
     <kbd>n</kbd>/<kbd>&rarr;</kbd> next &middot; <kbd>p</kbd>/<kbd>&larr;</kbd> previous &middot;

@@ -117,11 +117,25 @@ function renderBands() {
   const skipPressed = Boolean(view.answer.skipped);
   const skip = make("button", {
     className: "skip",
-    attrs: { type: "button", "aria-pressed": String(skipPressed) },
-    children: [make("span", { className: "k", text: "0" }), make("span", { text: "Skipped" })],
+    attrs: {
+      type: "button",
+      "aria-pressed": String(skipPressed),
+      title: "Your decision to move on. It records nothing about the candidate.",
+    },
+    children: [
+      make("span", { className: "k", text: "0" }),
+      make("span", { text: "Skip — no evidence recorded" }),
+    ],
   });
   skip.addEventListener("click", () => setSkipped(!skipPressed));
   row.appendChild(skip);
+}
+
+// Next is gated on the interviewer having recorded something. A band is a judgement about the
+// answer; a skip is a decision to move on that says nothing about the candidate. Either is a
+// deliberate act, and walking past a question without one loses the evidence silently.
+function answerIsRecorded() {
+  return Boolean(view.answer && (view.answer.band || view.answer.skipped));
 }
 
 async function setBand(value) {
@@ -136,6 +150,11 @@ async function setSkipped(on) {
   await save({ skipped: on });
 }
 
+function rememberAnswer(answer) {
+  const item = view.state && view.state.items && view.state.items[view.index];
+  if (item) item.answer = answer;
+}
+
 async function save(patch) {
   setSaveState("saving");
   try {
@@ -144,10 +163,10 @@ async function save(patch) {
       elapsed_seconds: questionElapsed(),
     });
     view.answer = result.answer;
-    if (result.calibration) {
-      view.state = { ...view.state, calibration: result.calibration };
-      renderStatus();
-    }
+    rememberAnswer(result.answer);
+    if (result.calibration) view.state = { ...view.state, calibration: result.calibration };
+    renderStatus();
+    renderSkippedDock();
     setSaveState("saved");
   } catch {
     setSaveState("error");
@@ -304,8 +323,60 @@ function renderStatus() {
 
   el("btn-prev").disabled = view.index === 0;
   const lastServed = view.index >= total - 1;
-  el("btn-next").disabled = lastServed && view.state.mode !== "adaptive";
-  if (view.state.adaptive_exhausted && lastServed) el("btn-next").disabled = true;
+  const gated = !answerIsRecorded();
+  const atTheEnd =
+    (lastServed && view.state.mode !== "adaptive") ||
+    (view.state.adaptive_exhausted && lastServed);
+  el("btn-next").disabled = gated || atTheEnd;
+  el("next-gate").classList.toggle("hidden", !gated);
+}
+
+// --- the skipped dock ------------------------------------------------------------------------
+//
+// A skipped question is parked, not discarded. Nothing re-serves it, and it is one click away
+// for the whole session.
+
+function skippedItems() {
+  if (!view.state || !view.state.items) return [];
+  return view.state.items
+    .map((item, index) => ({ ...item, index }))
+    .filter((item) => item.answer && item.answer.skipped);
+}
+
+function renderSkippedDock() {
+  const skipped = skippedItems();
+  el("skipped-dock").classList.toggle("hidden", skipped.length === 0);
+  el("skipped-count").textContent = String(skipped.length);
+
+  const list = el("skipped-list");
+  clear(list);
+  for (const item of skipped) {
+    const open = make("button", {
+      className: "linky",
+      text: item.question.title || item.qid,
+      attrs: { type: "button" },
+    });
+    open.addEventListener("click", () => {
+      toggleSkippedPopup(false);
+      goTo(item.index);
+    });
+    const entry = make("li", { children: [open] });
+    entry.appendChild(
+      make("span", {
+        className: "hint",
+        text: ` ${item.question.category} / ${item.question.topic} · ${item.question.level}`,
+      })
+    );
+    list.appendChild(entry);
+  }
+  if (skipped.length === 0) toggleSkippedPopup(false);
+}
+
+function toggleSkippedPopup(force) {
+  const popup = el("skipped-popup");
+  const show = force === undefined ? popup.classList.contains("hidden") : force;
+  popup.classList.toggle("hidden", !show);
+  el("btn-skipped").setAttribute("aria-expanded", String(show));
 }
 
 function tick() {
@@ -333,6 +404,7 @@ async function loadPosition(index) {
   view.enteredAt = Date.now();
   renderQuestion();
   renderStatus();
+  renderSkippedDock();
   tick();
 }
 
@@ -343,6 +415,7 @@ async function goTo(index) {
 }
 
 async function goNext() {
+  if (!answerIsRecorded()) return;
   await flushPending();
   const before = view.state.items.length;
   view.state = await api.next(view.sessionId);
@@ -389,6 +462,11 @@ function toggleFollowUps() {
 function onKeyDown(event) {
   if (el("screen-interview").classList.contains("hidden")) return;
 
+  if (event.key === "Escape" && !el("skipped-popup").classList.contains("hidden")) {
+    toggleSkippedPopup(false);
+    event.preventDefault();
+    return;
+  }
   if (event.key === "Escape" && document.activeElement === el("note")) {
     el("note").blur();
     event.preventDefault();
@@ -451,6 +529,7 @@ export function initInterview(handlers) {
   el("btn-next").addEventListener("click", () => goNext());
   el("btn-prev").addEventListener("click", () => goTo(view.index - 1));
   el("btn-hints").addEventListener("click", () => toggleHints());
+  el("btn-skipped").addEventListener("click", () => toggleSkippedPopup());
   el("btn-finish").addEventListener("click", async () => {
     await flushPending();
     stopInterviewTimers();

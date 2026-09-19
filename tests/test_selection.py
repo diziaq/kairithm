@@ -3,6 +3,7 @@ from app.levels import calibrate
 from app.selection import (
     ADAPTIVE,
     LEVEL_ASC,
+    MANUAL,
     RANDOM,
     SEQUENTIAL,
     PoolFilters,
@@ -11,6 +12,16 @@ from app.selection import (
     order_pool,
     suggest,
 )
+
+
+def served(pool, mode, seed, bank):
+    """Ids in the order a mode would serve them."""
+    return [question.id for question, _reason in order_pool(pool, mode, seed, bank)]
+
+
+def switches(values):
+    """How many times a sequence changes value. One block per value means len(set) - 1."""
+    return sum(1 for a, b in zip(values, values[1:]) if a != b)
 
 
 def question(
@@ -86,79 +97,194 @@ def test_excluded_ids_are_removed():
 # --- ordering ------------------------------------------------------------------------------
 
 
-def test_sequential_uses_the_order_field_then_the_id():
-    pool = [
-        question("z", "mid"),
-        question("a", "mid", order=20),
-        question("b", "mid", order=10),
-    ]
-    assert [q.id for q in order_pool(pool, SEQUENTIAL, 1)] == ["b", "a", "z"]
+MIXED = [
+    ("java-conc-a", "java", "concurrency"),
+    ("kafka-del-a", "kafka", "delivery"),
+    ("java-conc-b", "java", "concurrency"),
+    ("spring-di-a", "spring", "di"),
+    ("kafka-del-b", "kafka", "delivery"),
+    ("java-coll-a", "java", "collections"),
+]
+
+
+def mixed_bank(level="mid"):
+    return make_bank(
+        *(question(qid, level, category=category, topic=topic) for qid, category, topic in MIXED)
+    )
+
+
+def test_sequential_opens_on_the_order_field_then_stays_in_blocks():
+    bank = make_bank(
+        question("java-a", "mid", category="java", topic="concurrency", order=30),
+        question("java-b", "mid", category="java", topic="concurrency", order=10),
+        question("kafka-a", "mid", category="kafka", topic="delivery", order=20),
+    )
+    pool = list(bank.questions.values())
+    assert served(pool, SEQUENTIAL, 1, bank) == ["java-b", "java-a", "kafka-a"], (
+        "opens on the lowest order, finishes the topic, then moves on"
+    )
+
+
+def test_every_mode_serves_one_block_per_category():
+    bank = mixed_bank()
+    pool = list(bank.questions.values())
+    for mode in (SEQUENTIAL, RANDOM, LEVEL_ASC):
+        categories = [qid.split("-")[0] for qid in served(pool, mode, 7, bank)]
+        assert switches(categories) == len(set(categories)) - 1, (
+            f"{mode} left and re-entered a category"
+        )
+
+
+def test_a_topic_is_finished_before_the_chain_leaves_its_category():
+    bank = mixed_bank()
+    order = served(list(bank.questions.values()), SEQUENTIAL, 1, bank)
+    topics = [qid.rsplit("-", 1)[0] for qid in order]
+    assert switches(topics) == len(set(topics)) - 1
 
 
 def test_random_order_is_reproducible_from_the_seed():
-    pool = [question(name, "mid") for name in "abcdefgh"]
-    first = [q.id for q in order_pool(pool, RANDOM, 4815162342)]
-    second = [q.id for q in order_pool(pool, RANDOM, 4815162342)]
-    other = [q.id for q in order_pool(pool, RANDOM, 99)]
-    assert first == second
-    assert first != other, "a different seed should give a different order for eight cards"
+    bank = mixed_bank()
+    pool = list(bank.questions.values())
+    assert served(pool, RANDOM, 4815162342, bank) == served(pool, RANDOM, 4815162342, bank)
 
 
-def test_level_ascending_walks_the_scale_upwards():
-    pool = [
-        question("a", "senior"),
-        question("b", "junior"),
-        question("c", "lead"),
-        question("d", "mid"),
-    ]
-    assert [q.level for q in order_pool(pool, LEVEL_ASC, 1)] == ["junior", "mid", "senior", "lead"]
+def test_a_different_seed_opens_the_chain_somewhere_else():
+    bank = mixed_bank()
+    pool = list(bank.questions.values())
+    openings = {served(pool, RANDOM, seed, bank)[0] for seed in range(30)}
+    assert len(openings) > 1, "the seed has to be able to move the starting point"
+
+
+def test_level_ascending_still_climbs_while_staying_in_blocks():
+    bank = make_bank(
+        question("java-a", "senior", category="java", topic="concurrency"),
+        question("java-b", "junior", category="java", topic="concurrency"),
+        question("kafka-a", "junior", category="kafka", topic="delivery"),
+        question("kafka-b", "senior", category="kafka", topic="delivery"),
+    )
+    pool = list(bank.questions.values())
+    order = served(pool, LEVEL_ASC, 1, bank)
+    levels = [bank.get(qid).level for qid in order]
+
+    assert levels == ["junior", "junior", "senior", "senior"], "the run still climbs"
+    assert switches([qid.split("-")[0] for qid in order]) <= 2
+
+
+def test_level_ascending_picks_up_the_next_band_where_the_last_one_finished():
+    bank = make_bank(
+        question("java-a", "junior", category="java", topic="concurrency"),
+        question("kafka-a", "mid", category="kafka", topic="delivery"),
+        question("java-b", "mid", category="java", topic="concurrency"),
+    )
+    order = served(list(bank.questions.values()), LEVEL_ASC, 1, bank)
+    assert order == ["java-a", "java-b", "kafka-a"], "the mid band opens next to the junior one"
+
+
+def test_manual_order_is_left_exactly_as_it_was_picked():
+    bank = mixed_bank()
+    pool = [bank.get("kafka-del-a"), bank.get("java-conc-a"), bank.get("kafka-del-b")]
+    assert served(pool, MANUAL, 1, bank) == ["kafka-del-a", "java-conc-a", "kafka-del-b"]
+
+
+def test_every_served_card_carries_the_reason_it_came_next():
+    bank = mixed_bank()
+    walked = order_pool(list(bank.questions.values()), SEQUENTIAL, 1, bank)
+    assert all(reason for _question, reason in walked)
+    assert walked[0][1].startswith("opens on")
 
 
 def test_adaptive_has_no_precomputed_order():
-    assert order_pool([question("a", "mid")], ADAPTIVE, 1) == []
+    bank = mixed_bank()
+    assert order_pool(list(bank.questions.values()), ADAPTIVE, 1, bank) == []
+
+
+def test_an_unknown_mode_is_refused():
+    bank = mixed_bank()
+    try:
+        order_pool(list(bank.questions.values()), "sideways", 1, bank)
+    except ValueError as error:
+        assert "unknown order mode" in str(error)
+    else:
+        raise AssertionError("an unknown mode must not be served silently")
 
 
 # --- adaptive picking ------------------------------------------------------------------------
 
 
 def test_adaptive_prefers_the_target_level_then_the_nearest_one():
-    pool = [question("a", "junior"), question("b", "senior"), question("c", "lead")]
+    bank = make_bank(
+        question("a", "junior"), question("b", "senior"), question("c", "lead")
+    )
+    pool = list(bank.questions.values())
 
-    picked, reason = choose_adaptive(pool, [], "senior", seed=1, covered_topics=set())
+    picked, reason = choose_adaptive(bank, pool, [], "senior", seed=1)
     assert picked.id == "b"
     assert "target level senior" in reason
 
-    picked, reason = choose_adaptive(pool, ["b"], "senior", seed=1, covered_topics=set())
+    picked, reason = choose_adaptive(bank, pool, ["b"], "senior", seed=1)
     assert picked.level == "lead", "lead is one step away, junior is two"
     assert "nearest level" in reason
 
 
-def test_adaptive_prefers_a_topic_the_session_has_not_covered():
-    pool = [
-        question("a", "mid", topic="collections"),
-        question("b", "mid", topic="generics"),
-    ]
-    picked, reason = choose_adaptive(pool, [], "mid", seed=7, covered_topics={"collections"})
-    assert picked.id == "b"
-    assert "topic not covered yet" in reason
+def test_adaptive_stays_in_the_block_it_is_in():
+    bank = make_bank(
+        question("here", "mid", category="java", topic="concurrency"),
+        question("near", "mid", category="java", topic="concurrency"),
+        question("far", "mid", category="sap-jco", topic="rfc"),
+    )
+    picked, reason = choose_adaptive(bank, list(bank.questions.values()), ["here"], "mid", seed=3)
+
+    assert picked.id == "near"
+    assert "same topic, concurrency" in reason
+
+
+def test_adaptive_leaves_a_topic_only_when_the_calibration_asks_and_takes_the_nearest_exit():
+    """After a weak answer the point is to stop confirming a failure, not to change subject."""
+    bank = make_bank(
+        question("here", "mid", category="java", topic="concurrency", tags=("jmm",)),
+        question("same", "mid", category="java", topic="concurrency"),
+        question("sibling", "mid", category="java", topic="collections"),
+        question("stranger", "mid", category="sap-jco", topic="rfc"),
+    )
+    pool = list(bank.questions.values())
+
+    stay, _ = choose_adaptive(bank, pool, ["here"], "mid", seed=3, change_topic=False)
+    assert stay.id == "same"
+
+    move, reason = choose_adaptive(bank, pool, ["here"], "mid", seed=3, change_topic=True)
+    assert move.id == "sibling", "a different topic, but the nearest one"
+    assert "moved off concurrency" in reason
+
+
+def test_adaptive_stays_put_when_a_topic_change_has_nowhere_to_go():
+    bank = make_bank(
+        question("here", "mid", topic="concurrency"),
+        question("same", "mid", topic="concurrency"),
+    )
+    picked, _ = choose_adaptive(
+        bank, list(bank.questions.values()), ["here"], "mid", seed=1, change_topic=True
+    )
+    assert picked.id == "same"
 
 
 def test_adaptive_never_repeats_and_ends_when_the_pool_is_used_up():
-    pool = [question("a", "mid")]
-    picked, _ = choose_adaptive(pool, [], "mid", seed=1, covered_topics=set())
+    bank = make_bank(question("a", "mid"))
+    pool = list(bank.questions.values())
+    picked, _ = choose_adaptive(bank, pool, [], "mid", seed=1)
     assert picked.id == "a"
-    assert choose_adaptive(pool, ["a"], "mid", seed=1, covered_topics=set()) is None
+    assert choose_adaptive(bank, pool, ["a"], "mid", seed=1) is None
 
 
 def test_adaptive_is_reproducible_from_the_seed():
-    pool = [question(name, "mid") for name in "abcdef"]
+    bank = mixed_bank()
+    pool = list(bank.questions.values())
     runs = []
     for _ in range(2):
-        served: list[str] = []
+        order: list[str] = []
         for _ in range(4):
-            picked, _ = choose_adaptive(pool, served, "mid", seed=555, covered_topics=set())
-            served.append(picked.id)
-        runs.append(served)
+            picked, _ = choose_adaptive(bank, pool, order, "mid", seed=555)
+            order.append(picked.id)
+        runs.append(order)
     assert runs[0] == runs[1]
 
 
@@ -190,7 +316,19 @@ def test_suggestions_fall_back_to_the_target_level_when_there_are_no_links():
     found = suggest(bank, current, calibrate("senior", "mid"), "mid", ["now"])
     assert [s.question_id for s in found] == ["other"]
     assert found[0].kind == "level"
-    assert "topic not covered yet" in found[0].reason
+    assert "concurrency → collections" in found[0].reason
+
+
+def test_suggestions_at_the_target_level_come_nearest_first():
+    """An answer at the level asked holds the topic, so the nearest card leads."""
+    current = question("now", "mid", category="java", topic="concurrency")
+    near = question("near", "mid", category="java", topic="concurrency")
+    sibling = question("sibling", "mid", category="java", topic="collections")
+    stranger = question("stranger", "mid", category="sap-jco", topic="rfc")
+    bank = make_bank(current, near, sibling, stranger)
+
+    found = suggest(bank, current, calibrate("mid", "mid"), "mid", ["now"])
+    assert [s.question_id for s in found] == ["near", "sibling", "stranger"]
 
 
 def test_a_card_already_served_is_never_suggested_again():
@@ -201,11 +339,13 @@ def test_a_card_already_served_is_never_suggested_again():
     assert suggest(bank, current, calibrate("senior", "weak"), "junior", ["now", "easy"]) == []
 
 
-def test_a_topic_change_pushes_uncovered_topics_to_the_front():
+def test_a_topic_change_pushes_the_current_topic_to_the_back_without_dropping_it():
     current = question("now", "senior", topic="concurrency")
     same = question("same", "mid", topic="concurrency")
-    fresh = question("fresh", "mid", topic="collections")
-    bank = make_bank(current, same, fresh)
+    sibling = question("sibling", "mid", topic="collections")
+    bank = make_bank(current, same, sibling)
 
     found = suggest(bank, current, calibrate("senior", "mid"), "mid", ["now"])
-    assert [s.question_id for s in found] == ["fresh", "same"]
+    assert [s.question_id for s in found] == ["sibling", "same"], (
+        "a different topic leads, but the current one is still one click away"
+    )

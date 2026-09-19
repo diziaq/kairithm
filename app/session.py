@@ -119,8 +119,12 @@ class Session:
                 current["band"] = None
             elif str(band).lower() in BANDS:
                 current["band"] = str(band).lower()
+                # Assigning a band says the question was answered, so it cannot still be
+                # skipped. Leaving both set would drop the band from the evidence silently.
+                current["skipped"] = False
             else:
                 raise ValueError(f"band must be one of {', '.join(BANDS)}, not {band!r}")
+        # An explicit skip in the same patch still wins, so the order here matters.
         if "skipped" in patch:
             current["skipped"] = bool(patch["skipped"])
             if current["skipped"]:
@@ -165,12 +169,14 @@ class Session:
     def append_adaptive_item(self, bank: Bank) -> dict[str, Any] | None:
         """Serve one more adaptive card, or return None when the pool is used up."""
         target = self.target_level(bank)
+        latest, _, _ = self.replay_calibration(bank)
         picked = choose_adaptive(
+            bank,
             self.pool(bank),
             self.served_ids(),
             target,
             int(self.data["seed"]),
-            self.covered_topics(bank),
+            change_topic=bool(latest and latest.change_topic),
         )
         if picked is None:
             return None
@@ -219,13 +225,6 @@ class Session:
         if latest is not None:
             return latest.next_level
         return start_level(self.data.get("setup") or {})
-
-    def covered_topics(self, bank: Bank) -> set[str]:
-        topics: set[str] = set()
-        for item in self.items:
-            question = bank.get(item["qid"])
-            topics.add(question.topic if question else item.get("asked_topic", ""))
-        return {topic for topic in topics if topic}
 
     # --- derived views -------------------------------------------------------------------
 
@@ -337,10 +336,9 @@ def create_session(bank: Bank, setup: dict[str, Any]) -> Session:
     if (directory / "session.json").exists():
         session_id = f"{session_id}-{secrets.token_hex(2)}"
 
-    ordered = order_pool(pool, mode, seed)
     items = [
-        {"qid": q.id, "target_level": None, "reason": f"{mode} order", **snapshot(q)}
-        for q in ordered
+        {"qid": question.id, "target_level": None, "reason": reason, **snapshot(question)}
+        for question, reason in order_pool(pool, mode, seed, bank)
     ]
 
     data: dict[str, Any] = {
