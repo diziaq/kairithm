@@ -1,14 +1,26 @@
-// The live interview screen: one question, the interviewer notes, rating, note, timers, shortcuts.
+// The live interview screen: one card, the interviewer guidance, the band, the note, timers,
+// shortcuts. Nothing here assigns a band and nothing advances on its own.
 
 import { api, patchAnswerKeepalive } from "./api.js";
-import { clear, el, formatClock, isTypingTarget, make, renderSimpleMarkdown, setSaveState } from "./dom.js";
+import {
+  clear,
+  el,
+  formatClock,
+  isTypingTarget,
+  make,
+  renderBullets,
+  renderSimpleMarkdown,
+  setSaveState,
+} from "./dom.js";
 
-const RATING_LABELS = [
-  [1, "No understanding"],
-  [2, "Shaky, needed prompting"],
-  [3, "Solid, expected level"],
-  [4, "Strong, went beyond"],
-  [5, "Excellent, taught me something"],
+// The band the interviewer picks describes the answer. It is not the level of the question,
+// and the two are shown side by side on purpose.
+const BAND_LABELS = [
+  ["weak", "Weak — no working account of it"],
+  ["junior", "Junior — the basic rule, one example"],
+  ["mid", "Mid — trade-offs, a failure case"],
+  ["senior", "Senior — the mechanism, behaviour under load"],
+  ["lead", "Lead — chooses from constraints, names the cost"],
 ];
 
 const HINTS_KEY = "interview-runner.hints-visible";
@@ -57,9 +69,7 @@ function sumRecordedSeconds(state, exceptQid) {
 async function pushElapsed() {
   if (!view.question) return;
   try {
-    await api.patchAnswer(view.sessionId, view.question.id, {
-      elapsed_seconds: questionElapsed(),
-    });
+    await api.patchAnswer(view.sessionId, view.question.id, { elapsed_seconds: questionElapsed() });
   } catch {
     setSaveState("error");
   }
@@ -89,18 +99,21 @@ export async function flushPending(useKeepalive = false) {
   }
 }
 
-function renderRatings() {
-  const row = el("rating-row");
+function renderBands() {
+  const row = el("band-row");
   clear(row);
-  for (const [value, label] of RATING_LABELS) {
-    const pressed = !view.answer.skipped && view.answer.rating === value;
+  BAND_LABELS.forEach(([value, label], position) => {
+    const pressed = !view.answer.skipped && view.answer.band === value;
     const button = make("button", {
       attrs: { type: "button", "aria-pressed": String(pressed) },
-      children: [make("span", { className: "k", text: String(value) }), make("span", { text: label })],
+      children: [
+        make("span", { className: "k", text: String(position + 1) }),
+        make("span", { text: label }),
+      ],
     });
-    button.addEventListener("click", () => setRating(value));
+    button.addEventListener("click", () => setBand(value));
     row.appendChild(button);
-  }
+  });
   const skipPressed = Boolean(view.answer.skipped);
   const skip = make("button", {
     className: "skip",
@@ -111,15 +124,15 @@ function renderRatings() {
   row.appendChild(skip);
 }
 
-async function setRating(value) {
-  view.answer = { ...view.answer, rating: value, skipped: false };
-  renderRatings();
-  await save({ rating: value, skipped: false });
+async function setBand(value) {
+  view.answer = { ...view.answer, band: value, skipped: false };
+  renderBands();
+  await save({ band: value, skipped: false });
 }
 
 async function setSkipped(on) {
-  view.answer = { ...view.answer, skipped: on, rating: on ? null : view.answer.rating };
-  renderRatings();
+  view.answer = { ...view.answer, skipped: on, band: on ? null : view.answer.band };
+  renderBands();
   await save({ skipped: on });
 }
 
@@ -131,6 +144,10 @@ async function save(patch) {
       elapsed_seconds: questionElapsed(),
     });
     view.answer = result.answer;
+    if (result.calibration) {
+      view.state = { ...view.state, calibration: result.calibration };
+      renderStatus();
+    }
     setSaveState("saved");
   } catch {
     setSaveState("error");
@@ -143,36 +160,123 @@ function applyHintVisibility() {
   el("btn-hints").textContent = view.hintsVisible ? "Hints off" : "Hints on";
 }
 
+function block(heading, build) {
+  const node = make("div", { className: "hint-block" });
+  node.appendChild(make("h3", { text: heading }));
+  const body = make("div");
+  if (!build(body)) return null;
+  node.appendChild(body);
+  return node;
+}
+
+function renderHints(question) {
+  const zone = el("hint-zone");
+  clear(zone);
+  if (!view.hintsVisible) return;
+
+  const blocks = [];
+
+  if (question.tests) {
+    blocks.push(
+      block("What this tests", (body) => {
+        body.appendChild(make("p", { text: question.tests }));
+        return true;
+      })
+    );
+  }
+  blocks.push(block("Listen for", (body) => renderBullets(body, question.listen_for)));
+  blocks.push(
+    block("Expected knowledge", (body) => renderBullets(body, question.expected_knowledge))
+  );
+  blocks.push(block("Strong signals", (body) => renderBullets(body, question.strong_signals)));
+  blocks.push(block("Weak signals", (body) => renderBullets(body, question.weak_signals)));
+
+  blocks.push(
+    block("Answer bands", (body) => {
+      const bands = question.answer_bands || {};
+      const names = Object.keys(bands);
+      if (names.length === 0) return false;
+      for (const name of names) {
+        body.appendChild(make("p", { className: "band-name", text: name }));
+        renderBullets(body, bands[name]);
+      }
+      return true;
+    })
+  );
+
+  blocks.push(
+    block("Follow-ups", (body) => {
+      const followUps = question.follow_ups || [];
+      if (followUps.length === 0) return false;
+      const toggle = make("button", {
+        className: "linky",
+        text: view.followUpsVisible ? "hide" : "show",
+        attrs: { type: "button" },
+      });
+      toggle.addEventListener("click", toggleFollowUps);
+      body.appendChild(toggle);
+
+      const list = make("ul", { className: view.followUpsVisible ? "" : "hidden" });
+      followUps.forEach((followUp, position) => {
+        const item = make("li");
+        const used = (view.answer.follow_ups_used || []).includes(position);
+        const box = make("input", { attrs: { type: "checkbox", title: "mark as used" } });
+        box.checked = used;
+        box.addEventListener("change", () => toggleFollowUpUsed(position, box.checked));
+        item.appendChild(box);
+        item.appendChild(make("span", { text: ` ${followUp.text}` }));
+        // `probes` says why the interviewer is asking it. It is never read aloud.
+        if (followUp.probes) {
+          item.appendChild(make("span", { className: "probes", text: `probes: ${followUp.probes}` }));
+        }
+        list.appendChild(item);
+      });
+      body.appendChild(list);
+      return true;
+    })
+  );
+
+  if (question.notes) {
+    blocks.push(
+      block("Notes", (body) => {
+        renderSimpleMarkdown(body, question.notes);
+        return true;
+      })
+    );
+  }
+  for (const section of question.extra || []) {
+    blocks.push(
+      block(section.heading, (body) => {
+        renderSimpleMarkdown(body, section.body);
+        return true;
+      })
+    );
+  }
+
+  for (const node of blocks) if (node) zone.appendChild(node);
+}
+
+async function toggleFollowUpUsed(position, on) {
+  const current = new Set(view.answer.follow_ups_used || []);
+  if (on) current.add(position);
+  else current.delete(position);
+  view.answer = { ...view.answer, follow_ups_used: [...current].sort((a, b) => a - b) };
+  await save({ follow_ups_used: view.answer.follow_ups_used });
+  renderHints(view.question);
+}
+
 function renderQuestion() {
   const question = view.question;
   const tags = question.tags.length ? ` · ${question.tags.join(", ")}` : "";
   const target =
-    view.state.mode === "adaptive" && view.targetDifficulty !== null
-      ? ` · served at target ${view.targetDifficulty}`
-      : "";
-  el("ask-meta").textContent = `${question.topic} · difficulty ${question.difficulty}${tags}${target}`;
-  renderSimpleMarkdown(el("ask-text"), question.ask);
+    view.targetLevel ? ` · served at target ${view.targetLevel}` : "";
+  el("ask-meta").textContent =
+    `${question.category} / ${question.topic} · level ${question.level}${tags}${target}`;
+  renderSimpleMarkdown(el("ask-text"), question.question);
 
-  renderSimpleMarkdown(el("look-for"), question.look_for || "");
-  renderSimpleMarkdown(el("red-flags"), question.red_flags || "");
-  renderSimpleMarkdown(el("follow-ups"), question.follow_ups || "");
-
-  const extras = el("extra-sections");
-  clear(extras);
-  for (const section of question.extra || []) {
-    const block = make("div", { className: "hint-block" });
-    block.appendChild(make("h3", { text: section.heading }));
-    const body = make("div");
-    renderSimpleMarkdown(body, section.body);
-    block.appendChild(body);
-    extras.appendChild(block);
-  }
-
-  el("follow-ups").classList.toggle("hidden", !view.followUpsVisible);
-  el("btn-followups").textContent = view.followUpsVisible ? "hide" : "show";
-
+  renderHints(question);
   el("note").value = view.answer.note || "";
-  renderRatings();
+  renderBands();
   applyHintVisibility();
 }
 
@@ -180,6 +284,12 @@ function renderStatus() {
   const total = view.state.items.length;
   el("position").textContent = `${view.index + 1} / ${total}`;
   el("mode-label").textContent = view.state.mode;
+
+  const calibration = view.state.calibration || {};
+  el("calibration-label").textContent = calibration.target_level
+    ? `calibration ${calibration.target_level}${calibration.override ? " (manual)" : ""}`
+    : "";
+  el("calibration-label").title = (calibration.latest && calibration.latest.advice) || "";
 
   const pacing = view.state.pacing || { kind: "untimed" };
   const budgetSeconds = (view.budgetMinutes || 0) * 60;
@@ -216,7 +326,7 @@ async function loadPosition(index) {
   view.index = payload.index;
   view.question = payload.question;
   view.answer = payload.answer || {};
-  view.targetDifficulty = payload.target_difficulty;
+  view.targetLevel = payload.target_level;
   view.budgetMinutes = payload.budget_minutes;
   view.elapsedBase = Number(view.answer.elapsed_seconds || 0);
   view.totalBase = sumRecordedSeconds(view.state, view.question.id) + view.elapsedBase;
@@ -273,8 +383,7 @@ function toggleHints(force) {
 
 function toggleFollowUps() {
   view.followUpsVisible = !view.followUpsVisible;
-  el("follow-ups").classList.toggle("hidden", !view.followUpsVisible);
-  el("btn-followups").textContent = view.followUpsVisible ? "hide" : "show";
+  renderHints(view.question);
 }
 
 function onKeyDown(event) {
@@ -293,7 +402,7 @@ function onKeyDown(event) {
     return;
   }
   if (event.key >= "1" && event.key <= "5") {
-    setRating(Number(event.key));
+    setBand(BAND_LABELS[Number(event.key) - 1][0]);
     event.preventDefault();
   } else if (event.key === "0") {
     setSkipped(!view.answer.skipped);
@@ -342,7 +451,6 @@ export function initInterview(handlers) {
   el("btn-next").addEventListener("click", () => goNext());
   el("btn-prev").addEventListener("click", () => goTo(view.index - 1));
   el("btn-hints").addEventListener("click", () => toggleHints());
-  el("btn-followups").addEventListener("click", () => toggleFollowUps());
   el("btn-finish").addEventListener("click", async () => {
     await flushPending();
     stopInterviewTimers();

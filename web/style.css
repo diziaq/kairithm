@@ -180,6 +180,30 @@ fieldset label.check input { width: auto; }
   font-size: .9rem;
 }
 
+.hint-block .band-name {
+  margin: .5rem 0 0;
+  font-family: var(--mono);
+  font-size: .74rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--ink);
+}
+/* Interviewer-only: why the follow-up is being asked. Never read aloud. */
+.hint-block .probes {
+  display: block;
+  font-size: .76rem;
+  font-style: italic;
+  color: var(--ink-3);
+}
+.hint-block li { margin: .15rem 0; }
+
+.problem-error { color: var(--bad); font-weight: 600; }
+
+.range { font-size: 1.1rem; margin: .2rem 0; }
+.range strong { font-size: 1.9rem; letter-spacing: -.02em; }
+details { margin: .6rem 0; font-size: .85rem; }
+details summary { cursor: pointer; color: var(--accent); font-size: .82rem; }
+
 #capture { margin: 1rem 0; }
 .ratings { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .6rem; }
 .ratings button { text-align: left; }

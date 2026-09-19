@@ -26,26 +26,38 @@ async function request(method, path, body) {
   return payload;
 }
 
+const id = (value) => encodeURIComponent(value);
+
 export const api = {
   bank: () => request("GET", "/api/bank"),
+  bankQuestion: (questionId, hints) =>
+    request("GET", `/api/bank/questions/${id(questionId)}?hints=${hints ? 1 : 0}`),
   preview: (filters, excludeAskedTo) =>
     request("POST", "/api/bank/preview", { filters, exclude_asked_to: excludeAskedTo || "" }),
+
   listSessions: () => request("GET", "/api/sessions"),
   createSession: (setup) => request("POST", "/api/sessions", setup),
-  getSession: (id) => request("GET", `/api/sessions/${encodeURIComponent(id)}`),
-  getQuestion: (id, index, hints) =>
-    request("GET", `/api/sessions/${encodeURIComponent(id)}/question/${index}?hints=${hints ? 1 : 0}`),
-  patchAnswer: (id, qid, patch) =>
-    request("PATCH", `/api/sessions/${encodeURIComponent(id)}/answers/${qid}`, patch),
-  next: (id) => request("POST", `/api/sessions/${encodeURIComponent(id)}/next`, {}),
-  goto: (id, index) => request("POST", `/api/sessions/${encodeURIComponent(id)}/goto`, { index }),
-  finish: (id, payload) => request("POST", `/api/sessions/${encodeURIComponent(id)}/finish`, payload),
+  getSession: (sid) => request("GET", `/api/sessions/${id(sid)}`),
+  getQuestion: (sid, index, hints) =>
+    request("GET", `/api/sessions/${id(sid)}/question/${index}?hints=${hints ? 1 : 0}`),
+  patchAnswer: (sid, qid, patch) =>
+    request("PATCH", `/api/sessions/${id(sid)}/answers/${id(qid)}`, patch),
+
+  suggestions: (sid) => request("GET", `/api/sessions/${id(sid)}/suggestions`),
+  setCalibration: (sid, level) => request("POST", `/api/sessions/${id(sid)}/calibration`, { level }),
+  next: (sid) => request("POST", `/api/sessions/${id(sid)}/next`, {}),
+  goto: (sid, index) => request("POST", `/api/sessions/${id(sid)}/goto`, { index }),
+  jump: (sid, questionId, reason) =>
+    request("POST", `/api/sessions/${id(sid)}/jump`, { question_id: questionId, reason }),
+
+  summary: (sid) => request("GET", `/api/sessions/${id(sid)}/summary`),
+  finish: (sid, payload) => request("POST", `/api/sessions/${id(sid)}/finish`, payload),
 };
 
 // A last write that must survive the page going away. sendBeacon cannot set a JSON content type
 // on every browser, so this uses keepalive on fetch, which can.
-export function patchAnswerKeepalive(id, qid, patch) {
-  return fetch(`/api/sessions/${encodeURIComponent(id)}/answers/${qid}`, {
+export function patchAnswerKeepalive(sessionId, qid, patch) {
+  return fetch(`/api/sessions/${id(sessionId)}/answers/${id(qid)}`, {
     method: "PATCH",
     headers: JSON_HEADERS,
     body: JSON.stringify(patch),

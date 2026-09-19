@@ -18,7 +18,7 @@
 <section id="screen-home" class="screen">
   <h1>Interview Runner</h1>
   <div id="bank-summary" class="panel"></div>
-  <div id="bank-warnings" class="panel warn hidden"></div>
+  <div id="bank-problems" class="panel warn hidden"></div>
   <div class="row">
     <button id="btn-new-session" class="primary">New session</button>
   </div>
@@ -46,19 +46,17 @@
 
       <fieldset id="stage-pool">
         <legend>1 &middot; Build the pool <span class="hint">which questions</span></legend>
+        <label>Categories</label>
+        <div id="category-list" class="chiplist"></div>
         <label>Topics</label>
         <div id="topic-list" class="chiplist"></div>
+        <label>Levels <span class="hint">the seniority each question aims at</span></label>
+        <div id="level-list" class="chiplist"></div>
         <label>Include tags <span class="hint">any match</span></label>
         <div id="include-tag-list" class="chiplist"></div>
         <label>Exclude tags</label>
         <div id="exclude-tag-list" class="chiplist"></div>
         <div class="row">
-          <label>Difficulty from
-            <select id="in-diff-min"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-          </label>
-          <label>to
-            <select id="in-diff-max"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
-          </label>
           <label>At most <input id="in-limit" type="number" min="1" max="99" placeholder="all"></label>
         </div>
         <label class="check">
@@ -70,8 +68,8 @@
         <legend>2 &middot; Choose the order <span class="hint">in what sequence</span></legend>
         <div id="mode-list" class="radiolist"></div>
         <p id="mode-explain" class="hint"></p>
-        <label id="start-difficulty-row" class="hidden">Start at difficulty
-          <select id="in-start-difficulty"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select>
+        <label id="start-level-row" class="hidden">Start at level
+          <select id="in-start-level"></select>
         </label>
         <label>Seed <span class="hint">blank picks one and records it</span>
           <input id="in-seed" type="number" placeholder="random">
@@ -110,26 +108,15 @@
     <div id="ask-text"></div>
   </div>
 
-  <div id="hint-zone">
-    <div class="hint-block">
-      <h3>Look for</h3>
-      <div id="look-for"></div>
-    </div>
-    <div class="hint-block">
-      <h3>Red flags</h3>
-      <div id="red-flags"></div>
-    </div>
-    <div class="hint-block">
-      <h3>Follow-ups <button id="btn-followups" class="linky">show</button></h3>
-      <div id="follow-ups" class="hidden"></div>
-    </div>
-    <div id="extra-sections"></div>
-  </div>
+  <div id="hint-zone"></div>
   <div id="hints-hidden-notice" class="hidden">Interviewer notes are hidden. Press <kbd>h</kbd> to show them.</div>
 
   <div id="capture">
-    <div id="rating-row" class="ratings"></div>
-    <textarea id="note" rows="5" placeholder="Note (autosaves)"></textarea>
+    <p class="hint">
+      The band describes what you heard. It is not a score, and nothing assigns it but you.
+    </p>
+    <div id="band-row" class="ratings"></div>
+    <textarea id="note" rows="5" placeholder="Evidence note — what the candidate actually said (autosaves)"></textarea>
   </div>
 
   <div id="statusbar">
@@ -137,6 +124,7 @@
     <span id="q-timer"></span>
     <span id="total-timer"></span>
     <span id="mode-label"></span>
+    <span id="calibration-label"></span>
     <span id="budget-label"></span>
     <span class="grow"></span>
     <button id="btn-prev">&larr; Previous</button>
@@ -145,7 +133,7 @@
     <button id="btn-finish">End interview</button>
   </div>
   <p class="hint shortcuts">
-    <kbd>1</kbd>&ndash;<kbd>5</kbd> rate &middot; <kbd>0</kbd> skip &middot;
+    <kbd>1</kbd>&ndash;<kbd>5</kbd> band &middot; <kbd>0</kbd> skip &middot;
     <kbd>n</kbd>/<kbd>&rarr;</kbd> next &middot; <kbd>p</kbd>/<kbd>&larr;</kbd> previous &middot;
     <kbd>f</kbd> follow-ups &middot; <kbd>h</kbd> hints &middot; <kbd>/</kbd> note &middot; <kbd>Esc</kbd> leave note
   </p>
@@ -153,18 +141,16 @@
 
 <section id="screen-summary" class="screen hidden">
   <h1>Summary</h1>
-  <div id="summary-averages" class="panel"></div>
+  <div id="summary-range" class="panel"></div>
+  <div id="summary-profile" class="panel"></div>
   <div id="summary-questions"></div>
 
   <fieldset>
-    <legend>Outcome</legend>
-    <label>Recommendation
-      <select id="in-recommendation"></select>
-    </label>
+    <legend>Assessment <span class="hint">your words, written into the scorecard as they are</span></legend>
     <label>Summary <textarea id="in-summary" rows="4"></textarea></label>
     <label>Strengths <textarea id="in-strengths" rows="3"></textarea></label>
     <label>Concerns <textarea id="in-concerns" rows="3"></textarea></label>
-    <label>Suggested follow-up areas <textarea id="in-followup-areas" rows="2"></textarea></label>
+    <label>Follow up in the next round <textarea id="in-followup-areas" rows="2"></textarea></label>
     <label class="check"><input id="in-anonymise" type="checkbox"> Anonymise the candidate name in the file</label>
   </fieldset>
 

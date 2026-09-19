@@ -5,6 +5,78 @@ Each one names the option taken and the reason.
 
 ## Departures from the brief
 
+### The rating scale was replaced by answer bands
+
+The first brief used a 1 to 5 rating. The question-bank brief separates two things the number
+had merged: `level`, the seniority a question is pitched at, and the band, an observable
+description of how it was answered. Both are now explicit, and the gap between them is what
+drives navigation. Nothing in the tool assigns a band.
+
+The 1 to 5 keys on the keyboard still work; they now select weak, junior, mid, senior and lead.
+
+### The hire recommendation was removed
+
+The first brief asked for a Strong hire / No hire dropdown. The question-bank brief forbids the
+tool producing a hire recommendation, and the operator asked for the same. It is gone from the
+model, the API, the scorecard and the UI. The interviewer's own written assessment stays, under a
+heading that says nobody but them wrote it.
+
+### The per-topic averages were replaced by a profile and a 0-100 range
+
+A mean of 1 to 5 ratings per topic was a score the tool computed and presented as fact. In its
+place:
+
+- a band distribution and a per-topic "hot spot" table, showing how far the assigned bands sat
+  above or below the level those questions were set to;
+- a single 0-100 range, requested by the operator, where 0 is an intern and 100 an engineering
+  tech lead.
+
+The question-bank brief forbids a numeric composite score. The operator asked for one explicitly,
+so it is built — with the formula, every input row and a confidence label printed next to it, and
+never as the only thing on the page. A number nobody can reproduce by hand is the thing worth
+refusing; this one can be.
+
+Skipped and unrated questions are left out of both sums, so a skip is never counted as a zero.
+
+### The id is a field, not the file path
+
+The first version derived a question's id from its directory and file name. Ids are now
+referenced by links between cards and by finished sessions on disk, so a rename would silently
+break both. `id` is a required frontmatter field. The file name is a convention the validator
+warns about and nothing depends on.
+
+### Link inverses are derived, not declared twice
+
+`deeper` on one card implies `shallower` on the other. Requiring both would mean two edits per
+edge across a bank of ninety cards, and the second one being forgotten would look like a missing
+link rather than an oversight. The inverse is computed at load time. What the validator does
+report is a pair that was declared explicitly in both files and points the wrong way, because
+there the two files genuinely disagree.
+
+### Answer bands live in the body, not the frontmatter
+
+Bands are prose full of colons, hashes and backticks. In YAML every bullet would need hand
+quoting, and `senior: Explains the mechanism: not the API` is a parse error rather than a
+sentence. They are `###` sub-headings under `## Answer bands`. Frontmatter keeps only what is
+filtered, sorted or linked on.
+
+### The follow-up leak check is deliberately conservative
+
+The brief asks for a warning when a follow-up repeats a term the guidance is waiting to hear. A
+first version flagged any word over five letters shared with the guidance, which produced
+"twenty", "cover" and "claim" — noise that would train an author to ignore the check. It now
+flags only backticked identifiers, hyphenated compounds, internally capitalised names and long
+words that are not ordinary English or ordinary shop talk, and it subtracts everything the card
+already says in its own question, title, topic and tags. It catches "Did you consider
+idempotency?" and passes "What changes if that operation gets retried?".
+
+### Sessions stay in `sessions/`, not `interviews/`
+
+The brief suggests an `interviews/<timestamp>-<name>/` directory. The repository already writes
+one directory per interview, holding the session file and the scorecard, under `sessions/`.
+Renaming it would cost the session-id pattern and the resolved-path containment check, which are
+two of the four reasons this tool is safe without a password, and buys nothing.
+
 ### Adaptive back-navigation keeps every question already asked
 
 The brief says that going back and changing a rating "re-derives the remaining queue". Taken

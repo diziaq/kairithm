@@ -1,8 +1,11 @@
 # Interview Runner
 
 A local tool for running a live technical interview. It picks questions from a file-based bank,
-shows them one at a time with notes only the interviewer sees, records a rating and a note for each,
-and writes a Markdown scorecard back into this repository.
+shows them one at a time with guidance only the interviewer sees, records an assessed band and an
+evidence note for each, and writes a Markdown scorecard back into this repository.
+
+The tool collects evidence. It never assigns a band, never advances on its own, and produces no
+hire recommendation.
 
 There is no database, no account and no network service. The question bank and the results are text
 files you edit and commit.
@@ -21,76 +24,117 @@ run again at any time.
 Python 3.11 or newer is required. Set `PYTHON` if the interpreter is not on the path as `python3`,
 for example `PYTHON=/usr/local/bin/python3.12 ./init.sh`.
 
-To run the tests:
+To run the tests, and to check the question bank:
 
 ```bash
 ./init.sh --dev
 .venv/bin/python -m pytest tests/ -q
+.venv/bin/python -m app.validate
 ```
 
 ## Add a question
 
-Copy `bank/_template.md` into a topic directory and edit it. The directory name is the topic. The
-file name is the question id, so `bank/java/gc-tuning.md` has the id `java/gc-tuning`.
+Copy `bank/_template.md` into a category directory and edit it. The full field reference is in
+[`docs/question-format.md`](docs/question-format.md).
 
 ```markdown
 ---
-title: What does `volatile` actually guarantee?
-difficulty: 3
-tags: [concurrency, memory-model]
-time_minutes: 5
-order: 20
+id: java-concurrency-visibility-flag-01
+schema_version: 1
+title: A flag one thread writes and another never sees
+category: java              # the directory name, and it must match
+topic: concurrency          # the narrower area
+level: senior               # junior | mid | senior | lead — what the QUESTION aims at
+tags: [memory-model, jmm]
+time_estimate_min: 7
+links:
+  shallower: [java-concurrency-shared-counter-01]
 ---
 
 ## Ask
 
-The text you read to the candidate.
+The only text read aloud.
 
-## Look for
+## Tests
 
-- What a real answer contains
+One sentence: what this card actually probes.
 
-## Red flags
+## Listen for
 
-- What a weak answer contains
+- The concrete thing whose presence means they understand it
+
+## Answer bands
+
+### mid
+
+- Explains the trade-off and names a failure case.
+
+### senior
+
+- Explains the mechanism rather than the API surface.
 
 ## Follow-ups
 
-- The question to ask when the first answer is too general
+- The situation you describe when the first answer is thin
+  probes: interviewer-only, never read aloud
 ```
 
-Rules the loader applies:
+The rules the loader applies:
 
-- `title` and `difficulty` are required. Difficulty is a whole number from 1 to 5.
-- Every other field is optional. `order` sets the position in sequential mode.
-- The four headings above are recognised. Any other `##` heading is kept and shown under its own
-  title.
+- `id`, `schema_version`, `title`, `category`, `topic`, `level`, `## Ask`, `## Tests`,
+  `## Listen for` and `## Answer bands` are required. Everything else is optional.
+- The `id` is the identity, not the file name. It is never reused and never renumbered, because
+  links and finished sessions point at it.
+- `category` must match the directory the file is in.
+- Answer bands describe what the candidate does, not a verdict. "Excellent understanding" is
+  rejected.
 - A file whose name starts with `_` is ignored.
-- A file the loader cannot read is listed as a warning on the home screen and skipped. One broken
-  file never stops the tool.
+- A file the loader cannot use is listed as a problem on the home screen and skipped. One broken
+  file never stops the tool, and it is never silently missing from the bank.
 
-The bank is read again at the start of every session. Edit a file, start a new session, and the
-change is live. The tool never writes to `bank/`.
+Run `.venv/bin/python -m app.validate` to check every card, every link and every band in one
+command. It names the file, the card id and the field for each problem.
+
+The bank is read again on every request. Edit a file, reload the browser, and the change is
+live. The tool never writes to `bank/`.
 
 ## Selection modes
 
-Stage 1 builds the pool: topics, tags to include or exclude, a difficulty range, a cap on the count,
-and an optional hand-picked list. Stage 2 picks the order:
+Stage 1 builds the pool: categories, topics, levels, tags to include or exclude, a cap on the
+count, and an optional hand-picked list. Stage 2 picks the order:
 
 | Mode | What it does |
 |---|---|
-| Sequential | The `order` field, then the file name. The same every time. |
+| Sequential | The `order` field, then the id. The same every time. |
 | Random | Shuffled with a seed. The seed is written to the session, so the run can be repeated. |
-| Difficulty ascending | Lowest difficulty first. Ties are broken by the seed. |
-| Adaptive | The next question follows the rating just given. See below. |
+| Level ascending | Junior first, lead last. Ties are broken by the seed. |
+| Adaptive | The next card follows the band you just assigned. See below. |
 | Manual | The exact order ticked in stage 1. |
 
-Adaptive mode starts at difficulty 2, unless you change it. A rating of 4 or 5 raises the target
-difficulty by one. A rating of 1 or 2 lowers it by one. A rating of 3 holds it, and so does a skip.
-The target is kept between 1 and 5. If no question is left at the target, the tool takes the nearest
-level that still has one. Inside a level it prefers a question with a tag this session has not
-covered yet, so the mode does not stay on one subject. A question is never asked twice in one
-session. Every served question records the target and the reason, and both appear in the scorecard.
+### Bands, levels and the calibration
+
+`level` is the seniority a **question** is pitched at. A **band** describes how the candidate
+answered it. The two are separate scales that meet at `junior`, and the gap between them is what
+drives navigation:
+
+| Band you assigned, against the question's level | What the tool suggests |
+|---|---|
+| Two or more below | `shallower`, and consider changing topic |
+| One below | `shallower`, or the same level in an adjacent topic |
+| Equal | `related` at the same level, or `deeper` to find the ceiling |
+| Above | `deeper`, and the bar for that topic moves up |
+
+The suggested level is always the band just observed, floored at `junior`. A `mid` answer to a
+`senior` question therefore suggests `mid` next — not another `senior` question on that topic.
+
+The running calibration is shown in the status bar and can be overridden by hand at any time.
+Every suggestion is optional: the interviewer can ignore all of them, follow any link, or jump to
+any card in the bank. Leaving the planned sequence and coming back loses nothing — bands, notes
+and follow-up usage are all kept.
+
+Adaptive mode starts at `mid` unless you change it. It never repeats a card inside one session,
+prefers a topic the session has not covered, and stops cleanly when the pool is used up. Every
+served card records the target level and the reason, and both appear in the scorecard.
 
 Stage 3 picks the pacing: untimed, a budget per question, or a budget for the whole session. A
 question over its budget turns the card border red. The tool never advances on its own.
@@ -99,7 +143,7 @@ question over its budget turns the card border red. The tool never advances on i
 
 | Key | Action |
 |---|---|
-| `1` to `5` | Set the rating |
+| `1` to `5` | Assign the band: weak, junior, mid, senior, lead |
 | `0` | Mark the question skipped |
 | `n` or `→` | Next question |
 | `p` or `←` | Previous question |
@@ -126,14 +170,43 @@ question order, position, ratings, notes and times.
 
 ## Output
 
-Ending an interview opens a summary screen. Nothing is written until you press **Save & close**.
-That writes two files into `sessions/<date>_<time>_<candidate>_<role>/`:
+Ending an interview opens a summary screen showing the range, the hot spots and every question
+asked. Nothing is written until you press **Save & close**. That writes two files into
+`sessions/<date>_<time>_<candidate>_<role>/`:
 
 - `scorecard.md`, ready to paste into a hiring thread;
-- `session.json`, the full state, including per-question times, the seed and the reason each
-  question was served.
+- `session.json`, the full state, including per-question times, follow-ups used, the seed, and the
+  reason each card was served.
 
 The **anonymise** tick replaces the candidate name with initials in `scorecard.md`.
+
+The scorecard keeps facts and conclusions apart structurally. Everything above
+`## Assessment (interviewer)` is either something you recorded or arithmetic over it. Everything
+under it is your own prose, and the tool never writes into that section.
+
+### The 0-100 range
+
+The scorecard opens with a single figure. 0 is an intern, 100 an engineering tech lead. It is a
+weighted mean of the bands you assigned:
+
+```
+sum(band points x level weight) / sum(level weight)
+
+band points     weak 0, junior 25, mid 50, senior 75, lead 100
+level weights   junior 1, mid 2, senior 3, lead 4
+```
+
+A band earned on a harder question weighs more, because it says more about the ceiling. Skipped
+and unrated questions are left out of both sums, so a skip is never counted as a zero. The
+formula and every input row are printed next to the figure, in the scorecard and on screen, so it
+can be checked by hand.
+
+It is an approximation over judgements a person made, not a measurement. It is shown with a
+confidence label derived from how many questions were banded and how many categories they
+spanned, and it is never the only thing on the page: the band distribution, the per-topic hot
+spots and the raw evidence sit beside it.
+
+There is no hire recommendation, and nothing in the tool assigns a band.
 
 ## Security model
 
@@ -160,13 +233,17 @@ run.sh              starts the tool
 run.py              entry point
 app/config.py       paths, port, the host allow list
 app/storage.py      atomic writes and path containment
-app/bank.py         reading and validating the question bank
-app/selection.py    pool building, ordering, adaptive rules
+app/levels.py       levels, bands, and the navigation table that connects them
+app/bank.py         reading and parsing the question bank
+app/validate.py     checking the bank; the CLI and the home-screen list share it
+app/selection.py    pool building, ordering, adaptive picking, suggestions
+app/scoring.py      the 0-100 range and the per-area profile
 app/session.py      session state
 app/report.py       scorecard rendering
 app/main.py         routes and the two security middlewares
 web/                the browser code: plain HTML, CSS and ES modules, no build step
-bank/               the question bank, one file per question
+bank/               the question bank, one file per card
+docs/               the card format reference
 sessions/           one directory per interview
 ```
 

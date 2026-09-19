@@ -38,6 +38,16 @@ export function renderSimpleMarkdown(container, text) {
   }
 }
 
+// Most interviewer guidance arrives as an array of bullets, already split by the loader.
+// No parsing needed here, and nothing becomes markup.
+export function renderBullets(container, items) {
+  clear(container);
+  const list = make("ul");
+  for (const item of items || []) list.appendChild(make("li", { text: item }));
+  if (list.childNodes.length > 0) container.appendChild(list);
+  return list.childNodes.length > 0;
+}
+
 export function formatClock(totalSeconds) {
   const seconds = Math.max(0, Math.floor(totalSeconds));
   const minutes = Math.floor(seconds / 60);

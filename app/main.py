@@ -10,8 +10,10 @@ from fastapi.staticfiles import StaticFiles
 
 from . import config
 from .bank import Bank, load_bank
-from .report import RECOMMENDATIONS, render_scorecard, scorecard_filename
-from .selection import ADAPTIVE, PoolFilters, build_pool
+from .levels import BANDS, LEVELS
+from .report import render_scorecard, scorecard_filename
+from .scoring import band_matrix, by_category, by_topic, hot_spots, score
+from .selection import ADAPTIVE, PoolFilters, build_pool, suggest
 from .session import (
     Session,
     create_session,
@@ -22,6 +24,7 @@ from .session import (
     utc_now,
 )
 from .storage import UnsafePath, write_text_atomic
+from .validate import validate_bank
 
 MUTATING_METHODS = {"POST", "PATCH", "PUT", "DELETE"}
 JSON_CONTENT_TYPE = "application/json"
@@ -72,17 +75,48 @@ def create_app(port: int = config.DEFAULT_PORT) -> FastAPI:
         except (OSError, ValueError) as error:
             raise HTTPException(404, f"no such session: {session_id}") from error
 
+    def live_session(session_id: str) -> Session:
+        session = get_session(session_id)
+        if session.finished:
+            raise HTTPException(409, "this session is finished")
+        return session
+
+    # --- the bank ------------------------------------------------------------------------
+
     @app.get("/api/bank")
     def api_bank() -> dict[str, Any]:
         bank = read_bank()
+        problems = validate_bank(bank)
         return {
+            "categories": bank.categories,
             "topics": bank.topics,
             "tags": bank.tags,
-            "difficulty_histogram": bank.difficulty_histogram(),
+            "levels": list(LEVELS),
+            "bands": list(BANDS),
+            "level_histogram": bank.level_histogram(),
             "count": len(bank.questions),
             "questions": [q.summary() for q in bank.questions.values()],
-            "warnings": [{"path": w.path, "problem": w.problem} for w in bank.warnings],
+            "problems": [p.as_dict() for p in problems],
+            "error_count": sum(1 for p in problems if p.severity == "error"),
         }
+
+    @app.get("/api/bank/questions/{question_id}")
+    def api_bank_question(question_id: str, hints: int = 1) -> dict[str, Any]:
+        """Preview one card outside any session."""
+        bank = read_bank()
+        question = bank.get(question_id)
+        if question is None:
+            raise HTTPException(404, f"no card with id {question_id}")
+        data = question.public(include_hints=bool(hints))
+        data["resolved_links"] = {
+            kind: [
+                {"id": qid, "title": bank.get(qid).title, "level": bank.get(qid).level}
+                for qid in ids
+                if bank.get(qid)
+            ]
+            for kind, ids in bank.resolved_links(question_id).items()
+        }
+        return data
 
     @app.post("/api/bank/preview")
     def api_bank_preview(payload: dict[str, Any] = Body(default_factory=dict)) -> dict[str, Any]:
@@ -93,13 +127,14 @@ def create_app(port: int = config.DEFAULT_PORT) -> FastAPI:
             already = set(raw_filters.get("exclude_ids") or []) | set(previously_asked_ids(candidate))
             raw_filters["exclude_ids"] = sorted(already)
         pool = build_pool(bank, PoolFilters.from_dict(raw_filters))
-        minutes = sum(q.time_minutes or config.DEFAULT_QUESTION_MINUTES for q in pool)
+        minutes = sum(q.time_estimate_min or config.DEFAULT_QUESTION_MINUTES for q in pool)
         return {
             "count": len(pool),
             "estimated_minutes": minutes,
             "questions": [q.summary() for q in pool],
-            "warnings": [{"path": w.path, "problem": w.problem} for w in bank.warnings],
         }
+
+    # --- sessions ------------------------------------------------------------------------
 
     @app.get("/api/sessions")
     def api_sessions() -> dict[str, Any]:
@@ -140,34 +175,89 @@ def create_app(port: int = config.DEFAULT_PORT) -> FastAPI:
         return {
             "index": index,
             "total": len(session.items),
-            "target_difficulty": item.get("target_difficulty"),
+            "target_level": item.get("target_level"),
             "reason": item.get("reason"),
             "budget_minutes": session.default_minutes_for(question),
             "question": question.public(include_hints=bool(hints)),
             "answer": session.answer_for(item["qid"]),
         }
 
-    @app.patch("/api/sessions/{session_id}/answers/{question_id:path}")
+    @app.patch("/api/sessions/{session_id}/answers/{question_id}")
     def api_patch_answer(
         session_id: str, question_id: str, patch: dict[str, Any] = Body(...)
     ) -> dict[str, Any]:
-        session = get_session(session_id)
-        if session.finished:
-            raise HTTPException(409, "this session is finished")
-        if question_id not in {item["qid"] for item in session.items}:
+        session = live_session(session_id)
+        if question_id not in set(session.served_ids()):
             raise HTTPException(404, f"{question_id} is not part of this session")
-        answer = session.set_answer(question_id, patch)
+        try:
+            answer = session.set_answer(question_id, patch)
+        except ValueError as error:
+            raise HTTPException(400, str(error)) from error
         session.save()
-        return {"qid": question_id, "answer": answer, "revision": session.data["revision"]}
+        bank = read_bank()
+        return {
+            "qid": question_id,
+            "answer": answer,
+            "revision": session.data["revision"],
+            "calibration": session.as_state(bank)["calibration"],
+        }
+
+    # --- navigation ----------------------------------------------------------------------
+
+    @app.get("/api/sessions/{session_id}/suggestions")
+    def api_suggestions(session_id: str) -> dict[str, Any]:
+        """What the tool would offer next. Always advisory; nothing here moves the interview."""
+        session = get_session(session_id)
+        bank = read_bank()
+        position = int(session.data.get("position", 0))
+        current = None
+        if 0 <= position < len(session.items):
+            current = bank.get(session.items[position]["qid"])
+
+        latest, source, per_topic = session.replay_calibration(bank)
+        target = session.target_level(bank)
+        suggestions = suggest(
+            bank=bank,
+            current=current,
+            calibration=latest,
+            target_level=target,
+            served_ids=session.served_ids(),
+            pool=session.pool(bank) or None,
+        )
+        return {
+            "calibration": {
+                "target_level": target,
+                "override": session.data.get("calibration_override"),
+                "from_question": source,
+                "latest": latest.as_dict() if latest else None,
+                "by_topic": per_topic,
+            },
+            "suggestions": [
+                {**s.as_dict(), **(bank.get(s.question_id).summary())}
+                for s in suggestions
+                if bank.get(s.question_id)
+            ],
+        }
+
+    @app.post("/api/sessions/{session_id}/calibration")
+    def api_set_calibration(
+        session_id: str, payload: dict[str, Any] = Body(...)
+    ) -> dict[str, Any]:
+        """Override the running calibration by hand, or clear the override with null."""
+        session = live_session(session_id)
+        raw = payload.get("level")
+        if raw is not None and str(raw).lower() not in LEVELS:
+            raise HTTPException(400, f"level must be null or one of {', '.join(LEVELS)}")
+        session.data["calibration_override"] = None if raw is None else str(raw).lower()
+        session.save()
+        return session.as_state(read_bank())
 
     @app.post("/api/sessions/{session_id}/next")
     def api_next(
         session_id: str, payload: dict[str, Any] = Body(default_factory=dict)
     ) -> dict[str, Any]:
-        session = get_session(session_id)
+        session = live_session(session_id)
         bank = read_bank()
-        if session.finished:
-            raise HTTPException(409, "this session is finished")
 
         position = int(session.data.get("position", 0))
         target = position + 1
@@ -185,11 +275,9 @@ def create_app(port: int = config.DEFAULT_PORT) -> FastAPI:
 
     @app.post("/api/sessions/{session_id}/goto")
     def api_goto(session_id: str, payload: dict[str, Any] = Body(...)) -> dict[str, Any]:
-        """Move to any served position. The interview screen uses this for previous and for jumps."""
-        session = get_session(session_id)
+        """Move to any position already served. Covers previous, next and a jump backwards."""
+        session = live_session(session_id)
         bank = read_bank()
-        if session.finished:
-            raise HTTPException(409, "this session is finished")
         try:
             index = int(payload.get("index"))
         except (TypeError, ValueError) as error:
@@ -200,15 +288,62 @@ def create_app(port: int = config.DEFAULT_PORT) -> FastAPI:
         session.save()
         return session.as_state(bank)
 
+    @app.post("/api/sessions/{session_id}/jump")
+    def api_jump(session_id: str, payload: dict[str, Any] = Body(...)) -> dict[str, Any]:
+        """Serve any card in the bank next, whether or not it was in the pool.
+
+        The interviewer is never confined to the plan. A card already served is not appended
+        again; the position moves to where it already is, so no state is lost.
+        """
+        session = live_session(session_id)
+        bank = read_bank()
+        question_id = str(payload.get("question_id") or "")
+        if bank.get(question_id) is None:
+            raise HTTPException(404, f"no card with id {question_id}")
+
+        served = session.served_ids()
+        if question_id in served:
+            session.data["position"] = served.index(question_id)
+        else:
+            session.append_item(bank, question_id, str(payload.get("reason") or "picked by hand"))
+            session.data["position"] = len(session.items) - 1
+        session.save()
+        return session.as_state(bank)
+
+    # --- finishing -----------------------------------------------------------------------
+
+    @app.get("/api/sessions/{session_id}/summary")
+    def api_summary(session_id: str) -> dict[str, Any]:
+        """The aggregates the summary screen draws. Arithmetic over recorded bands, nothing more."""
+        session = get_session(session_id)
+        bank = read_bank()
+        observations = session.observations(bank)
+        topics = by_topic(observations)
+        return {
+            "id": session.id,
+            "score": score(observations).as_dict(),
+            "by_category": [row.as_dict() for row in by_category(observations)],
+            "by_topic": [row.as_dict() for row in topics],
+            "hot_spots": {key: [row.as_dict() for row in rows] for key, rows in hot_spots(topics).items()},
+            "band_matrix": band_matrix(observations),
+            "observations": [
+                {
+                    "qid": o.qid,
+                    "category": o.category,
+                    "topic": o.topic,
+                    "level": o.level,
+                    "band": o.band,
+                    "gap": o.gap,
+                }
+                for o in observations
+            ],
+        }
+
     @app.post("/api/sessions/{session_id}/finish")
     def api_finish(session_id: str, payload: dict[str, Any] = Body(...)) -> dict[str, Any]:
         session = get_session(session_id)
         bank = read_bank()
-        recommendation = str(payload.get("recommendation") or "Inconclusive")
-        if recommendation not in RECOMMENDATIONS:
-            raise HTTPException(400, f"recommendation must be one of {list(RECOMMENDATIONS)}")
         session.data["finish"] = {
-            "recommendation": recommendation,
             "summary": str(payload.get("summary") or ""),
             "strengths": str(payload.get("strengths") or ""),
             "concerns": str(payload.get("concerns") or ""),

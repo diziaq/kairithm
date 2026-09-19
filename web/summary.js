@@ -1,70 +1,122 @@
 // The screen between the last question and the file on disk. Nothing is written until Save.
+//
+// The figures here are arithmetic over the bands the interviewer assigned. The assessment boxes
+// are the interviewer's own words and nothing fills them in.
 
 import { api } from "./api.js";
 import { clear, el, make, setSaveState } from "./dom.js";
 
-const RECOMMENDATIONS = [
-  "Strong hire",
-  "Hire",
-  "Lean hire",
-  "Lean no",
-  "No hire",
-  "Inconclusive",
-];
+const BANDS = ["weak", "junior", "mid", "senior", "lead"];
 
-const state = { sessionId: null, session: null, onHome: () => {}, onBack: () => {} };
+const state = { sessionId: null, session: null, summary: null, onHome: () => {}, onBack: () => {} };
 
-function averages(session, key) {
-  const totals = new Map();
-  for (const item of session.items) {
-    const rating = item.answer && item.answer.rating;
-    if (rating == null) continue;
-    const buckets = key === "topic" ? [item.question.topic] : item.question.tags || [];
-    for (const bucket of buckets) {
-      if (!totals.has(bucket)) totals.set(bucket, []);
-      totals.get(bucket).push(Number(rating));
-    }
+function table(headings, rows, className = "slist") {
+  const node = make("table", { className });
+  node.appendChild(make("tr", { children: headings.map((text) => make("th", { text })) }));
+  for (const row of rows) {
+    node.appendChild(make("tr", { children: row.map((cell) => make("td", { text: String(cell) })) }));
   }
-  return [...totals.entries()]
-    .map(([name, values]) => [name, values.reduce((a, b) => a + b, 0) / values.length, values.length])
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  return node;
 }
 
-function renderAverages(session) {
-  const panel = el("summary-averages");
+function gapLabel(meanGap) {
+  if (meanGap > 0) return `+${meanGap.toFixed(1)} above`;
+  if (meanGap < 0) return `${meanGap.toFixed(1)} below`;
+  return "at the bar";
+}
+
+function renderRange(summary, session) {
+  const panel = el("summary-range");
   clear(panel);
-  const answered = session.items.filter((i) => i.answer && i.answer.rating != null).length;
-  const skipped = session.items.filter((i) => i.answer && i.answer.skipped).length;
+
+  const score = summary.score;
+  if (score.value === null) {
+    panel.appendChild(
+      make("p", { text: "No question carries a band yet, so there is nothing to summarise." })
+    );
+    return;
+  }
+
+  panel.appendChild(
+    make("p", {
+      className: "range",
+      children: [
+        make("strong", { text: `${score.value} / 100` }),
+        make("span", { text: ` — reads as ${score.label}` }),
+      ],
+    })
+  );
   panel.appendChild(
     make("p", {
       className: "hint",
-      text: `${session.items.length} asked · ${answered} rated · ${skipped} skipped · seed ${session.seed} · mode ${session.mode}`,
+      text:
+        `0 is an intern, 100 an engineering tech lead. ${score.rated} banded answer(s), ` +
+        `confidence ${score.confidence}. Seed ${session.seed}, mode ${session.mode}.`,
     })
   );
-  for (const [label, key] of [["Topic", "topic"], ["Tag", "tag"]]) {
-    const rows = averages(session, key);
-    if (rows.length === 0) continue;
-    const table = make("table", { className: "slist" });
-    const head = make("tr", {
-      children: [
-        make("th", { text: label }),
-        make("th", { text: "Avg" }),
-        make("th", { text: "Asked" }),
-      ],
-    });
-    table.appendChild(head);
-    for (const [name, avg, count] of rows) {
-      table.appendChild(
-        make("tr", {
-          children: [
-            make("td", { text: name }),
-            make("td", { text: avg.toFixed(1) }),
-            make("td", { text: String(count) }),
-          ],
-        })
-      );
-    }
-    panel.appendChild(table);
+
+  const details = make("details");
+  details.appendChild(make("summary", { text: "How this number is produced" }));
+  details.appendChild(make("p", { className: "hint", text: score.formula }));
+  details.appendChild(
+    table(
+      ["Question", "Level", "Band", "vs level"],
+      summary.observations.map((row) => [
+        row.qid,
+        row.level,
+        row.band,
+        row.gap > 0 ? `+${row.gap}` : String(row.gap),
+      ])
+    )
+  );
+  panel.appendChild(details);
+}
+
+function renderProfile(summary) {
+  const panel = el("summary-profile");
+  clear(panel);
+  if (summary.observations.length === 0) return;
+
+  const spots = summary.hot_spots;
+  if (spots.strong.length > 0 || spots.weak.length > 0) {
+    panel.appendChild(make("h2", { text: "Hot spots" }));
+    panel.appendChild(
+      make("p", {
+        className: "hint",
+        text:
+          "How far the bands you assigned sat above or below the level those questions were " +
+          "set to.",
+      })
+    );
+    const rows = [...spots.strong, ...spots.at_bar, ...spots.weak];
+    panel.appendChild(
+      table(
+        ["Topic", "Asked", "Deepest band", "Held at", "vs level"],
+        rows.map((row) => [
+          row.name,
+          row.asked,
+          row.deepest_band,
+          row.hardest_level_held || "—",
+          gapLabel(row.mean_gap),
+        ])
+      )
+    );
+  }
+
+  if (summary.by_category.length > 0) {
+    panel.appendChild(make("h2", { text: "By category" }));
+    panel.appendChild(
+      table(
+        ["Category", "Asked", "Range", "Deepest band", "vs level"],
+        summary.by_category.map((row) => [
+          row.name,
+          row.asked,
+          row.score,
+          row.deepest_band,
+          gapLabel(row.mean_gap),
+        ])
+      )
+    );
   }
 }
 
@@ -73,39 +125,42 @@ function renderQuestions(session) {
   clear(container);
   session.items.forEach((item, index) => {
     const row = make("div", { className: "qrow" });
-    const rating = item.answer && item.answer.rating;
-    const skipped = item.answer && item.answer.skipped;
-    const verdict = skipped ? "skipped" : rating == null ? "not rated" : `${rating} / 5`;
+    const answer = item.answer || {};
+    const verdict = answer.skipped
+      ? "skipped"
+      : answer.band
+        ? `${answer.band} band on a ${item.question.level} question`
+        : "not banded";
     row.appendChild(
       make("h4", { text: `${index + 1}. ${item.question.title || item.qid} — ${verdict}` })
     );
     row.appendChild(
       make("p", {
         className: "hint",
-        text: `${item.qid} · difficulty ${item.question.difficulty ?? "?"}${
+        text: `${item.qid} · ${item.question.category} / ${item.question.topic}${
           item.reason ? " · " + item.reason : ""
         }`,
       })
     );
 
-    const ratingRow = make("div", { className: "row" });
-    for (const value of [1, 2, 3, 4, 5, 0]) {
-      const isSkip = value === 0;
-      const pressed = isSkip ? Boolean(skipped) : !skipped && rating === value;
+    const bandRow = make("div", { className: "row" });
+    for (const value of [...BANDS, null]) {
+      const isSkip = value === null;
+      const pressed = isSkip ? Boolean(answer.skipped) : !answer.skipped && answer.band === value;
       const button = make("button", {
-        text: isSkip ? "skip" : String(value),
+        text: isSkip ? "skip" : value,
         attrs: { type: "button", "aria-pressed": String(pressed) },
       });
       button.addEventListener("click", async () => {
-        const patch = isSkip ? { skipped: !pressed } : { rating: value, skipped: false };
+        const patch = isSkip ? { skipped: !pressed } : { band: value, skipped: false };
         await patchAndRedraw(item.qid, patch);
       });
-      ratingRow.appendChild(button);
+      bandRow.appendChild(button);
     }
-    row.appendChild(ratingRow);
+    row.appendChild(bandRow);
 
-    const note = make("textarea", { attrs: { rows: "3", placeholder: "Note" } });
-    note.value = (item.answer && item.answer.note) || "";
+    const note = make("textarea", { attrs: { rows: "3", placeholder: "Evidence note" } });
+    note.value = answer.note || "";
     let timer = null;
     note.addEventListener("input", () => {
       setSaveState("saving");
@@ -124,13 +179,19 @@ function renderQuestions(session) {
   });
 }
 
+async function redraw() {
+  state.session = await api.getSession(state.sessionId);
+  state.summary = await api.summary(state.sessionId);
+  renderRange(state.summary, state.session);
+  renderProfile(state.summary);
+  renderQuestions(state.session);
+}
+
 async function patchAndRedraw(qid, patch) {
   setSaveState("saving");
   try {
     await api.patchAnswer(state.sessionId, qid, patch);
-    state.session = await api.getSession(state.sessionId);
-    renderAverages(state.session);
-    renderQuestions(state.session);
+    await redraw();
     setSaveState("saved");
   } catch {
     setSaveState("error");
@@ -141,7 +202,6 @@ async function saveAndClose() {
   el("finish-error").textContent = "";
   try {
     const result = await api.finish(state.sessionId, {
-      recommendation: el("in-recommendation").value,
       summary: el("in-summary").value,
       strengths: el("in-strengths").value,
       concerns: el("in-concerns").value,
@@ -170,15 +230,9 @@ async function saveAndClose() {
 export async function openSummary(sessionId, handlers) {
   state.sessionId = sessionId;
   state.onHome = handlers.onHome;
-  state.session = await api.getSession(sessionId);
+  await redraw();
 
-  const select = el("in-recommendation");
-  clear(select);
-  for (const value of RECOMMENDATIONS) {
-    select.appendChild(make("option", { text: value, attrs: { value } }));
-  }
   const finish = state.session.finish || {};
-  select.value = finish.recommendation || "Inconclusive";
   el("in-summary").value = finish.summary || "";
   el("in-strengths").value = finish.strengths || "";
   el("in-concerns").value = finish.concerns || "";
@@ -186,9 +240,6 @@ export async function openSummary(sessionId, handlers) {
   el("in-anonymise").checked = Boolean(finish.anonymise);
   el("btn-save-close").disabled = false;
   el("finish-result").classList.add("hidden");
-
-  renderAverages(state.session);
-  renderQuestions(state.session);
 }
 
 export function initSummary(handlers) {

@@ -4,11 +4,17 @@ import { api } from "./api.js";
 import { clear, el, make } from "./dom.js";
 
 const MODES = [
-  ["sequential", "Sequential", "The order frontmatter, then the file name. The same every time."],
+  ["sequential", "Sequential", "The order field, then the id. The same every time."],
   ["random", "Random", "Shuffled with a seed. The seed is recorded, so the run can be repeated."],
-  ["difficulty_asc", "Difficulty ascending", "Warm up easy and escalate. Ties broken by the seed."],
-  ["adaptive", "Adaptive", "The next question follows the rating just given. Rating 4 or 5 steps the target difficulty up, 1 or 2 steps it down, 3 holds, a skip holds. A tag not yet covered wins the tie."],
-  ["manual", "Manual", "The exact order picked in stage 1."],
+  ["level_asc", "Level ascending", "Junior first, lead last. Ties broken by the seed."],
+  [
+    "adaptive",
+    "Adaptive",
+    "The next card follows the band you just assigned. A band above the question's level raises " +
+      "the bar, a band below drops it, and a topic not yet covered wins the tie. Nothing advances " +
+      "on its own.",
+  ],
+  ["manual", "Manual", "The exact order ticked in stage 1."],
 ];
 
 const PACING = [
@@ -19,7 +25,9 @@ const PACING = [
 
 const state = {
   bank: null,
+  categories: new Set(),
   topics: new Set(),
+  levels: new Set(),
   includeTags: new Set(),
   excludeTags: new Set(),
   manual: false,
@@ -81,7 +89,7 @@ function renderModes() {
 function renderModeExtras() {
   const found = MODES.find(([value]) => value === state.mode);
   el("mode-explain").textContent = found ? found[2] : "";
-  el("start-difficulty-row").classList.toggle("hidden", state.mode !== "adaptive");
+  el("start-level-row").classList.toggle("hidden", state.mode !== "adaptive");
 }
 
 function renderPacing() {
@@ -106,11 +114,11 @@ function renderPacing() {
 function currentFilters() {
   const limit = Number(el("in-limit").value);
   const filters = {
+    categories: [...state.categories],
     topics: [...state.topics],
+    levels: [...state.levels],
     include_tags: [...state.includeTags],
     exclude_tags: [...state.excludeTags],
-    difficulty_min: Number(el("in-diff-min").value),
-    difficulty_max: Number(el("in-diff-max").value),
     limit: Number.isFinite(limit) && limit > 0 ? limit : null,
   };
   if (state.manual && state.manualIds.length > 0) filters.manual_ids = state.manualIds;
@@ -142,7 +150,7 @@ async function refreshPreview() {
   const minutes = state.manual
     ? state.manualIds
         .map((id) => result.questions.find((q) => q.id === id))
-        .reduce((total, q) => total + (q && q.time_minutes ? q.time_minutes : 5), 0)
+        .reduce((total, q) => total + (q && q.time_estimate_min ? q.time_estimate_min : 5), 0)
     : result.estimated_minutes;
   el("preview-summary").textContent =
     `${shown} question${shown === 1 ? "" : "s"}, about ${minutes} minutes` +
@@ -166,7 +174,9 @@ function renderPreviewList(questions) {
   ordered.forEach((question) => {
     const meta = make("span", {
       className: "d",
-      text: ` d${question.difficulty}${question.tags.length ? " · " + question.tags.join(", ") : ""}`,
+      text: ` ${question.level} · ${question.topic}${
+        question.tags.length ? " · " + question.tags.join(", ") : ""
+      }`,
     });
     const item = make("li");
 
@@ -210,7 +220,6 @@ function moveManual(position, delta) {
 
 async function start() {
   el("setup-error").textContent = "";
-  const filters = currentFilters();
   const seedRaw = el("in-seed").value.trim();
   const setup = {
     candidate: el("in-candidate").value.trim(),
@@ -219,8 +228,8 @@ async function start() {
     context: el("in-context").value.trim(),
     mode: state.mode,
     seed: seedRaw === "" ? null : Number(seedRaw),
-    start_difficulty: Number(el("in-start-difficulty").value),
-    filters,
+    start_level: el("in-start-level").value,
+    filters: currentFilters(),
     exclude_asked_to: el("in-exclude-asked").checked ? el("in-candidate").value.trim() : "",
     pacing: {
       kind: state.pacing,
@@ -246,40 +255,47 @@ export function initSetup(bank, handlers) {
   state.bank = bank;
   onStarted = handlers.onStarted;
 
-  el("in-diff-min").value = "1";
-  el("in-diff-max").value = "5";
+  state.categories = new Set();
   state.topics = new Set();
+  state.levels = new Set();
   state.includeTags = new Set();
   state.excludeTags = new Set();
   state.manualIds = [];
 
-  const drawTopics = () =>
-    renderChips(el("topic-list"), bank.topics, state.topics, (value, on) =>
-      toggleSet(state.topics, value, on, drawTopics)
-    );
-  const drawInclude = () =>
-    renderChips(el("include-tag-list"), bank.tags, state.includeTags, (value, on) =>
-      toggleSet(state.includeTags, value, on, drawInclude)
-    );
-  const drawExclude = () =>
-    renderChips(
-      el("exclude-tag-list"),
-      bank.tags,
-      state.excludeTags,
-      (value, on) => toggleSet(state.excludeTags, value, on, drawExclude),
-      "exclude"
-    );
+  const startLevel = el("in-start-level");
+  clear(startLevel);
+  for (const level of bank.levels) {
+    startLevel.appendChild(make("option", { text: level, attrs: { value: level } }));
+  }
+  startLevel.value = bank.levels.includes("mid") ? "mid" : bank.levels[0];
 
+  const draw = (container, values, selected, className) => {
+    const redraw = () =>
+      renderChips(
+        el(container),
+        values,
+        selected,
+        (value, on) => toggleSet(selected, value, on, redraw),
+        className
+      );
+    return redraw;
+  };
+
+  const drawCategories = draw("category-list", bank.categories, state.categories);
+  const drawTopics = draw("topic-list", bank.topics, state.topics);
+  const drawLevels = draw("level-list", bank.levels, state.levels);
+  const drawInclude = draw("include-tag-list", bank.tags, state.includeTags);
+  const drawExclude = draw("exclude-tag-list", bank.tags, state.excludeTags, "exclude");
+
+  drawCategories();
   drawTopics();
+  drawLevels();
   drawInclude();
   drawExclude();
   renderModes();
   renderPacing();
 
-  for (const id of ["in-diff-min", "in-diff-max", "in-limit"]) {
-    el(id).addEventListener("change", schedulePreview);
-    el(id).addEventListener("input", schedulePreview);
-  }
+  el("in-limit").addEventListener("input", schedulePreview);
   el("in-candidate").addEventListener("input", schedulePreview);
   el("in-exclude-asked").addEventListener("change", schedulePreview);
   el("in-manual").addEventListener("change", (event) => {

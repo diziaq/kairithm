@@ -11,29 +11,43 @@ let bank = null;
 function renderBankSummary() {
   const panel = el("bank-summary");
   clear(panel);
-  const histogram = Object.entries(bank.difficulty_histogram)
-    .map(([level, count]) => `d${level}:${count}`)
+  const histogram = bank.levels
+    .map((level) => `${level}:${bank.level_histogram[level]}`)
     .join("  ");
   panel.appendChild(
     make("p", {
-      text: `${bank.count} questions · ${bank.topics.length} topics · ${bank.tags.length} tags`,
+      text:
+        `${bank.count} cards · ${bank.categories.length} categories · ` +
+        `${bank.topics.length} topics · ${bank.tags.length} tags`,
     })
   );
-  panel.appendChild(make("p", { className: "hint", text: `topics: ${bank.topics.join(", ")}` }));
-  panel.appendChild(make("p", { className: "hint", text: `difficulty: ${histogram}` }));
+  panel.appendChild(
+    make("p", { className: "hint", text: `categories: ${bank.categories.join(", ")}` })
+  );
+  panel.appendChild(make("p", { className: "hint", text: `levels: ${histogram}` }));
 
-  const warnings = el("bank-warnings");
-  clear(warnings);
-  warnings.classList.toggle("hidden", bank.warnings.length === 0);
-  if (bank.warnings.length > 0) {
-    warnings.appendChild(
-      make("p", { text: `${bank.warnings.length} file(s) were skipped or need attention:` })
+  // A card the loader could not use is reported here rather than quietly missing from the bank.
+  const problems = el("bank-problems");
+  clear(problems);
+  problems.classList.toggle("hidden", bank.problems.length === 0);
+  if (bank.problems.length > 0) {
+    const warnings = bank.problems.length - bank.error_count;
+    problems.appendChild(
+      make("p", {
+        text: `${bank.error_count} error(s) and ${warnings} warning(s) in the bank:`,
+      })
     );
     const list = make("ul");
-    for (const warning of bank.warnings) {
-      list.appendChild(make("li", { text: `${warning.path} — ${warning.problem}` }));
+    for (const problem of bank.problems) {
+      const where = [problem.path, problem.card_id, problem.field].filter(Boolean).join(" · ");
+      list.appendChild(
+        make("li", {
+          className: problem.severity === "error" ? "problem-error" : "",
+          text: `${problem.severity}: ${where} — ${problem.problem}`,
+        })
+      );
     }
-    warnings.appendChild(list);
+    problems.appendChild(list);
   }
 }
 
@@ -48,7 +62,7 @@ async function renderSessions() {
   const table = make("table", { className: "slist" });
   table.appendChild(
     make("tr", {
-      children: ["Session", "Role", "Mode", "Asked", "Rated", "", ""].map((text) =>
+      children: ["Session", "Role", "Mode", "Asked", "Banded", "", ""].map((text) =>
         make("th", { text })
       ),
     })

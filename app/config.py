@@ -19,7 +19,6 @@ HOST = "127.0.0.1"
 
 SESSION_ID_PATTERN = r"^[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{4}_[A-Za-z0-9-]+_[A-Za-z0-9-]+$"
 
-DEFAULT_START_DIFFICULTY = 2
 DEFAULT_QUESTION_MINUTES = 5
 
 

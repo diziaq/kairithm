@@ -104,7 +104,7 @@ def test_killing_the_server_mid_session_loses_nothing(tmp_path, stop_signal):
                 "interviewer": "me",
                 "mode": "sequential",
                 "seed": 777,
-                "filters": {"topics": ["java"]},
+                "filters": {"categories": ["java"]},
             },
             timeout=5.0,
         ).json()
@@ -112,7 +112,7 @@ def test_killing_the_server_mid_session_loses_nothing(tmp_path, stop_signal):
         qid = created["items"][0]["qid"]
         httpx.patch(
             f"{base}/api/sessions/{session_id}/answers/{qid}",
-            json={"rating": 4, "note": "written before the kill", "elapsed_seconds": 42},
+            json={"band": "senior", "note": "written before the kill", "elapsed_seconds": 42},
             timeout=5.0,
         )
         httpx.post(f"{base}/api/sessions/{session_id}/next", json={}, timeout=5.0)
@@ -132,9 +132,10 @@ def test_killing_the_server_mid_session_loses_nothing(tmp_path, stop_signal):
         state = httpx.get(f"{base}/api/sessions/{session_id}", timeout=5.0).json()
         assert state["position"] == 1, "the position must survive the kill"
         answer = state["items"][0]["answer"]
-        assert answer["rating"] == 4
+        assert answer["band"] == "senior"
         assert answer["note"] == "written before the kill"
         assert answer["elapsed_seconds"] == 42
+        assert state["calibration"]["target_level"] == "senior", "the calibration is rederived"
 
         listed = httpx.get(f"{base}/api/sessions", timeout=5.0).json()["sessions"]
         assert any(row["id"] == session_id and row["resumable"] for row in listed)
