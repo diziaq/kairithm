@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview Runner</title>
+<link rel="stylesheet" href="/web/style.css">
+</head>
+<body>
+
+<header id="topbar">
+  <span id="brand">Interview Runner</span>
+  <span id="save-state" data-state="idle">ready</span>
+</header>
+
+<main>
+
+<section id="screen-home" class="screen">
+  <h1>Interview Runner</h1>
+  <div id="bank-summary" class="panel"></div>
+  <div id="bank-warnings" class="panel warn hidden"></div>
+  <div class="row">
+    <button id="btn-new-session" class="primary">New session</button>
+  </div>
+  <h2>Sessions</h2>
+  <div id="session-list" class="panel"></div>
+</section>
+
+<section id="screen-setup" class="screen hidden">
+  <h1>New session</h1>
+
+  <div class="setup-grid">
+    <div class="setup-col">
+
+      <fieldset id="stage-who">
+        <legend>Who</legend>
+        <label>Candidate <input id="in-candidate" type="text" autocomplete="off"></label>
+        <label>Role or seniority <input id="in-role" type="text" autocomplete="off"></label>
+        <label>Interviewer <input id="in-interviewer" type="text" autocomplete="off"></label>
+        <label>Context <textarea id="in-context" rows="2"></textarea></label>
+        <label class="check">
+          <input id="in-exclude-asked" type="checkbox">
+          Exclude questions already asked to this candidate
+        </label>
+      </fieldset>
+
+      <fieldset id="stage-pool">
+        <legend>1 &middot; Build the pool <span class="hint">which questions</span></legend>
+        <label>Topics</label>
+        <div id="topic-list" class="chiplist"></div>
+        <label>Include tags <span class="hint">any match</span></label>
+        <div id="include-tag-list" class="chiplist"></div>
+        <label>Exclude tags</label>
+        <div id="exclude-tag-list" class="chiplist"></div>
+        <div class="row">
+          <label>Difficulty from
+            <select id="in-diff-min"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+          </label>
+          <label>to
+            <select id="in-diff-max"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+          </label>
+          <label>At most <input id="in-limit" type="number" min="1" max="99" placeholder="all"></label>
+        </div>
+        <label class="check">
+          <input id="in-manual" type="checkbox"> Manual pick: choose and order by hand
+        </label>
+      </fieldset>
+
+      <fieldset id="stage-order">
+        <legend>2 &middot; Choose the order <span class="hint">in what sequence</span></legend>
+        <div id="mode-list" class="radiolist"></div>
+        <p id="mode-explain" class="hint"></p>
+        <label id="start-difficulty-row" class="hidden">Start at difficulty
+          <select id="in-start-difficulty"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select>
+        </label>
+        <label>Seed <span class="hint">blank picks one and records it</span>
+          <input id="in-seed" type="number" placeholder="random">
+        </label>
+      </fieldset>
+
+      <fieldset id="stage-pacing">
+        <legend>3 &middot; Choose the pacing <span class="hint">at what speed</span></legend>
+        <div id="pacing-list" class="radiolist"></div>
+        <label id="per-question-row" class="hidden">Default minutes per question
+          <input id="in-default-minutes" type="number" min="1" max="60" value="5">
+        </label>
+        <label id="total-row" class="hidden">Total minutes
+          <input id="in-total-minutes" type="number" min="5" max="480" value="45">
+        </label>
+      </fieldset>
+
+      <div class="row">
+        <button id="btn-start" class="primary">Start interview</button>
+        <button id="btn-cancel-setup">Cancel</button>
+        <span id="setup-error" class="error"></span>
+      </div>
+    </div>
+
+    <div class="setup-col">
+      <h2>Preview</h2>
+      <p id="preview-summary" class="hint"></p>
+      <ol id="preview-list" class="preview"></ol>
+    </div>
+  </div>
+</section>
+
+<section id="screen-interview" class="screen hidden">
+  <div id="ask-card">
+    <p id="ask-meta" class="hint"></p>
+    <div id="ask-text"></div>
+  </div>
+
+  <div id="hint-zone">
+    <div class="hint-block">
+      <h3>Look for</h3>
+      <div id="look-for"></div>
+    </div>
+    <div class="hint-block">
+      <h3>Red flags</h3>
+      <div id="red-flags"></div>
+    </div>
+    <div class="hint-block">
+      <h3>Follow-ups <button id="btn-followups" class="linky">show</button></h3>
+      <div id="follow-ups" class="hidden"></div>
+    </div>
+    <div id="extra-sections"></div>
+  </div>
+  <div id="hints-hidden-notice" class="hidden">Interviewer notes are hidden. Press <kbd>h</kbd> to show them.</div>
+
+  <div id="capture">
+    <div id="rating-row" class="ratings"></div>
+    <textarea id="note" rows="5" placeholder="Note (autosaves)"></textarea>
+  </div>
+
+  <div id="statusbar">
+    <span id="position"></span>
+    <span id="q-timer"></span>
+    <span id="total-timer"></span>
+    <span id="mode-label"></span>
+    <span id="budget-label"></span>
+    <span class="grow"></span>
+    <button id="btn-prev">&larr; Previous</button>
+    <button id="btn-next" class="primary">Next &rarr;</button>
+    <button id="btn-hints">Hints off</button>
+    <button id="btn-finish">End interview</button>
+  </div>
+  <p class="hint shortcuts">
+    <kbd>1</kbd>&ndash;<kbd>5</kbd> rate &middot; <kbd>0</kbd> skip &middot;
+    <kbd>n</kbd>/<kbd>&rarr;</kbd> next &middot; <kbd>p</kbd>/<kbd>&larr;</kbd> previous &middot;
+    <kbd>f</kbd> follow-ups &middot; <kbd>h</kbd> hints &middot; <kbd>/</kbd> note &middot; <kbd>Esc</kbd> leave note
+  </p>
+</section>
+
+<section id="screen-summary" class="screen hidden">
+  <h1>Summary</h1>
+  <div id="summary-averages" class="panel"></div>
+  <div id="summary-questions"></div>
+
+  <fieldset>
+    <legend>Outcome</legend>
+    <label>Recommendation
+      <select id="in-recommendation"></select>
+    </label>
+    <label>Summary <textarea id="in-summary" rows="4"></textarea></label>
+    <label>Strengths <textarea id="in-strengths" rows="3"></textarea></label>
+    <label>Concerns <textarea id="in-concerns" rows="3"></textarea></label>
+    <label>Suggested follow-up areas <textarea id="in-followup-areas" rows="2"></textarea></label>
+    <label class="check"><input id="in-anonymise" type="checkbox"> Anonymise the candidate name in the file</label>
+  </fieldset>
+
+  <div class="row">
+    <button id="btn-back-to-interview">Back to questions</button>
+    <button id="btn-save-close" class="primary">Save &amp; close</button>
+    <span id="finish-error" class="error"></span>
+  </div>
+
+  <div id="finish-result" class="panel hidden">
+    <p id="finish-path"></p>
+    <div class="row">
+      <button id="btn-download">Download scorecard.md</button>
+      <button id="btn-home">Home</button>
+    </div>
+    <pre id="finish-preview"></pre>
+  </div>
+</section>
+
+</main>
+
+<script type="module" src="/web/app.js"></script>
+</body>
+</html>
