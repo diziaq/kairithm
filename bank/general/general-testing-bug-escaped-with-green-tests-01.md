@@ -9,6 +9,7 @@ tags: [testing, correctness, failure-modes]
 time_estimate_min: 6
 order: 30
 links:
+  related: [java-runtime-string-identity-01]
   deeper: [general-testing-suite-nobody-trusts-01]
 ---
 

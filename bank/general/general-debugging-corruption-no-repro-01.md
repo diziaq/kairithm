@@ -8,6 +8,9 @@ level: senior
 tags: [correctness, observability, failure-modes, operations]
 time_estimate_min: 9
 order: 140
+links:
+  related: [spring-proxying-interface-vs-class-01]
+  deeper: [general-debugging-nobody-can-see-production-01]
 ---
 
 ## Ask

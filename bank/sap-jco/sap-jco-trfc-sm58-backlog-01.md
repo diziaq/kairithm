@@ -9,7 +9,7 @@ tags: [retries, idempotency, failure-modes, delivery-semantics]
 time_estimate_min: 8
 order: 70
 links:
-  deeper: [sap-jco-qrfc-blocked-queue-01]
+  deeper: [sap-jco-trfc-duplicate-and-lost-units-01]
 ---
 
 ## Ask

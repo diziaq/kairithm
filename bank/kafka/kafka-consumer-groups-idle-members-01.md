@@ -10,7 +10,7 @@ time_estimate_min: 6
 order: 14
 links:
   deeper: [kafka-consumer-groups-flapping-member-01]
-  related: [kafka-partitioning-hot-partition-01]
+  related: [kafka-partitioning-hot-partition-01, microservices-retries-storm-after-outage-01]
 ---
 
 ## Ask

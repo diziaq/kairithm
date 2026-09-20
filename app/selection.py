@@ -28,6 +28,11 @@ MODES = (SEQUENTIAL, RANDOM, LEVEL_ASC, ADAPTIVE, MANUAL)
 
 DEFAULT_START_LEVEL = "mid"
 
+# Consecutive questions from one category before the run is pushed somewhere else. Blocks are
+# the point — an interview that hops every question is exhausting — but without a ceiling a
+# candidate can spend a whole session in one area and the scorecard then measures one area.
+MAX_BLOCK = 4
+
 
 @dataclass(frozen=True)
 class PoolFilters:
@@ -188,6 +193,7 @@ def suggest(
     served_ids: list[str],
     pool: list[Question] | None = None,
     limit: int = 8,
+    settled: bool = False,
 ) -> list[Suggestion]:
     """Cards worth offering next, best first. Always advisory.
 
@@ -236,6 +242,11 @@ def suggest(
     target_ordinal = LEVEL_ORDINAL[target_level]
     ordered.sort(key=lambda q: abs(LEVEL_ORDINAL[q.level] - target_ordinal))
 
+    if current is not None:
+        seen = {bank.get(qid).category for qid in served_ids if bank.get(qid)}
+        # Once the ceiling is known the remaining questions are worth more on new ground.
+        ordered.sort(key=lambda q: q.category in seen if settled else 0)
+
     for question in ordered:
         note = explain(current, question, linked) if current else question.topic
         at = question.level if question.level == target_level else f"{question.level}, nearest to {target_level}"
@@ -244,24 +255,45 @@ def suggest(
     return out[:limit]
 
 
+def _tail_run(bank: Bank, served_ids: list[str], key) -> int:
+    """How many questions at the end of the run share the current value of `key`."""
+    if not served_ids:
+        return 0
+    current = bank.get(served_ids[-1])
+    if current is None:
+        return 0
+    run = 0
+    for qid in reversed(served_ids):
+        question = bank.get(qid)
+        if question is None or key(question) != key(current):
+            break
+        run += 1
+    return run
+
+
 def choose_adaptive(
     bank: Bank,
     pool: list[Question],
     served_ids: list[str],
     target_level: str,
     seed: int,
-    change_topic: bool = False,
+    escape: str = "",
+    settled: bool = False,
 ) -> tuple[Question, str] | None:
     """Pick the card adaptive mode serves next, and say why it was picked.
 
     The rules, in order:
     1. never repeat a card inside one session;
     2. prefer the target level, then the nearest level that still has cards;
-    3. inside that level, take the card most related to the one just asked, so the interview
-       stays in a block instead of hopping between categories;
-    4. when the calibration asks for a topic change, leave the current topic but take the
-       nearest thing outside it rather than an unrelated card;
-    5. break the remaining tie with the session seed, so the run repeats exactly.
+    3. leave the current category when the run has been there `MAX_BLOCK` questions, or when
+       two answers in a row landed two or more bands below — grinding one area neither finds a
+       ceiling nor collects usable evidence;
+    4. leave the current topic when the calibration asks for it;
+    5. once the ceiling is settled, prefer ground the session has not covered, because the
+       remaining questions are worth more spent on breadth than on the same wall;
+    6. otherwise take the card most related to the one just asked, so the interview stays in a
+       block instead of hopping between categories;
+    7. break the remaining tie with the session seed, so the run repeats exactly.
     """
     remaining = [q for q in pool if q.id not in served_ids]
     if not remaining:
@@ -277,23 +309,50 @@ def choose_adaptive(
 
     current = bank.get(served_ids[-1]) if served_ids else None
     candidates = at_level
-    moved_on = False
-    if change_topic and current is not None:
-        elsewhere = [q for q in at_level if q.topic != current.topic]
-        if elsewhere:
-            candidates = elsewhere
-            moved_on = True
+    moved = ""
 
-    # The seed only decides between cards the affinity walk cannot separate.
+    if current is not None:
+        block = _tail_run(bank, served_ids, lambda q: q.category)
+        if escape == "category" or block >= MAX_BLOCK:
+            elsewhere = [q for q in at_level if q.category != current.category]
+            if elsewhere:
+                candidates = elsewhere
+                moved = (
+                    f"two answers well below in {current.category}"
+                    if escape == "category"
+                    else f"{block} questions in {current.category}"
+                )
+        elif escape == "topic":
+            elsewhere = [q for q in at_level if q.topic != current.topic]
+            if elsewhere:
+                candidates = elsewhere
+                moved = f"moved off {current.topic}"
+
+    seen_categories = {bank.get(qid).category for qid in served_ids if bank.get(qid)}
+    seen_topics = {bank.get(qid).topic for qid in served_ids if bank.get(qid)}
+
+    # The seed only decides between cards the rules below cannot separate.
     picker = random.Random(f"{seed}:{len(served_ids)}")
     shuffled = sorted(candidates, key=lambda q: q.id)
     picker.shuffle(shuffled)
-    chosen = nearest_of(current, shuffled, link_map(bank))[0]
+    ordered = nearest_of(current, shuffled, link_map(bank))
+
+    if settled:
+        # Stable, so relatedness still decides inside each group.
+        ordered.sort(key=lambda q: (q.category in seen_categories, q.topic in seen_topics))
+
+    chosen = ordered[0]
 
     where = "target level" if level == target_level else f"nearest level to target {target_level}"
+    parts = [f"{where} {level}"]
+    if moved:
+        parts.append(moved)
+    if settled and chosen.category not in seen_categories:
+        parts.append("ceiling settled, new category")
+    elif settled and chosen.topic not in seen_topics:
+        parts.append("ceiling settled, new topic")
     if current is None:
-        return chosen, f"{where} {level}, opens on {chosen.category} / {chosen.topic}"
-    note = explain(current, chosen, link_map(bank))
-    if moved_on:
-        note = f"moved off {current.topic}: {note}"
-    return chosen, f"{where} {level}, {note}"
+        parts.append(f"opens on {chosen.category} / {chosen.topic}")
+    else:
+        parts.append(explain(current, chosen, link_map(bank)))
+    return chosen, ", ".join(parts)

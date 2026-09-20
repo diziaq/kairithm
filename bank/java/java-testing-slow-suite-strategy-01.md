@@ -8,6 +8,8 @@ level: lead
 tags: [testing, operations, performance]
 time_estimate_min: 10
 order: 910
+links:
+  related: [spring-testing-context-cache-01]
 ---
 
 ## Ask

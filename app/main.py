@@ -214,7 +214,7 @@ def create_app(port: int = config.DEFAULT_PORT) -> FastAPI:
         if 0 <= position < len(session.items):
             current = bank.get(session.items[position]["qid"])
 
-        latest, source, per_topic = session.replay_calibration(bank)
+        progress, source, per_topic = session.replay_calibration(bank)
         target = session.target_level(bank)
         # Exclude what has actually been answered, plus wherever the interviewer is standing —
         # not the whole planned queue, or a sequential session would never be offered anything.
@@ -224,18 +224,19 @@ def create_app(port: int = config.DEFAULT_PORT) -> FastAPI:
         suggestions = suggest(
             bank=bank,
             current=current,
-            calibration=latest,
+            calibration=progress.latest,
             target_level=target,
             served_ids=done,
             pool=session.pool(bank) or None,
+            settled=progress.settled,
         )
         return {
             "calibration": {
                 "target_level": target,
                 "override": session.data.get("calibration_override"),
                 "from_question": source,
-                "latest": latest.as_dict() if latest else None,
                 "by_topic": per_topic,
+                **progress.as_dict(),
             },
             "suggestions": [
                 {**s.as_dict(), **(bank.get(s.question_id).summary())}

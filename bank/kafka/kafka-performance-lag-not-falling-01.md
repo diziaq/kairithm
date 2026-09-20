@@ -9,6 +9,7 @@ tags: [performance, observability, operations]
 time_estimate_min: 10
 order: 68
 links:
+  related: [spring-troubleshooting-slow-in-production-01]
   deeper: [kafka-performance-mixed-workloads-01]
 ---
 

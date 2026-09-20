@@ -9,6 +9,7 @@ tags: [observability, operations, failure-modes]
 time_estimate_min: 6
 order: 60
 links:
+  related: [sap-jco-troubleshooting-3am-failure-triage-01]
   deeper: [microservices-observability-dashboards-green-users-angry-01]
 ---
 

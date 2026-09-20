@@ -8,6 +8,8 @@ level: senior
 tags: [consistency, transactions, observability, operations]
 time_estimate_min: 10
 order: 62
+links:
+  deeper: [kafka-offsets-rewind-choice-01]
 ---
 
 ## Ask

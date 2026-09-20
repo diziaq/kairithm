@@ -380,17 +380,22 @@ def test_a_band_above_the_question_raises_the_bar_and_offers_deeper_first(client
     assert suggestions[0]["id"] == "java-conc-senior-01"
 
 
-def test_revising_an_earlier_band_changes_the_calibration_without_losing_the_past(client):
+def test_revising_an_earlier_band_re_derives_everything_without_losing_the_past(client):
+    """The whole run is replayed, so a correction made later still changes what comes next."""
     session = make_session(client)
     first, second = session["items"][0]["qid"], session["items"][1]["qid"]
     band(client, session["id"], first, "lead")
-    band(client, session["id"], second, "weak")
-    assert client.get(f"/api/sessions/{session['id']}").json()["calibration"]["target_level"] == "junior"
+    band(client, session["id"], second, "lead")
+    climbed = client.get(f"/api/sessions/{session['id']}").json()["calibration"]["target_level"]
 
-    band(client, session["id"], second, "senior")
+    # Change the first answer an hour later; the whole run is replayed, not patched.
+    band(client, session["id"], first, "weak")
     state = client.get(f"/api/sessions/{session['id']}").json()
-    assert state["calibration"]["target_level"] == "senior"
-    assert state["items"][0]["answer"]["band"] == "lead", "nothing already asked is lost"
+
+    assert state["calibration"]["target_level"] != climbed, "the correction has to count"
+    assert state["items"][0]["answer"]["band"] == "weak"
+    assert state["items"][1]["answer"]["band"] == "lead", "nothing already asked is lost"
+    assert len(state["items"]) == len(session["items"]), "no question is discarded"
 
 
 def test_the_calibration_can_be_overridden_and_cleared(client):
@@ -431,25 +436,104 @@ def test_the_calibration_is_tracked_per_topic_as_well(client):
     assert ids
 
 
-def test_adaptive_follows_the_bands_up_and_then_back_down(client):
+def test_the_calibration_climbs_one_step_at_a_time(client):
+    """A single spectacular answer is evidence, not proof. The bar moves by one level."""
     session = make_session(
         client, mode="adaptive", start_level="junior", filters={"categories": ["java", "kafka"]}
     )
     session_id = session["id"]
     targets = []
-    for value in ("lead", "lead", "weak"):
+    for _ in range(3):
         state = client.get(f"/api/sessions/{session_id}").json()
         current = state["items"][state["position"]]
         targets.append(current["target_level"])
-        band(client, session_id, current["qid"], value)
+        band(client, session_id, current["qid"], "lead")
         client.post(f"/api/sessions/{session_id}/next", json={}, headers=JSON)
 
-    final = client.get(f"/api/sessions/{session_id}").json()
-    targets.append(final["items"][final["position"]]["target_level"])
+    assert targets == ["junior", "mid", "senior"], "one step per answer, never a jump"
 
-    assert targets[0] == "junior"
-    assert targets[1] == "lead", "a lead band raises the bar straight away"
-    assert targets[3] == "junior", "a weak band drops it to the floor"
+
+def test_the_ceiling_settles_once_a_level_is_held_and_the_next_one_is_not(client):
+    session = make_session(client, mode="adaptive", start_level="mid", filters={})
+    session_id = session["id"]
+
+    def current():
+        state = client.get(f"/api/sessions/{session_id}").json()
+        return state["items"][state["position"]], state["calibration"]
+
+    # Two answers cannot bracket a ceiling, so this takes three.
+    for _ in range(2):
+        item, _ = current()
+        band(client, session_id, item["qid"], "lead")        # above -> the bar rises
+        client.post(f"/api/sessions/{session_id}/next", json={}, headers=JSON)
+
+    item, calibration = current()
+    assert calibration["settled"] is False
+    band(client, session_id, item["qid"], "weak")            # well below -> bracketed
+    _, calibration = current()
+
+    assert calibration["settled"] is True
+    assert calibration["ceiling"] is not None
+    assert "ceiling looks like" in calibration["note"]
+
+
+def seed_extra(bank_root, category, topic_prefix, level, count):
+    """More cards of one shape, for the tests that need a run longer than the base fixture."""
+    for n in range(count):
+        write(
+            bank_root,
+            f"{category}/{category}-{topic_prefix}{n}-01.md",
+            card(
+                card_id=f"{category}-{topic_prefix}{n}-01",
+                category=category,
+                topic=f"{topic_prefix}{n}",
+                level=level,
+            ),
+        )
+
+
+def test_three_answers_at_the_level_asked_trigger_a_probe_upwards(client, bank_root):
+    seed_extra(bank_root, "spring", "t", "mid", 4)
+    session = make_session(client, mode="adaptive", start_level="mid", filters={})
+    session_id = session["id"]
+
+    for turn in range(3):
+        state = client.get(f"/api/sessions/{session_id}").json()
+        item = state["items"][state["position"]]
+        assert item["question"]["level"] == "mid", f"turn {turn} should still be at the bar"
+        band(client, session_id, item["qid"], "mid")
+        client.post(f"/api/sessions/{session_id}/next", json={}, headers=JSON)
+
+    state = client.get(f"/api/sessions/{session_id}").json()
+    assert state["calibration"]["probing"] is True
+    assert state["calibration"]["target_level"] == "senior"
+    assert state["items"][state["position"]]["question"]["level"] == "senior", (
+        "the ceiling is never found if the tool only ever asks what it knows they can answer"
+    )
+
+
+def test_an_interview_does_not_spend_itself_inside_one_category(client, bank_root):
+    # Enough cards in one category that the run could stay there if nothing stopped it.
+    seed_extra(bank_root, "java", "extra", "mid", 6)
+    seed_extra(bank_root, "spring", "t", "mid", 4)
+    session = make_session(client, mode="adaptive", start_level="mid", filters={})
+    session_id = session["id"]
+    seen = []
+    for _ in range(8):
+        state = client.get(f"/api/sessions/{session_id}").json()
+        if state["adaptive_exhausted"]:
+            break
+        item = state["items"][state["position"]]
+        seen.append(item["question"]["category"])
+        band(client, session_id, item["qid"], "mid")
+        client.post(f"/api/sessions/{session_id}/next", json={}, headers=JSON)
+
+    longest = 1
+    run = 1
+    for before, after in zip(seen, seen[1:]):
+        run = run + 1 if before == after else 1
+        longest = max(longest, run)
+    assert longest <= 4, f"stayed in one category {longest} questions running: {seen}"
 
 
 def test_adaptive_stops_cleanly_when_the_pool_is_used_up(client):

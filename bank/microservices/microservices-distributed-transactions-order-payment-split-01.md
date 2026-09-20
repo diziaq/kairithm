@@ -9,6 +9,7 @@ tags: [transactions, correctness, failure-modes, idempotency]
 time_estimate_min: 10
 order: 170
 links:
+  related: [spring-transactions-checked-exception-01]
   deeper: [microservices-distributed-transactions-compensation-cannot-undo-01]
 ---
 

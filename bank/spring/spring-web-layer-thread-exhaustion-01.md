@@ -9,6 +9,7 @@ tags: [performance, failure-modes, operations, observability]
 time_estimate_min: 10
 order: 72
 links:
+  deeper: [spring-web-layer-long-running-request-01]
   related: [spring-troubleshooting-slow-in-production-01]
 ---
 

@@ -8,6 +8,8 @@ level: lead
 tags: [performance, consistency, operations, observability]
 time_estimate_min: 10
 order: 710
+links:
+  related: [sap-jco-idoc-error-ownership-01]
 ---
 
 ## Ask

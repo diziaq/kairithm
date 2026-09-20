@@ -2,6 +2,7 @@ from app.bank import Bank, Question
 from app.levels import calibrate
 from app.selection import (
     ADAPTIVE,
+    MAX_BLOCK,
     LEVEL_ASC,
     MANUAL,
     RANDOM,
@@ -283,10 +284,10 @@ def test_adaptive_leaves_a_topic_only_when_the_calibration_asks_and_takes_the_ne
     )
     pool = list(bank.questions.values())
 
-    stay, _ = choose_adaptive(bank, pool, ["here"], "mid", seed=3, change_topic=False)
+    stay, _ = choose_adaptive(bank, pool, ["here"], "mid", seed=3)
     assert stay.id == "same"
 
-    move, reason = choose_adaptive(bank, pool, ["here"], "mid", seed=3, change_topic=True)
+    move, reason = choose_adaptive(bank, pool, ["here"], "mid", seed=3, escape="topic")
     assert move.id == "sibling", "a different topic, but the nearest one"
     assert "moved off concurrency" in reason
 
@@ -297,7 +298,7 @@ def test_adaptive_stays_put_when_a_topic_change_has_nowhere_to_go():
         question("same", "mid", topic="concurrency"),
     )
     picked, _ = choose_adaptive(
-        bank, list(bank.questions.values()), ["here"], "mid", seed=1, change_topic=True
+        bank, list(bank.questions.values()), ["here"], "mid", seed=1, escape="topic"
     )
     assert picked.id == "same"
 
@@ -384,3 +385,73 @@ def test_a_topic_change_pushes_the_current_topic_to_the_back_without_dropping_it
     assert [s.question_id for s in found] == ["sibling", "same"], (
         "a different topic leads, but the current one is still one click away"
     )
+
+
+# --- the block budget and the settled state ---------------------------------------------------
+
+
+def block_bank():
+    cards = [
+        question(f"java-{n}", "mid", category="java", topic=f"t{n}") for n in range(6)
+    ] + [question(f"kafka-{n}", "mid", category="kafka", topic=f"k{n}") for n in range(3)]
+    return make_bank(*cards)
+
+
+def test_a_run_leaves_a_category_once_the_block_budget_is_spent():
+    bank = block_bank()
+    pool = list(bank.questions.values())
+    served = [f"java-{n}" for n in range(MAX_BLOCK)]
+
+    picked, reason = choose_adaptive(bank, pool, served, "mid", seed=1)
+    assert picked.category == "kafka", f"{MAX_BLOCK} in a row is enough of one area"
+    assert f"{MAX_BLOCK} questions in java" in reason
+
+
+def test_a_shorter_run_stays_in_the_block():
+    bank = block_bank()
+    pool = list(bank.questions.values())
+    served = [f"java-{n}" for n in range(MAX_BLOCK - 1)]
+    picked, _ = choose_adaptive(bank, pool, served, "mid", seed=1)
+    assert picked.category == "java"
+
+
+def test_two_answers_well_below_leave_the_category_immediately():
+    bank = block_bank()
+    pool = list(bank.questions.values())
+    picked, reason = choose_adaptive(bank, pool, ["java-0"], "mid", seed=1, escape="category")
+
+    assert picked.category == "kafka", "grinding the area they are worst at collects nothing"
+    assert "two answers well below in java" in reason
+
+
+def test_the_budget_is_ignored_when_there_is_nowhere_else_to_go():
+    bank = make_bank(*(question(f"java-{n}", "mid", topic=f"t{n}") for n in range(6)))
+    pool = list(bank.questions.values())
+    served = [f"java-{n}" for n in range(MAX_BLOCK)]
+    picked, _ = choose_adaptive(bank, pool, served, "mid", seed=1)
+    assert picked.category == "java", "a one-category pool is not a reason to serve nothing"
+
+
+def test_a_settled_ceiling_turns_the_run_towards_new_ground():
+    bank = block_bank()
+    pool = list(bank.questions.values())
+    # One question in, still inside the block budget: without `settled` it would stay in java.
+    staying, _ = choose_adaptive(bank, pool, ["java-0"], "mid", seed=1)
+    assert staying.category == "java"
+
+    widening, reason = choose_adaptive(bank, pool, ["java-0"], "mid", seed=1, settled=True)
+    assert widening.category == "kafka"
+    assert "ceiling settled, new category" in reason
+
+
+def test_suggestions_prefer_new_ground_once_the_ceiling_is_settled():
+    current = question("now", "mid", category="java", topic="concurrency")
+    same = question("same", "mid", category="java", topic="collections")
+    fresh = question("fresh", "mid", category="kafka", topic="delivery")
+    bank = make_bank(current, same, fresh)
+
+    hunting = suggest(bank, current, calibrate("mid", "mid"), "mid", ["now"])
+    assert hunting[0].question_id == "same", "relatedness leads while the ceiling is unknown"
+
+    settled = suggest(bank, current, calibrate("mid", "mid"), "mid", ["now"], settled=True)
+    assert settled[0].question_id == "fresh", "breadth leads once it is known"

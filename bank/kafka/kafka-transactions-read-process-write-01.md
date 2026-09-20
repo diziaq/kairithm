@@ -10,7 +10,7 @@ time_estimate_min: 10
 order: 64
 links:
   deeper: [kafka-transactions-zombie-fencing-01]
-  related: [kafka-offsets-external-store-01]
+  related: [kafka-offsets-external-store-01, sap-jco-bapi-two-bapis-one-commit-01]
 ---
 
 ## Ask

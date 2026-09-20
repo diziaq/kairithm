@@ -9,6 +9,7 @@ tags: [performance, correctness, failure-modes]
 time_estimate_min: 8
 order: 700
 links:
+  related: [microservices-scalability-autoscaled-into-database-01]
   deeper: [java-performance-local-cache-proposal-01]
 ---
 

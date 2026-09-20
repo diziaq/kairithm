@@ -8,6 +8,8 @@ level: senior
 tags: [correctness, failure-modes, testing]
 time_estimate_min: 8
 order: 120
+links:
+  deeper: [java-collections-large-lookup-table-01]
 ---
 
 ## Ask

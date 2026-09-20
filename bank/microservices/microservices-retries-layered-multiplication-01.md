@@ -9,7 +9,7 @@ tags: [retries, failure-modes, performance, operations]
 time_estimate_min: 8
 order: 90
 links:
-  related: [microservices-idempotency-key-scope-and-lifetime-01]
+  related: [microservices-idempotency-key-scope-and-lifetime-01, sap-jco-troubleshooting-first-call-after-idle-01]
 ---
 
 ## Ask

@@ -8,6 +8,8 @@ level: mid
 tags: [correctness, api-design, failure-modes]
 time_estimate_min: 7
 order: 610
+links:
+  related: [spring-proxying-final-method-01]
 ---
 
 ## Ask

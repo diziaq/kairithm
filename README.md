@@ -171,10 +171,32 @@ drives navigation:
 | Equal | `related` at the same level, or `deeper` to find the ceiling |
 | Above | `deeper`, and the bar for that topic moves up |
 
-The suggested level is always the band just observed, floored at `junior`. A `mid` answer to a
-`senior` question therefore suggests `mid` next — not another `senior` question on that topic.
+That table is what the interview screen shows as the advice for the answer just given. The
+**running calibration** — the level the next question is actually pitched at — is derived from
+every band recorded so far, not from the last one alone, because a candidate sitting between two
+levels answers above, then below, then above, and a tool with no memory chases that for the whole
+interview.
 
-The running calibration is shown in the status bar and can be overridden by hand at any time.
+| Rule | Why |
+|---|---|
+| The bar moves **one level per answer**, never a jump | One spectacular answer is evidence, not proof |
+| Three answers **at** the level asked trigger one question a level up | Otherwise a candidate is only ever asked what they have already proved they can do, and the ceiling is never found |
+| The bar **stops** once a level was held and the one above it was not | The ceiling has been located; the rest of the interview is worth more spent on coverage |
+| Three answers **above** a settled ceiling reopen it | The bracket can be built on one unlucky topic; consistent contradiction falsifies it |
+| Failing a question at a level they also hold is **not** a ceiling | That is inconsistency, not a wall |
+| A ceiling is never called from fewer than three answers | One unlucky topic at the start is not a bracket |
+
+The status bar shows the level, and one word for the state: `probing` while it is trying a step
+up, `ceiling senior` once it has settled, `manual` if you have overridden it. The sentence beside
+it says why.
+
+Two rules keep the run from grinding one area:
+
+- after four consecutive questions in one category it moves to the nearest other one;
+- after two answers in a row two or more bands below, it leaves that category immediately —
+  grinding the area somebody is worst at neither finds a ceiling nor collects usable evidence.
+
+The running calibration can be overridden by hand at any time.
 Every suggestion is optional: the interviewer can ignore all of them, follow any link, or jump to
 any card in the bank. Leaving the planned sequence and coming back loses nothing — bands, notes
 and follow-up usage are all kept.
@@ -185,6 +207,24 @@ served card records the target level and the reason, and both appear in the scor
 
 Stage 3 picks the pacing: untimed, a budget per question, or a budget for the whole session. A
 question over its budget turns the card border red. The tool never advances on its own.
+
+### Match the pool to the role
+
+The pool decides what the range means. Four scripted candidates, the same fourteen questions
+each, run twice — once against a pool matching the role, once against the whole bank including
+two specialities they had never worked in:
+
+| Candidate | Pool matched the role | Whole bank |
+|---|---|---|
+| junior | 17, reads junior | 17, reads junior |
+| solid mid | 50, reads mid | 37, reads junior |
+| borderline senior | 64, reads senior | 60, reads mid |
+| strong senior | 92, reads lead | 92, reads lead |
+
+Matched to the role, every candidate lands on the level they actually are. Against the whole bank
+the two in the middle drop about a band, because questions from a speciality they have never
+worked in still count as evidence. The ordering survives either way, but the number only means
+what it says if the categories in stage 1 are the ones the job needs.
 
 ## During the interview
 

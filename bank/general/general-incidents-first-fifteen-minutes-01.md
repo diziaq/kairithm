@@ -9,6 +9,7 @@ tags: [operations, observability, failure-modes]
 time_estimate_min: 7
 order: 90
 links:
+  related: [kafka-consumer-groups-flapping-member-01]
   deeper: [general-incidents-roll-back-or-forward-01]
 ---
 

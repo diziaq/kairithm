@@ -74,6 +74,26 @@ technology, or the run will jump from the end of one category to an unrelated on
 Explicit `links:` are stronger than any tag. Same topic is stronger still, so a topic is always
 finished before the run moves on.
 
+### A topic that spans all four levels is worth more than a topic with two cards
+
+Adaptive mode climbs and drops the level as the interview goes. When a topic has a card at every
+level the run can follow a candidate up and down *inside one subject*, which is both a better
+conversation and better evidence. Twelve topics currently span junior → mid → senior → lead;
+the rest span two. If you are deciding where to add a card, completing a ladder beats starting a
+new topic.
+
+Check any topic with:
+
+```bash
+.venv/bin/python -c "
+import sys; sys.path.insert(0,'.')
+from app.bank import load_bank
+b = load_bank()
+print(sorted({q.level for q in b.questions.values()
+              if q.category=='java' and q.topic=='concurrency'}))
+"
+```
+
 ---
 
 ## IDs

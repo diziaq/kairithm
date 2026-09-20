@@ -9,6 +9,7 @@ tags: [failure-modes, performance, operations]
 time_estimate_min: 10
 order: 30
 links:
+  related: [microservices-scalability-one-tenant-dominates-01]
   shallower: [java-concurrency-visibility-flag-01]
 ---
 

@@ -77,6 +77,57 @@ one directory per interview, holding the session file and the scorecard, under `
 Renaming it would cost the session-id pattern and the resolved-path containment check, which are
 two of the four reasons this tool is safe without a password, and buys nothing.
 
+### The running calibration has memory; the brief's table does not
+
+The brief's section 6 table is a function of one answer, and it is still implemented exactly that
+way — `calibrate()` — and still shown as the advice for the answer just given.
+
+Deriving the *running* calibration from that one answer as well was a mistake, and scripted
+interviews made it obvious. A candidate whose real level sits between two bands answers above,
+then below, then above. The old calibration followed every swing: a strong senior spent twelve of
+fourteen questions alternating senior and lead, six `above` and six `one_below`, re-confirming a
+ceiling it had already located at question two.
+
+So `track()` replays the whole run and moves one step at a time, and stops once a level was held
+and the one above it was not. Four scripted candidates, before and after:
+
+| | before | after |
+|---|---|---|
+| strong senior, questions to find the ceiling | never | 3 |
+| strong senior, categories seen in 20 questions | 2 | 6 |
+| junior, consecutive questions in their worst category | 7 | 4 |
+| solid mid, questions above their level (ceiling probe) | 0 | 1 |
+
+Three rules earned their place by failing first:
+
+- **Settling had to be reversible.** The first version settled and stayed. A borderline senior
+  bracketed at `mid` by one bad topic then answered above it eight times running and was never
+  re-tested. Three answers above a settled ceiling now reopen it.
+- **The bracket had to be tightened.** "Some level held, some level failed" settles on
+  inconsistency — failing one question at a level you otherwise hold is not a wall. Only the
+  level immediately above the best held one counts.
+- **Breadth had to be forced.** Relatedness alone let a candidate spend a whole interview in one
+  category. Four consecutive questions in one category is the cap, and two answers in a row two
+  or more bands below leave it at once.
+- **Settling needed a floor.** A run that opened in a speciality the candidate had never touched
+  bracketed a ceiling off two answers, then spent two more climbing back out of it. Three
+  answers minimum.
+
+The same four candidates, run against a pool matching the role, now land where they should:
+junior 17, solid mid 50, borderline senior 64, strong senior 92 — and the labels read junior,
+mid, senior and lead respectively.
+
+### The pool is part of the measurement
+
+The same four candidates score about a band lower against the whole bank than against a pool
+matching the role, because questions from a speciality they have never worked in still count as
+evidence. The ordering holds either way, so the tool is not wrong — but the figure only means
+what it says if stage 1 selects the categories the job needs. That is now stated in the README
+next to the numbers rather than left for an operator to discover.
+
+Rejected: down-weighting categories where a candidate scores badly. It would make the figure
+unreproducible by hand, and it would hide exactly the finding an interviewer needs to see.
+
 ### The charts are hand-built SVG, and there are three of them
 
 The browser code has no dependencies and no build step, and that is the reason it can be edited

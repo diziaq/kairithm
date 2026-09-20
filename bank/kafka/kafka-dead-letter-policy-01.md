@@ -8,6 +8,8 @@ level: lead
 tags: [failure-modes, api-design, operations, correctness]
 time_estimate_min: 12
 order: 86
+links:
+  related: [microservices-distributed-transactions-compensation-cannot-undo-01]
 ---
 
 ## Ask

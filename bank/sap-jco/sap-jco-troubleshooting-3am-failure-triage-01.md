@@ -9,7 +9,7 @@ tags: [observability, operations, failure-modes]
 time_estimate_min: 6
 order: 60
 links:
-  deeper: [sap-jco-troubleshooting-works-for-abap-dev-01]
+  deeper: [sap-jco-troubleshooting-first-call-after-idle-01]
 ---
 
 ## Ask

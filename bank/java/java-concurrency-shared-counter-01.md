@@ -9,7 +9,7 @@ tags: [threads, correctness, memory-model]
 time_estimate_min: 5
 order: 10
 links:
-  deeper: [java-concurrency-visibility-flag-01]
+  deeper: [java-concurrency-lock-ordering-transfer-01]
 ---
 
 ## Ask

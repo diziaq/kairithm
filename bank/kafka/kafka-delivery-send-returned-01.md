@@ -9,7 +9,8 @@ tags: [correctness, failure-modes, api-design]
 time_estimate_min: 6
 order: 18
 links:
-  deeper: [kafka-delivery-acks-min-isr-01, kafka-delivery-exactly-once-claim-01]
+  related: [spring-web-layer-validation-missing-01]
+  deeper: [kafka-delivery-duplicate-orders-01]
 ---
 
 ## Ask

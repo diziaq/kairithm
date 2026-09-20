@@ -9,7 +9,8 @@ tags: [retries, idempotency, failure-modes, correctness]
 time_estimate_min: 8
 order: 100
 links:
-  deeper: [general-trade-offs-ship-the-shortcut-01]
+  related: [sap-jco-trfc-sm58-backlog-01]
+  deeper: [general-trade-offs-window-or-dual-write-01]
 ---
 
 ## Ask

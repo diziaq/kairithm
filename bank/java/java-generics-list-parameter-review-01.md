@@ -9,6 +9,7 @@ tags: [correctness, api-design, testing]
 time_estimate_min: 5
 order: 600
 links:
+  related: [microservices-api-evolution-renamed-field-broke-consumer-01]
   deeper: [java-generics-erasure-boundary-01]
 ---
 

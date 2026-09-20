@@ -8,6 +8,8 @@ level: lead
 tags: [api-design, operations, consistency]
 time_estimate_min: 10
 order: 810
+links:
+  related: [kafka-delivery-acks-min-isr-01]
 ---
 
 ## Ask

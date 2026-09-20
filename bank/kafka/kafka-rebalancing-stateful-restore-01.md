@@ -8,6 +8,8 @@ level: lead
 tags: [operations, performance, consistency]
 time_estimate_min: 12
 order: 84
+links:
+  related: [sap-jco-performance-nightly-bulk-extract-01]
 ---
 
 ## Ask

@@ -9,6 +9,7 @@ tags: [correctness, retries, failure-modes, transactions]
 time_estimate_min: 9
 order: 50
 links:
+  deeper: [microservices-idempotency-four-schemes-one-refund-01]
   related: [microservices-distributed-transactions-order-payment-split-01]
 ---
 

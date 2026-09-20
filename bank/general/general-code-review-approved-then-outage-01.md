@@ -8,6 +8,8 @@ level: senior
 tags: [correctness, testing, operations, failure-modes]
 time_estimate_min: 8
 order: 180
+links:
+  related: [java-collections-comparator-contract-01]
 ---
 
 ## Ask

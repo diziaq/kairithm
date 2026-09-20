@@ -5,12 +5,16 @@ import pytest
 from app.levels import (
     ABOVE,
     BANDS,
+    CONTRADICT_AFTER,
+    MIN_ANSWERS_TO_SETTLE,
     EQUAL,
     LEVELS,
     ONE_BELOW,
+    PROBE_AFTER_EQUALS,
     TWO_OR_MORE_BELOW,
     calibrate,
     delta,
+    track,
 )
 
 
@@ -90,3 +94,104 @@ def test_an_unknown_level_or_band_is_refused():
         calibrate("principal", "mid")
     with pytest.raises(ValueError):
         calibrate("mid", "outstanding")
+
+
+# --- the running calibration -------------------------------------------------------------------
+
+
+
+def test_nothing_recorded_leaves_the_calibration_where_the_setup_put_it():
+    progress = track("senior", [])
+    assert progress.level == "senior"
+    assert progress.settled is False
+    assert progress.latest is None
+    assert "No band assigned" in progress.note
+
+
+def test_the_bar_moves_one_step_per_answer_however_good_it_was():
+    """A lead band on a junior question is evidence, not proof. Jumping three levels on one
+    answer is how the old version sawtoothed for a whole interview."""
+    assert track("junior", [("junior", "lead")]).level == "mid"
+    assert track("junior", [("junior", "lead"), ("mid", "lead")]).level == "senior"
+
+
+def test_the_ceiling_settles_when_the_level_above_the_best_held_one_fails():
+    progress = track("mid", [("mid", "mid"), ("mid", "mid"), ("senior", "mid")])
+    assert progress.settled is True
+    assert progress.ceiling == "mid"
+    assert progress.level == "mid"
+    assert "ceiling looks like mid" in progress.note
+
+
+def test_failing_a_question_at_a_level_they_also_hold_is_not_a_ceiling():
+    """Inconsistency is not a bracket. Only the level immediately above the best held one counts."""
+    progress = track("mid", [("mid", "mid"), ("mid", "mid"), ("mid", "weak")])
+    assert progress.settled is False
+
+
+def test_two_answers_are_never_enough_to_call_a_ceiling():
+    """One unlucky topic at the start of an interview is not a bracket."""
+    early = track("mid", [("mid", "mid"), ("senior", "mid")])
+    assert early.settled is False
+    assert len(early.held) + len(early.failed) < MIN_ANSWERS_TO_SETTLE
+
+
+def test_a_settled_ceiling_stops_the_bar_moving():
+    settled = track("mid", [("mid", "mid"), ("mid", "mid"), ("senior", "mid")])
+    still = track("mid", [("mid", "mid"), ("mid", "mid"), ("senior", "mid"), ("mid", "mid")])
+    assert still.level == settled.level == "mid"
+    assert still.settled is True
+
+
+def test_answering_above_a_settled_ceiling_enough_times_reopens_it():
+    """The bracket can be built on one unlucky topic. Consistent contradiction falsifies it."""
+    answers = [("mid", "mid"), ("mid", "mid"), ("senior", "mid")]
+    assert track("mid", answers).settled is True
+
+    for _ in range(CONTRADICT_AFTER):
+        answers.append(("mid", "senior"))
+    progress = track("mid", answers)
+
+    assert progress.settled is False, "out-answered three times running"
+    assert progress.level == "senior", "the estimate was too low, so it climbs again"
+
+
+def test_two_answers_above_a_settled_ceiling_are_not_enough_to_reopen_it():
+    answers = [("mid", "mid"), ("mid", "mid"), ("senior", "mid"),
+               ("mid", "senior"), ("mid", "senior")]
+    assert track("mid", answers).settled is True
+
+
+def test_consecutive_answers_at_the_level_asked_trigger_a_probe_upwards():
+    answers = [("mid", "mid")] * (PROBE_AFTER_EQUALS - 1)
+    assert track("mid", answers).probing is False
+    assert track("mid", answers).level == "mid"
+
+    answers.append(("mid", "mid"))
+    progress = track("mid", answers)
+    assert progress.probing is True
+    assert progress.level == "senior", "one step up, to find where it stops"
+    assert "find where it stops" in progress.note
+
+
+def test_a_probe_is_not_run_once_the_ceiling_is_known():
+    answers = [("mid", "mid"), ("mid", "mid"), ("senior", "mid")] + [("mid", "mid")] * PROBE_AFTER_EQUALS
+    progress = track("mid", answers)
+    assert progress.settled is True
+    assert progress.probing is False, "no point probing a wall that has already been found"
+
+
+def test_two_answers_well_below_ask_for_a_different_category():
+    assert track("mid", [("mid", "weak")]).escape == "topic"
+    assert track("mid", [("mid", "weak"), ("junior", "weak")]).escape == "topic"
+    assert track("senior", [("senior", "weak"), ("senior", "weak")]).escape == "category"
+
+
+def test_an_answer_at_or_above_the_level_asks_for_nothing_to_change():
+    assert track("mid", [("mid", "mid")]).escape == ""
+    assert track("mid", [("mid", "senior")]).escape == ""
+
+
+def test_the_floor_and_the_ceiling_of_the_scale_are_respected():
+    assert track("junior", [("junior", "weak")] * 5).level == "junior"
+    assert track("lead", [("lead", "lead")] * 5).level == "lead"

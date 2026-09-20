@@ -8,6 +8,8 @@ level: lead
 tags: [operations, failure-modes, testing, observability]
 time_estimate_min: 9
 order: 200
+links:
+  related: [spring-troubleshooting-slow-first-requests-01]
 ---
 
 ## Ask

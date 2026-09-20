@@ -9,6 +9,7 @@ tags: [failure-modes, observability, operations]
 time_estimate_min: 8
 order: 48
 links:
+  related: [spring-web-layer-error-contract-01]
   deeper: [kafka-dead-letter-policy-01]
 ---
 

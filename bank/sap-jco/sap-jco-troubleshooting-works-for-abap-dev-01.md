@@ -8,6 +8,8 @@ level: senior
 tags: [security, observability, failure-modes]
 time_estimate_min: 8
 order: 180
+links:
+  deeper: [sap-jco-troubleshooting-oncall-without-sap-access-01]
 ---
 
 ## Ask

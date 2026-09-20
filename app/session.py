@@ -18,7 +18,7 @@ from typing import Any
 
 from .bank import Bank, Question
 from .config import DEFAULT_QUESTION_MINUTES, SESSIONS_ROOT
-from .levels import BANDS, LEVELS, Calibration, calibrate
+from .levels import BANDS, LEVELS, Progress, calibrate, track
 from .scoring import Observation
 from .selection import (
     ADAPTIVE,
@@ -182,14 +182,15 @@ class Session:
     def append_adaptive_item(self, bank: Bank) -> dict[str, Any] | None:
         """Serve one more adaptive card, or return None when the pool is used up."""
         target = self.target_level(bank)
-        latest, _, _ = self.replay_calibration(bank)
+        progress = self.progress(bank)
         picked = choose_adaptive(
             bank,
             self.pool(bank),
             self.served_ids(),
             target,
             int(self.data["seed"]),
-            change_topic=bool(latest and latest.change_topic),
+            escape=progress.escape,
+            settled=progress.settled,
         )
         if picked is None:
             return None
@@ -205,14 +206,15 @@ class Session:
 
     # --- calibration ---------------------------------------------------------------------
 
-    def replay_calibration(self, bank: Bank) -> tuple[Calibration | None, str, dict[str, str]]:
+    def replay_calibration(self, bank: Bank) -> tuple[Progress, str, dict[str, str]]:
         """Derive the running calibration from every band recorded so far, in served order.
 
-        Revising an earlier band therefore changes what is suggested next without discarding any
-        card already asked. The per-topic map exists for the one row of the table that says to
-        raise the bar "for subsequent questions in this topic".
+        Revising an earlier band re-derives the whole thing, so a correction made an hour later
+        still changes what comes next without discarding any card already asked. The per-topic
+        map exists for the one row of the table that says to raise the bar "for subsequent
+        questions in this topic".
         """
-        latest: Calibration | None = None
+        pairs: list[tuple[str, str]] = []
         source = ""
         per_topic: dict[str, str] = {}
         for item in self.items:
@@ -221,23 +223,23 @@ class Session:
             level = self.item_level(item, bank)
             if not band or band not in BANDS or level is None:
                 continue
-            latest = calibrate(level, band)
+            pairs.append((level, band))
             source = item["qid"]
             question = bank.get(item["qid"])
             topic = question.topic if question else item.get("asked_topic", "")
             if topic:
-                per_topic[topic] = latest.next_level
-        return latest, source, per_topic
+                per_topic[topic] = calibrate(level, band).next_level
+        return track(start_level(self.data.get("setup") or {}), pairs), source, per_topic
+
+    def progress(self, bank: Bank) -> Progress:
+        return self.replay_calibration(bank)[0]
 
     def target_level(self, bank: Bank) -> str:
-        """The level the tool would suggest next. A manual override always wins."""
+        """The level the tool would pitch the next question at. A manual override always wins."""
         override = self.data.get("calibration_override")
         if override in LEVELS:
             return override
-        latest, _, _ = self.replay_calibration(bank)
-        if latest is not None:
-            return latest.next_level
-        return start_level(self.data.get("setup") or {})
+        return self.progress(bank).level
 
     # --- derived views -------------------------------------------------------------------
 
@@ -276,7 +278,7 @@ class Session:
 
     def as_state(self, bank: Bank) -> dict[str, Any]:
         """Everything the browser needs to render the session, hints excluded."""
-        latest, source, per_topic = self.replay_calibration(bank)
+        progress, source, per_topic = self.replay_calibration(bank)
         items = []
         for index, item in enumerate(self.items):
             question = bank.get(item["qid"])
@@ -321,8 +323,8 @@ class Session:
                 "target_level": self.target_level(bank),
                 "override": self.data.get("calibration_override"),
                 "from_question": source,
-                "latest": latest.as_dict() if latest else None,
                 "by_topic": per_topic,
+                **progress.as_dict(),
             },
             "finish": self.data.get("finish") or {},
             "adaptive_exhausted": bool(self.data.get("adaptive_exhausted")),

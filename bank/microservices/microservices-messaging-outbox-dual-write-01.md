@@ -9,7 +9,7 @@ tags: [messaging, consistency, transactions, correctness]
 time_estimate_min: 9
 order: 110
 links:
-  deeper: [microservices-messaging-ordering-out-of-order-address-01]
+  deeper: [microservices-messaging-backlog-replay-expiry-01]
   related: [microservices-consistency-stale-read-after-write-01]
 ---
 

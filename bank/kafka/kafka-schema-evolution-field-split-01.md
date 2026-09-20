@@ -8,6 +8,8 @@ level: senior
 tags: [api-design, operations, correctness]
 time_estimate_min: 10
 order: 66
+links:
+  related: [microservices-api-evolution-deleting-a-field-nobody-uses-01]
 ---
 
 ## Ask

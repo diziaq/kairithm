@@ -9,6 +9,7 @@ tags: [api-design, correctness, failure-modes]
 time_estimate_min: 8
 order: 800
 links:
+  related: [spring-di-circular-dependency-01]
   deeper: [java-api-design-shared-record-change-01]
 ---
 

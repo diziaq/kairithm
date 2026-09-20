@@ -10,7 +10,7 @@ time_estimate_min: 5
 order: 900
 links:
   deeper: [java-testing-slow-suite-strategy-01]
-  related: [java-concurrency-shared-counter-01]
+  related: [java-concurrency-shared-counter-01, spring-testing-leaky-state-01]
 ---
 
 ## Ask

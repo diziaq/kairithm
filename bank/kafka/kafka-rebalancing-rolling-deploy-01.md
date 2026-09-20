@@ -10,7 +10,7 @@ time_estimate_min: 8
 order: 44
 links:
   deeper: [kafka-rebalancing-stateful-restore-01]
-  related: [kafka-consumer-groups-flapping-member-01]
+  related: [kafka-consumer-groups-flapping-member-01, sap-jco-work-processes-dialog-timeout-01]
 ---
 
 ## Ask

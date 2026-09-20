@@ -9,6 +9,7 @@ tags: [correctness, observability, failure-modes]
 time_estimate_min: 7
 order: 80
 links:
+  related: [spring-transactions-self-invocation-01]
   deeper: [general-debugging-corruption-no-repro-01]
 ---
 

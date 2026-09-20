@@ -369,8 +369,21 @@ async function refreshNav() {
 function renderCalibration(calibration) {
   el("calibration-now").textContent = calibration.target_level;
   el("calibration-why").textContent = calibration.override
-    ? "set by hand"
-    : (calibration.latest && calibration.latest.advice) || "no band assigned yet";
+    ? "set by hand — the bands are being ignored"
+    : calibration.note || "No band assigned yet.";
+
+  // One word for the state the run is in, so the interviewer can see the bar stop moving.
+  const state = el("calibration-state");
+  const label = calibration.override
+    ? "manual"
+    : calibration.settled
+      ? `ceiling ${calibration.ceiling}`
+      : calibration.probing
+        ? "probing"
+        : "";
+  state.textContent = label;
+  state.className = label ? `calibration-state state-${label.split(" ")[0]}` : "hidden";
+
   el("in-calibration").value = calibration.override || "";
 }
 
