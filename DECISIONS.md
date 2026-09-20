@@ -77,6 +77,46 @@ one directory per interview, holding the session file and the scorecard, under `
 Renaming it would cost the session-id pattern and the resolved-path containment check, which are
 two of the four reasons this tool is safe without a password, and buys nothing.
 
+### The SAP cards were checked against the decompiled library, not the documentation
+
+Ten SAP/JCo cards carried `NEEDS-REVIEW` because the claims could not be settled from public
+documentation. The operator supplied the shipping artefacts — `sapjco-3.1.14.jar` and
+`sapidoc-3.1.4.jar` — so they were decompiled and read instead. That is a better authority than
+the documentation, and it turned out to matter: the code contradicted the cards in eight places.
+
+The two that were simply backwards:
+
+- A card said metadata cached behind a destination is thrown away with it. `RepositoryManager`
+  keys repositories by system key and has **no removal method at all**; metadata survives for the
+  life of the process. Three cards were built on the wrong claim.
+- A card said the turbo metadata path is used only when
+  `jco.use_repository_roundtrip_optimization` is switched on. `JCoRuntime` seeds that property
+  with `"1"`, and the classic path is taken only when it is explicitly `"0"`. So the function
+  module named in a real authorisation error is most likely the opposite of what the card said.
+
+Others: an unset `peak_limit` is `Integer.MAX_VALUE`, so a default destination has one idle
+connection and *unbounded* concurrency; `expiration_time = 0` silently disables pooling
+altogether; the CPIC keepalive properties reach only the registered-server path, not client
+calls, so a card promising them was promising something the client cannot do.
+
+Four flags were resolved outright. `jco.destination.pool_check_connection` exists, is **off by
+default** (`JCoRuntime.toBoolean` returns false for a null), and when on makes
+`PoolingFactory.getClient` probe with `SAP_CMKEEPALIVE` before handing a connection out — where
+`isAlive()` is only a local handle check. A pooled connection is reused without a new logon
+because `connect()`, and therefore `RfcOpen`, runs only when the connection is not already open.
+A throwing `commit` callback becomes `RFC_FAILURE "Commit fault"` and triggers `rollback` on the
+same TID. `JCoCustomRepository` is unchanged in 3.1.
+
+Four flags remain, all genuinely outside the client library: what SAP does at the instant a
+client vanishes mid-call, whether the application server times out an idle stateful session, the
+tRFC scheduler's re-send timing, and product licensing. A jar cannot settle any of them.
+
+Nobody had opened the IDoc jar. It is far thinner than the cards assumed, which sharpened both of
+them: `IDocDocument.getStatus()` is a raw two-character field with no constants or validation
+anywhere, so status semantics are entirely ABAP-side; every `JCoIDoc.send` overload takes a TID
+and dispatches transactionally, which is the mechanical reason a re-send duplicates; and
+`checkSyntax()` exists but `send` never calls it.
+
 ### The bank was read card by card, and about a quarter of it was wrong
 
 The validator proves a card is well-formed, not that it is right or that it earns its place. So

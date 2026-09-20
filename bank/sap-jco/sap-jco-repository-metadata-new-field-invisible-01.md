@@ -25,12 +25,14 @@ cached, and can act on that without reaching for a redeploy.
 ## Listen for
 
 - JCo has to know the interface before it can build the call, and it reads that from SAP once
-- The description is cached per repository behind the destination for the life of the process,
-  so a week-old process holds a week-old interface
+- The description is cached in a repository behind the destination and kept for the life of the
+  process, so a week-old process holds a week-old interface
 - A restart rebuilds the cache, which is why it looks like a deployment problem
 - It can be refreshed without a restart: clear the repository, or drop the one template that
   changed
 - The metadata is a remote call to SAP, not something shipped inside the jar
+- Nothing polls for changes unless somebody turned that on, so the staleness is the default
+  behaviour rather than a fault
 
 ## Expected knowledge
 
@@ -41,6 +43,8 @@ cached, and can act on that without reaching for a redeploy.
 
 - Wants the refresh to be a deliberate, small action — an admin endpoint or a flag — rather than
   rolling every pod
+- Asks whether the client could notice the change by itself instead of being told, and what that
+  would cost in extra calls to SAP
 - Says that an interface change is a breaking change for a running consumer and belongs in a
   release conversation, not in a Tuesday transport
 - Asks whether the field was added as optional, and what happens to the running version if it was
@@ -75,7 +79,8 @@ cached, and can act on that without reaching for a redeploy.
 - Treats the cache as deliberate — the alternative is a remote lookup per call — and weighs the
   refresh against that.
 - Says how a changed interface should be rolled out so no running consumer breaks.
-- Points out the same cache is what a per-call destination throws away, and what that costs.
+- Points out the cache is shared by everything pointing at that SAP system, so a refresh is not
+  a private act and has to be timed accordingly.
 
 ## Follow-ups
 
@@ -92,11 +97,32 @@ cached, and can act on that without reaching for a redeploy.
 If a candidate says "I would just redeploy", ask what they would do if the service could not be
 restarted during business hours. That is where the interesting answer starts.
 
-Verified: `JCoRepository.clear()` empties both the function template cache and the record
-metadata cache. The targeted call is `removeFunctionTemplateFromCache(String functionName)`, with
-`removeRecordMetaDataFromCache` and `removeClassMetaDataFromCache` alongside it. Do not test the
+Verified in the decompiled JCo 3.1.14. `com.sap.conn.jco.rt.BasicRepository.clear()` calls
+`storage.clear()`, which empties the whole repository — function templates, record metadata and
+class metadata, not just the first two as this card previously said. The targeted call is
+`removeFunctionTemplateFromCache(String functionName)`, with `removeRecordMetaDataFromCache` and
+`removeClassMetaDataFromCache` alongside it on `com.sap.conn.jco.JCoRepository`. Do not test the
 spelling — a candidate who knows a single template can be dropped without clearing everything has
 made the point.
+
+Verified, and the ceiling answer on this card: JCo 3.1 can find the change by itself.
+`JCoRepository.removeOutdatedMetaDataFromCache()` is implemented in
+`com.sap.conn.jco.rt.AbapRepository`, where it calls `RFC_METADATA_GET_TIMESTAMP` and evicts only
+the templates whose ABAP timestamp has moved since they were cached. It is driven periodically by
+`com.sap.conn.jco.rt.RepositoryChecker`, whose interval comes from the destination property
+`jco.destination.repository.check_interval` — read in `com.sap.conn.jco.rt.RfcDestination` with a
+default of **0**, meaning no checker at all, and interpreted in **minutes**
+(`RepositoryChecker.getTimeUnit()` returns `TimeUnit.MINUTES`). So the scenario in the Ask is the
+default configuration, and a candidate who asks "could the client just notice?" is right that it
+can, at the price of a periodic roundtrip per repository. `BasicRepository` returns 0 from the
+same method, so this only applies to a repository backed by a real destination. Do not expect the
+property name.
+
+Verified: the repository is not per destination. `com.sap.conn.jco.rt.RepositoryManager.getRepository`
+keys its cache on `InternalDestination.getSystemKey()`, which
+`com.sap.conn.jco.rt.ConnectionAttributes.getSystemKey()` builds as the system id plus the
+installation number. Two destinations pointing at the same SAP system therefore share one cache —
+which means clearing it affects both, something worth knowing before wiring a refresh endpoint.
 
 ## Sources
 

@@ -30,7 +30,8 @@ enforced instead — each with an operational cost.
 - The pool settings are per destination inside one JVM; JCo has no idea the other eleven exist,
   so scaling out multiplies the effective limit rather than sharing it
 - Says what a caller actually gets when the peak limit is already allocated: it waits, and that
-  wait has its own bound, which is not a bound on the call itself
+  wait has its own bound, which is not a bound on the call itself; when the wait runs out the
+  caller gets an exception, not a connection
 - Distinguishes the two numbers: one caps how many connections may be active at once, the other
   caps how many idle ones are kept open — only the first is a concurrency limit at all
 - Names the candidate places to put the real limit, and what each costs somebody: a per-instance
@@ -46,6 +47,7 @@ enforced instead — each with an operational cost.
 
 - `jco.destination.peak_limit` and `jco.destination.pool_capacity` and which one does what
 - A pool that is exhausted makes the caller wait, and that wait is itself bounded by a setting
+- A concurrency limit only exists once it has been configured; an unset limit is not a small one
 
 ## Strong signals
 
@@ -122,19 +124,48 @@ flaps; that one is about the control loop, this one is about what JCo's two pool
 what a caller experiences when the pool is full. Keeping the autoscaler out of this Ask is what
 stops the two reading as the same question.
 
-Verified: `jco.destination.peak_limit` is documented as the maximum number of connections that
-can be active for a destination simultaneously, and `jco.destination.pool_capacity` as the
-maximum number of idle connections kept open, where 0 disables pooling entirely. The bounded wait
-referred to in `## Expected knowledge` is `jco.destination.max_get_client_time`, the time a caller
-waits for a connection once the peak limit is already allocated — note it is not a timeout on the
-call itself, which is a distinction candidates routinely get wrong.
+Verified in the decompiled JCo 3.1.14. `jco.destination.peak_limit` bounds the connections that
+may be **allocated — checked out and in use — at once**: `com.sap.conn.jco.rt.PoolingFactory.getClient`
+creates a new connection only while `getNumUsed() < peakLimit`, where `getNumUsed()` is the size
+of the allocated list in `com.sap.conn.jco.rt.ClientFactory`. `jco.destination.pool_capacity`
+bounds only the **idle** list: it is the limit of the `available` ring buffer, enforced in
+`PoolingFactory.setCapacity`. Only the first is a concurrency limit at all, which is the
+distinction this card turns on.
+
+Verified, and the sharpest thing to have in hand for this card: **an unset `peak_limit` is
+unlimited.** `com.sap.conn.jco.rt.RfcDestination.setProperties` reads it defaulting to whatever
+`pool_capacity` was, and then `if (peakLimit == Integer.MIN_VALUE || peakLimit == 0) peakLimit =
+Integer.MAX_VALUE;`. So a destination with nothing configured gets one pooled idle connection and
+an effectively unbounded number of concurrent ones, and `max_get_client_time` never comes into
+play because the peak-limit test is always true. The colleague in the Ask is wrong twice over: the
+pool does not protect SAP, and on a destination where nobody set the number it is not bounding
+anything either. A candidate who asks "is the limit actually configured on all twelve?" has found
+the real risk.
+
+Verified: what the caller gets at exhaustion is `com.sap.conn.jco.JCoException` with group 106,
+`JCO_ERROR_RESOURCE`, and the message `"Connection pool <destination> is exhausted. The current
+pool size peak limit is N connections."` followed by a per-connection dump from
+`ClientFactory.describeAllocatedClients` saying how long each allocated connection has been
+executing or idle and which function it is on. Note that a `max_get_client_time` expiry and an
+instant refusal throw the **same** exception with the same group, key and message — the two cannot
+be told apart from the exception, only from how long the caller waited. That is worth knowing
+before promising an incident channel that the two are distinguishable.
+
+Verified: the bounded wait is `jco.destination.max_get_client_time`, default 30000 ms
+(`RfcDestination.setProperties`). `PoolingFactory.getClient` waits on a monitor for at most that
+long in total, decrementing the remaining budget each pass, so a caller can never block forever
+there. Set it to 0 or a negative number and there is no wait at all — the exhaustion exception is
+thrown immediately. Waiters are served first-in-first-out. It is not a timeout on the call itself,
+which is the distinction candidates routinely get wrong.
 
 One honest caveat on the card's central claim: that these limits do not coordinate across JVMs is
-a consequence of the pool being an in-process object, not a sentence SAP publishes. It is safe,
-but if a candidate asks for a citation, that is the right answer to give them.
+a consequence of the pool being an in-process object — `PoolingFactory` is an ordinary Java object
+holding Java lists, with no coordination of any kind in it — not a sentence SAP publishes.
 
-Defaults have moved between JCo versions — `pool_capacity` changed from 0 to 1 in 3.0.8 — so do
-not build the question on a default value.
+Current defaults in 3.1.14, from `RfcDestination.setProperties`: `pool_capacity` 1,
+`peak_limit` unlimited as above, `max_get_client_time` 30000 ms, `expiration_time` 60000 ms,
+`expiration_check_period` 60000 ms. Defaults have moved between versions, so do not build the
+question on one or hold a candidate to it.
 
 ## Sources
 

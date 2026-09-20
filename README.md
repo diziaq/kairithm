@@ -214,12 +214,12 @@ The pool decides what the range means. Four scripted candidates, the same fourte
 each, run twice — once against a pool matching the role, once against the whole bank including
 two specialities they had never worked in:
 
-| Candidate | Pool matched the role | Whole bank |
+| Candidate | Pool matched the role | Whole bank (7 categories) |
 |---|---|---|
-| junior | 20, reads junior | 8, reads weak |
-| solid mid | 50, reads mid | 46, reads mid |
-| borderline senior | 67, reads senior | 62, reads mid |
-| strong senior | 90, reads lead | 90, reads lead |
+| junior | 18, reads junior | 8, reads weak |
+| solid mid | 50, reads mid | 41, reads mid |
+| borderline senior | 63, reads senior | 59, reads mid |
+| strong senior | 91, reads lead | 83, reads senior |
 
 Matched to the role, every candidate lands on the level they actually are. Against the whole bank
 they drop, because questions from a speciality they have never worked in still count as evidence —

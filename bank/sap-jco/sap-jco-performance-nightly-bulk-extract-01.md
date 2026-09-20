@@ -99,10 +99,12 @@ client is executed in a dialog work process, which has a maximum runtime, and wo
 longer belongs in background processing, which is not bound by it. The dialog-timeout card in the
 work-processes topic owns that mechanism in detail.
 
-NEEDS-REVIEW — retained deliberately, and this one will not be resolved by more research. The
-card asks the candidate when a function-call interface is the wrong tool and what else exists.
-Product names, their availability on a given release, and above all what a customer is licensed
-for differ per landscape and per contract, so no verifiable general statement is possible here.
+NEEDS-REVIEW — retained deliberately and permanently. Re-examined against the decompiled JCo and
+SAP IDoc jars, which settle nothing here and never will: a client library cannot tell you what a
+customer is licensed for. The card asks the candidate when a function-call interface is the wrong
+tool and what else exists. Product names, their availability on a given release, and above all
+what a customer is entitled to use differ per landscape and per contract, so no verifiable
+general statement is possible.
 Credit a candidate for knowing that dedicated extraction and replication paths exist, that
 choosing one is a commercial decision as much as a technical one, and that the decision is not
 theirs alone. Do not credit or penalise a specific product name, and do not name one yourself —

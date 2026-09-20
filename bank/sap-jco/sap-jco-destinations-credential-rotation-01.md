@@ -29,8 +29,9 @@ failure mode of a rotation against a cache and a shared account.
   with any framework in the same process that registers its own
 - JCo caches the destination data; after a rotation the cache still holds the old password unless
   the provider tells JCo the entry changed
-- Existing pooled connections may keep working while every new logon fails, which makes the
-  outage look intermittent and delays diagnosis
+- Existing pooled connections keep working while every new logon fails, because the password is
+  presented once when the connection is opened and not on each call — which makes the outage look
+  intermittent and delays diagnosis
 - Repeated failed logons with a stale password can lock the SAP user, depending on how the system
   is configured — and if all six services share one account, all six go down together
 - Rotation has to be coordinated with Basis; changing the password in the vault alone changes
@@ -103,13 +104,30 @@ documentation gives a fixed interval for that fallback, so do not let the candid
 yourself — depend on a number. Note this is destination *configuration* caching, which is a
 different thing from the pool's idle-connection expiry settings; candidates conflate the two.
 
-NEEDS-REVIEW — new flag added by this review, replacing an assertion the card previously made
-flatly. The claim that connections already open keep working through a password change while
-every new logon fails could not be confirmed in any SAP documentation or note. It is a reasonable
-inference from the password being checked at the logon handshake rather than on each call, and it
-matches what people report in the field, but it is not documented. Treat it as a hypothesis the
-candidate is credited for reaching, not as a fact the card knows. A candidate who instead
-predicts a total outage at the moment of rotation has not said anything wrong.
+Verified in the decompiled JCo 3.1.14, and the previous flag is removed: on the client side, an
+open pooled connection is reused without a new logon. `com.sap.conn.jco.rt.PoolingFactory.getClient`
+calls `connect()` only when the connection is not already connected — the guard is
+`if ((client.state & 2) == 0)` — and `com.sap.conn.jco.rt.ClientConnection.connect()` is where the
+credentials are presented, through `RfcApi.RfcOpen(this.logonParams)`. So the logon happens once
+per physical connection, at open, and never again while that connection lives. After a password
+change, connections already open in the pool keep working; only a new `RfcOpen` presents the
+credentials and fails. The messy partial failure the `senior` band asks for is therefore the
+correct prediction, not a guess.
+
+The one thing the client jar cannot settle, and the interviewer should not assert: whether the
+SAP system itself invalidates an existing session when the password is changed. If it does, the
+partial-failure window closes immediately and the outage looks total. A candidate who predicts a
+clean total outage has not said anything wrong; a candidate who says "the already-open ones
+should survive unless SAP tears the sessions down, and I would check that" has said the better
+thing.
+
+Verified: only one `DestinationDataProvider` may be registered per JVM.
+`com.sap.conn.jco.rt.RuntimeEnvironment.setDestinationDataProvider` holds it in a static field and
+throws `IllegalStateException("DestinationDataProvider already registered [...]")` on a second
+attempt, which is precisely the collision with an in-process framework that the second
+`## Listen for` bullet describes. `com.sap.conn.jco.ext.DestinationDataEventListener` declares
+exactly `updated(String)` and `deleted(String)`, and a provider advertises whether it will use
+them through `DestinationDataProvider.supportsEvents()`.
 
 ## Sources
 

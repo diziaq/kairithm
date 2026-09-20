@@ -85,6 +85,17 @@ Whether the candidate can turn a single failure line into a routed, evidenced re
 Transaction-code recall is not the point. A candidate who says "there will be a dump, ask them
 for it" without naming `ST22` has answered well.
 
+Verified in the decompiled JCo 3.1.14, and it is what the first `## Listen for` bullet rests on:
+`com.sap.conn.jco.JCoException` carries `getGroup()` and `getKey()` alongside the message, plus
+`getMessageClass()` and `getMessageNumber()` for an ABAP message. The four owners in the card map
+onto four of its group constants — `JCO_ERROR_LOGON_FAILURE` (103) for a refusal,
+`JCO_ERROR_COMMUNICATION` (102) for a network or gateway problem, `JCO_ERROR_ABAP_EXCEPTION`
+(126) for an error the function module raised, and `JCO_ERROR_SYSTEM_FAILURE` (104) for an ABAP
+runtime error or short dump. Others a candidate may legitimately have seen are
+`JCO_ERROR_RESOURCE` (106), which is what an exhausted connection pool throws, and
+`JCO_ERROR_APPLICATION_EXCEPTION` (105). Do not test the numbers — the point is that the
+exception classifies itself and the first line of the log threw that away.
+
 ## Sources
 
 - https://github.com/cemeng/sap-integration/blob/master/sapjco3-darwinintel64-3.0.14/javadoc/com/sap/conn/jco/JCoException.html

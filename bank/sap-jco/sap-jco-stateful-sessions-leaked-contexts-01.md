@@ -24,8 +24,10 @@ the restart habit with a control the team can see and enforce.
 ## Listen for
 
 - A stateful sequence reserves its connection for its exclusive use until it is explicitly
-  released; if the release is skipped on an exception path, nothing in the default setup ever
-  takes it back, so it is gone until the process dies
+  released; if the release is skipped on an exception path, the reservation survives the request
+  that created it
+- The clean-up that does exist is tied to the thread that opened the sequence, so on a thread
+  pool — where the threads outlive every request — nothing ever reclaims it
 - Restarting clears it because the process dies, which is why it looks like a memory problem and
   is not
 - Two weeks after a release, growing slowly, points at a rare error path rather than at traffic
@@ -41,6 +43,8 @@ the restart habit with a control the team can see and enforce.
 ## Expected knowledge
 
 - A reserved connection is not returned to the pool until the sequence is closed
+- A reserved connection still counts against the pool's limit, which is how the leak becomes an
+  exhausted pool rather than just wasted memory
 - The error path is the part of the code least likely to have been exercised in test
 
 ## Strong signals
@@ -94,24 +98,54 @@ the restart habit with a control the team can see and enforce.
 
 ## Notes
 
-Verified: failing to close a stateful sequence leaves that connection reserved and open. In the
-default, thread-bound setup nothing reclaims it, so it is held until the process ends — which is
-why a restart appears to fix the problem.
+Verified in the decompiled JCo 3.1.14: failing to close a stateful sequence leaves that connection
+reserved, open and **still counted as allocated**. `com.sap.conn.jco.rt.Context.releaseConnection`
+skips `releaseClient` while the destination entry exists, and
+`com.sap.conn.jco.rt.PoolTimeoutChecker` never touches an allocated connection —
+`com.sap.conn.jco.rt.ClientFactory.isTimedOut` requires `getNumUsed() == 0`. So the leak shows up
+as an exhausted pool, exactly as in the Ask.
 
-Verified, and worth having in your pocket as a ceiling probe: a leaked sequence is not
-irrecoverable by design. If the application registers a `SessionReferenceProvider`, JCo checks
-periodically whether the session is still alive and releases the context and cancels its calls
-when it is not. That is a second, structural answer to this card beyond the `finally` block, and
-a candidate who reaches it is well above the bar. Do not expect it.
+Correction to what this card previously said, and the sharpest thing in it. There *is* a reclaim
+path in the default setup, but it only fires when the thread that opened the sequence has died.
+`com.sap.conn.jco.rt.SessionTimeoutChecker.run` releases a context when it has been idle longer
+than the timeout **and** the session reference provider reports the session dead; the stock
+`com.sap.conn.jco.ext.DefaultSessionReferenceProvider.isSessionAlive` answers that from a
+`WeakReference` to the originating thread, via `Thread.isAlive()`. In a servlet container or any
+thread pool the worker threads outlive every request, so the answer is permanently "alive" and
+the context is never released. That is the real reason a restart is the only thing that clears
+it — not "nothing reclaims it", but "the condition for reclaiming it never becomes true". A
+candidate who gets to "it is tied to the thread, and our threads never die" has found the
+mechanism.
 
-NEEDS-REVIEW — genuinely unverifiable rather than merely unchecked. Whether the SAP application
-server itself times out an idle *stateful* RFC session held open by an external client, and which
-profile parameter would govern that, could not be confirmed from any public SAP documentation;
-the SAP notes that discuss the symptom are behind a login wall. The gateway parameters that do
-exist govern registered-program and CPIC connections, which is a different layer, and
-`jco.session_timeout` is a client-side setting, not a server one. So: a candidate who assumes SAP
-tidies up after them is making an unsupported assumption and should be pushed on it — but do not
-assert the opposite either. Confirm with Basis per system.
+Correction, same paragraph: registering a `SessionReferenceProvider` does not switch the check on.
+The checker runs either way; a custom provider only changes what counts as a live session — for
+example a request or transaction scope that really does end. `Environment` allows exactly one per
+JVM (`com.sap.conn.jco.rt.RuntimeEnvironment` throws `IllegalStateException` on a second
+registration), so this is an application-wide decision and usually the framework's. Still a
+ceiling probe; do not expect it.
+
+Verified, for the "what number goes on the dashboard" follow-up: when the pool is exhausted JCo
+names the culprits. `com.sap.conn.jco.rt.ClientFactory.describeAllocatedClients` appends
+`[stateful session id: ...]` to every allocated connection that has one and `[stateless]` to the
+rest, and that listing goes into the exhaustion message thrown by
+`com.sap.conn.jco.rt.PoolingFactory.getClient`. A team that reads the whole exception instead of
+its first line gets the leak handed to them.
+
+Verified, and worth knowing before anyone tunes it: the JCo-side timeout is `jco.session_timeout`,
+default 600000 ms, checked every `jco.session_timeout.check_interval`, default 300000 ms — both in
+`com.sap.conn.jco.rt.SessionTimeoutChecker`. Both are parsed by `JCoRuntime.parseTimeValue` with a
+factor of 60000, so **a bare number is read as minutes**, not milliseconds; a suffix such as `s`
+or `ms` is needed to mean anything else. When a context is finally released, `Context.reset()`
+calls `closeConnections()`, which routes in-flight connections through
+`ConnectionManager.releaseWithCancel` and cancels them — so the calls belonging to a dead session
+are actively cancelled, not merely abandoned.
+
+NEEDS-REVIEW — one sentence, genuinely unverifiable from the client jar. Whether the SAP
+application server itself times out an idle *stateful* RFC session held open by an external
+client, and which profile parameter would govern that, is a property of the ABAP side and cannot
+be settled here. A candidate who assumes SAP tidies up after them is making an unsupported
+assumption and should be pushed on it; do not assert the opposite either. Confirm with Basis per
+system.
 
 ## Sources
 

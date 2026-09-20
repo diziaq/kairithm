@@ -96,24 +96,41 @@ side, rather than as a failure they can assume away or retry blindly.
 
 ## Notes
 
-Verified: JCo 3 has no per-call execution timeout. There is no way to say "give up on this
-`JCoFunction.execute` after thirty seconds". `jco.destination.max_get_client_time` is the setting
-candidates usually reach for and it is not this — it bounds how long a caller waits to be handed
-a pooled connection when the peak limit is already allocated, and expires before the function
-module has been called at all. The only documented way to bound an execution is indirectly,
-through the lifetime of a session: when JCo sees a session end it cancels the calls belonging to
+Verified in the decompiled JCo 3.1.14, and it can be asserted flatly: **there is no per-call
+execution timeout.** `com.sap.conn.jco.JCoFunction` declares exactly three `execute` overloads —
+destination, destination plus tid, destination plus tid plus queue name — and none takes a
+deadline. Searching the whole public package for a timeout turns up nothing on `JCoDestination`,
+`JCoFunction`, `JCoContext` or `JCo`. Below the API the read path is deliberately untimed: the
+client socket carries a 500 ms `SO_TIMEOUT`, but
+`com.sap.conn.rfc.driver.input.CancelableInputStream.read` catches every `SocketTimeoutException`
+and continues the loop, breaking out only if an explicit cancel flag has been set. A long-running
+ABAP function therefore blocks the calling thread for as long as it likes.
+
+Verified: `jco.destination.max_get_client_time` is the setting candidates usually reach for, and
+it is not this. It bounds how long `com.sap.conn.jco.rt.PoolingFactory.getClient` will wait to
+hand over a connection once the peak limit is allocated — default 30000 ms — and it expires
+before the function module has been called at all, with a `JCoException` of group
+`JCO_ERROR_RESOURCE`. The only other configurable time bound on the client is
+`jrfc.client_connect_timeout`, default 60 seconds, which covers the TCP connect and nothing after
 it. So a candidate who says "we set a timeout on the call" should be asked which property, and
 the honest answer is that the communication error in the scenario came from the network or the
 gateway, not from a JCo timer.
 
-NEEDS-REVIEW — narrowed after review. What is verified and can be asserted: a document that was
-already committed stays committed, because nothing issues a rollback on the client's behalf; and
-uncommitted work is never persisted, because no commit ever ran. What could not be confirmed from
-public documentation is the *timing and mechanics* on the SAP side — whether an in-flight, not
-yet committed unit is torn down the moment the socket is lost, or only when the work process is
-later reused, and how gateway timeouts interact with that. Do not ask a candidate to state the
-moment, and do not state it yourself. The card does not depend on it: the three possible outcomes
-stand either way.
+Verified: the indirect bound through session lifetime is real. When a session is released,
+`com.sap.conn.jco.rt.Context.reset()` calls `closeConnections()`, which routes connections that
+were still in use through `ConnectionManager.releaseWithCancel` and on to
+`ClientConnection.cancel()`. Note `cancel()` is `protected` and there is no public cancel or
+abort anywhere in `com.sap.conn.jco` — an application that wants a hard deadline on a call has to
+run it on its own executor and impose the deadline itself. That is a legitimate strong answer to
+this card.
+
+NEEDS-REVIEW — one sentence, and it is ABAP-side. What happens inside SAP at the moment the
+socket is lost — whether an in-flight, not yet committed unit is torn down immediately or only
+when the work process is next reused, and how gateway timeouts interact with that — is not
+something the client jar can show. Do not ask a candidate to state the moment, and do not state
+it yourself. The rest holds: a document already committed stays committed because nothing issues
+a rollback on the client's behalf, uncommitted work is never persisted because no commit ever
+ran, and the three possible outcomes stand either way.
 
 ## Sources
 

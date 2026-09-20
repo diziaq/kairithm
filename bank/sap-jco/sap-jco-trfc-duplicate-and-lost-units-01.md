@@ -116,15 +116,24 @@ be delivered again. `false` is the answer only for one that definitely committed
 `false` for a unit that did not complete is a permanent data-loss bug in the handler — which is
 exactly the three missing movements in the scenario.
 
-NEEDS-REVIEW — narrowed after review, and now genuinely unverifiable rather than merely
-unchecked. Two specific things could not be confirmed from public SAP documentation: (a) the
-precise conditions and timing under which the sending system re-sends a unit whose `confirmTID`
-was lost — what is documented is only that the sender keeps the record while the unit is
-unconfirmed, and that a stale record is eventually cleaned up, not the retry schedule; (b) what
-happens when the `commit` callback itself throws, which is not specified anywhere reachable and
-appears to be implementation-dependent. Do not ask a candidate to state either. The safe position
-the card is built on — a repeat is possible until the sender has confirmed, so keep the record
-until then — is sound regardless of how (a) and (b) resolve.
+Verified in the decompiled JCo 3.1.14, replacing the second half of the previous flag: a throwing
+`commit` callback causes a rollback and a system failure. `com.sap.conn.jco.server.JCoServerTIDHandler`
+declares exactly `checkTID`, `confirmTID`, `commit` and `rollback`. In
+`com.sap.conn.jco.rt.AbstractServerConnection` the call to `onCommit(tid)` is wrapped, and its
+`catch (Throwable)` converts whatever came out into `new RfcException(RfcRc.RFC_FAILURE, "Commit
+fault: " + message, RfcErrorGroup.RFC_ERROR_SYSTEM_FAILURE, ...)`. The enclosing
+`catch (RfcException)` then calls `onRollback(tid)` for the same transaction id and rethrows. So
+if `commit` throws, JCo calls `rollback` for that unit and reports a system failure to the sender
+— it is specified after all, and a handler that throws out of `commit` gets a rollback it may not
+have been expecting. Worth knowing, but do not ask a candidate to state it.
+
+NEEDS-REVIEW — one sentence, and it is ABAP-side rather than merely unchecked. The precise
+conditions and timing under which the sending system re-sends a unit whose `confirmTID` was lost
+belong to the tRFC scheduler inside SAP and are not in the client jar; what is documented is only
+that the sender keeps the record while the unit is unconfirmed, and that a stale record is
+eventually cleaned up. Do not ask a candidate to state the retry schedule. The safe position the
+card is built on — a repeat is possible until the sender has confirmed, so keep the record until
+then — is sound regardless.
 
 ## Sources
 

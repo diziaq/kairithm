@@ -86,6 +86,14 @@ the line that causes it rather than blaming the far side.
 Reject an answer that stops at "they forgot a loop". The point is that the cursor makes a wrong
 program look right, which is why the count matched.
 
+Verified in the decompiled JCo 3.1.14: `com.sap.conn.jco.JCoTable` really is a cursor, not a
+collection. It declares `getNumRows()`, `firstRow()`, `lastRow()`, `nextRow()`, `getRow()`,
+`setRow(int)`, `appendRow()` and `appendRows(int)`, and the field accessors it inherits from
+`com.sap.conn.jco.JCoRecord` read whichever row the cursor is currently on. Both corrected
+patterns in `## Listen for` are supported — `firstRow()` then `nextRow()`, or `setRow(i)` in an
+index loop — and `appendRow()` is the mirror-image trap on the way in, since the fields have to
+be set after the row is appended, not before.
+
 ## Sources
 
 - https://github.com/cemeng/sap-integration/blob/master/sapjco3-darwinintel64-3.0.14/javadoc/com/sap/conn/jco/JCoTable.html

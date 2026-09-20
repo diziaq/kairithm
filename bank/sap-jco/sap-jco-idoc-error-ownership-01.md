@@ -96,3 +96,26 @@ than describing tools, and whether they separate failures by who can actually re
 Keep the candidate away from tool names. The discriminator is whether they can name the two
 populations of failures and assign each an owner, a detection time and a recovery that is safe
 to repeat.
+
+Verified in the decompiled SAP IDoc library 3.1.4, and it is why the two populations really are
+two. On the sending side, `com.sap.conn.idoc.jco.JCoIDoc.send(...)` is transactional in every
+overload — it takes a transaction id and dispatches through `JCoFunction.execute(destination,
+tid[, queueName])` — so it returns once SAP has recorded the unit and gives the caller no
+outcome, no document number back and no exception for anything that fails afterwards. Documents
+that never reached SAP are therefore visible only as unconfirmed transactional units on the SAP
+side, while documents that arrived and failed to post are visible only as IDoc status. Nothing
+in the client library spans both, which is exactly why the reconciliation in `## Listen for` has
+to be built rather than looked up.
+
+Verified: the library will not catch a malformed document for you either.
+`com.sap.conn.idoc.IDocDocument.checkSyntax()` exists and does enforce mandatory segments and
+occurrence limits from the metadata, but `JCoIDoc.send` never calls it, and
+`com.sap.conn.idoc.rt.DefaultIDocSegment.addChild` validates only that the segment type is a
+legal child — not how many of them there are. So a structurally invalid IDoc is sent happily and
+fails on the SAP side, arriving in the population the business has to triage. A candidate who
+proposes validating before sending has proposed something real and unusual.
+
+Verified: the library has no notion of what a status code means. `IDocDocument.getStatus()` is a
+raw two-character control-record field, and there are no status constants or classification
+anywhere in the jar. Routing errors by cause, which this card is built on, is therefore
+application work on top of SAP-side information — it is not a feature anyone can switch on.

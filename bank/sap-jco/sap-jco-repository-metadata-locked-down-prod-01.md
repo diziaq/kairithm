@@ -30,8 +30,8 @@ can turn that into a precise authorisation request instead of a demand for a wid
 - QA and production differing in roles is the ordinary cause of "but it works in QA"
 - The ask is a specific `S_RFC` entry for the metadata lookups, not a broader role — or a
   separate destination and user for repository queries
-- The lookups cost roundtrips, which is why they happen once and are cached, and why a per-call
-  destination pays for them again and again
+- The lookups cost roundtrips, which is why they happen once per system and are then cached for
+  the life of the process — so the cost, and the failure, land on the first call and not later
 - If metadata reads will never be permitted, the interface can be described locally instead, and
   then you own keeping that description in step with the ABAP side
 
@@ -67,7 +67,8 @@ can turn that into a precise authorisation request instead of a demand for a wid
 - Explains what the extra call is for and why it happens once rather than every time.
 - Requests a narrow, specific authorisation and can justify each part of it.
 - Offers the separate-repository-user option and says when it is the right shape.
-- Connects the caching to the startup cost and to the per-call-destination anti-pattern.
+- Connects the caching to the startup cost, and to why this surfaced on the very first call
+  rather than intermittently.
 
 ### lead
 
@@ -89,16 +90,28 @@ can turn that into a precise authorisation request instead of a demand for a wid
 
 ## Notes
 
-Verified, replacing the previous flag on the metadata function modules. JCo's own release notes
-state that it normally calls several function modules to assemble the description of one
-function and its structures, and that `RFC_METADATA_GET` — introduced by SAP Note 1456826, in
-function group `RFC_METADATA` — reduces that to a single roundtrip. JCo uses it only if the
-backend has it and the property `jco.use_repository_roundtrip_optimization` is set. The older
-multi-roundtrip path involves function modules such as `RFC_GET_FUNCTION_INTERFACE` and
-`DDIF_FIELDINFO_GET`, and the function group `SDIFRUNTIME` is one that shows up in exactly this
-kind of authorisation failure. So the card's premise is sound and the name in the error genuinely
-does vary. Still do not test names — the mechanism is the point, and the exact release in which
-each backend gained `RFC_METADATA_GET` is not publicly pinned down.
+Verified against the decompiled JCo 3.1.14, replacing the previous flag on the metadata function
+modules. The premise is sound: JCo really does make its own RFC calls to read interface
+descriptions, and the name in the error genuinely varies.
+
+`com.sap.conn.jco.rt.AbapRepository` builds one of two helpers. The classic one,
+`AbapRepository.DDICHelper`, calls `RFC_GET_FUNCTION_INTERFACE`, `DDIF_FIELDINFO_GET`,
+`FUNCTION_IMPORT_INTERFACE` and `RFC_GET_STRUCTURE_DEFINITION` — several roundtrips per function.
+The optimised one, `AbapRepository.TurboDDICHelper`, uses the single call `RFC_METADATA_GET`
+(template built in `com.sap.conn.jco.rt.StaticFunctionTemplates.createRFC_METADATA_GETTemplate`).
+
+Correction to what this card previously said: the optimisation is **on by default** in 3.1, not
+opt-in. `com.sap.conn.jco.rt.JCoRuntime` seeds `jco.use_repository_roundtrip_optimization` with
+`"1"`, and `AbapRepository.createDDICHelper` takes the classic path only when that property is
+explicitly `"0"`. Otherwise it consults `RfcDestination.hasEntryAndSupportsTurboRepository`, which
+reads the per-destination override `jco.destination.repository_roundtrip_optimization`, and where
+neither is set it uses the single-roundtrip path for any backend of release 7.40 or higher and
+probes the backend for `RFC_METADATA_GET` below that. Practical consequence for this card: on a
+current landscape the name in the authorisation error is most likely `RFC_METADATA_GET`, and the
+older names appear only where the optimisation has been switched off or the backend is old.
+
+The function group `SDIFRUNTIME` shows up in exactly this kind of failure, but that is an ABAP-side
+fact and is not visible in the jar. Still do not test names — the mechanism is the point.
 
 Verified: `S_RFC` carries the fields `RFC_TYPE`, `RFC_NAME` and `ACTVT`, where `ACTVT` only ever
 takes the value for execute. Function-group granularity is the normal usage; single-function
@@ -106,14 +119,23 @@ granularity is also possible but rarely used. On newer releases UCON, the unifie
 framework, adds a separate allow-list layer on top of `S_RFC` rather than changing it — if a
 candidate raises UCON, that is a strong signal, not a confusion.
 
-NEEDS-REVIEW — narrowed. The API for describing an interface locally is confirmed for JCo 3.0.x:
-`JCo.createCustomRepository(name)`, then `addFunctionTemplateToCache(...)`, with
-`JCoCustomRepository.setDestination(...)` for cache misses and
-`JCoCustomDestination.setRepositoryDestination(...)` to point a destination elsewhere. Note there
-is no `setRepository` on a plain `JCoDestination` — only a getter. What could not be confirmed is
-that this is unchanged in JCo 3.1, because the 3.1 documentation ships only inside the SDK
-download behind an S-user login. Treat the capability as certain and the exact call sequence as
-"check against the version in use".
+Verified in JCo 3.1.14, and the previous flag is removed. Describing the interface locally is
+unchanged from 3.0: `com.sap.conn.jco.JCo.createCustomRepository(String name)` returns a
+`JCoCustomRepository`, whose whole interface is `addFunctionTemplateToCache`,
+`addRecordMetaDataToCache`, `addClassMetaDataToCache`, `setDestination`, `setQueryMode` and the
+nested `QueryMode` enum. `setDestination` is what serves a cache miss from the backend;
+`com.sap.conn.jco.JCoCustomDestination.setRepositoryDestination` points a destination's metadata
+lookups elsewhere. `com.sap.conn.jco.JCoDestination` still has `getRepository()` and no
+`setRepository` — grepping 3.1.14, `setRepository` exists only on `JCoServer`.
+
+The separate-repository-user option in `## Listen for` is real:
+`com.sap.conn.jco.ext.DestinationDataProvider` carries `jco.destination.repository_destination`
+alongside `jco.destination.repository.user` and `jco.destination.repository.passwd` — note the
+inconsistent punctuation, underscore in the first and a dot in the others — and `JCoDestination`
+exposes `getRepositoryUser()`. Note
+that `com.sap.conn.jco.rt.RepositoryManager.getRepository` caches by system key —
+`ConnectionAttributes.getSystemKey()` is the system id plus the installation number — so several
+destinations pointing at the same SAP system share one metadata cache rather than one each.
 
 ## Sources
 

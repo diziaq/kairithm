@@ -86,8 +86,17 @@ environment-specific configuration, and treats pointing at the wrong system as a
 
 ## Notes
 
-The default provider reads `<destinationName>.jcoDestination` from the working directory. Most
-production setups replace it; a candidate who only knows the file is fine at this level.
+Verified in the decompiled JCo 3.1.14: the built-in provider is
+`com.sap.conn.jco.rt.PropertyFileDestinationDataProvider`, whose `DESTFILE_SUFFIX` is the literal
+`".jcoDestination"`, so the file it looks for is `<destinationName>.jcoDestination` in the
+directory it was given. Most production setups replace it with their own
+`com.sap.conn.jco.ext.DestinationDataProvider`; a candidate who only knows the file is fine at
+this level.
+
+Verified, and worth knowing before running the first follow-up: a mistyped property is not an
+error. `com.sap.conn.jco.rt.RfcDestination.getIntProperty` and `getLongProperty` catch every
+exception and silently return the default. So "the details look right" is exactly the situation
+where a wrong value produces default behaviour rather than a complaint.
 
 ## Sources
 

@@ -6,7 +6,7 @@
 id: category-topic-short-slug-01
 schema_version: 1
 title: A short label for lists and navigation
-category: java              # general | java | spring | microservices | kafka | sap-jco
+category: java              # the directory this file lives in, e.g. java, database, kafka
 topic: concurrency          # the narrower area inside the category
 level: mid                  # junior | mid | senior | lead — the seniority the QUESTION aims at
 tags: [tag-one, tag-two]

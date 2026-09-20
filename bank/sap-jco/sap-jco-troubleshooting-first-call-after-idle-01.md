@@ -31,8 +31,10 @@ was using it, and can say which calls they would let a machine repeat.
 - The pooled connections were opened yesterday and left open; something on the path — a firewall,
   a load balancer, a NAT device — drops a TCP connection that has been idle too long, and neither
   end is told
-- The Java side only finds out when it tries to use that socket, which is exactly why the failure
-  lands on the first call and the retry, on a freshly opened connection, succeeds
+- By default the Java side only finds out when it tries to use that socket, which is exactly why
+  the failure lands on the first call and the retry, on a freshly opened connection, succeeds
+- There is a setting that makes the pool probe the far side before handing a connection over, and
+  it is off unless somebody turned it on — that is a third change worth weighing, not a free win
 - "Nothing on their side" is consistent with that: the request never reached a work process, so
   there is nothing for them to find
 - Two changes, not one: get the real idle timeout of every device on the path from whoever owns
@@ -47,6 +49,8 @@ was using it, and can say which calls they would let a machine repeat.
 - A `JCoDestination` hands out connections from a pool and keeps them open between calls
 - Idle connections in the pool are closed after a configurable time, and how often that is
   enforced is a second setting
+- Whether a pooled connection is checked before it is handed out is itself configurable, and the
+  default is not to check
 
 ## Strong signals
 
@@ -98,25 +102,49 @@ was using it, and can say which calls they would let a machine repeat.
 
 ## Notes
 
-Verified: the two pool settings behind the second half of the answer are
-`jco.destination.expiration_time`, the time in milliseconds after which an idle pooled connection
-may be closed, and `jco.destination.expiration_check_period`, the interval in milliseconds at
-which the checker thread looks for expired connections. Both matter: setting the first below the
-firewall's idle timeout achieves nothing if the second is longer than the gap it is meant to
-close. A candidate who spots that there are two numbers, not one, is ahead.
+Verified in the decompiled JCo 3.1.14. The two pool settings behind the second half of the answer
+are `jco.destination.expiration_time`, the milliseconds an idle pooled connection may sit before
+it may be closed, and `jco.destination.expiration_check_period`, the interval at which the sweep
+runs. Both default to 60000 ms in `com.sap.conn.jco.rt.RfcDestination.setProperties`. The sweep is
+`com.sap.conn.jco.rt.PoolingFactory.isTimedOut`, driven by `com.sap.conn.jco.rt.PoolTimeoutChecker`
+on the shared task scheduler, and it walks only the idle list, comparing each connection's
+`last_active_timestamp`. So a connection's real lifetime after going idle is somewhere between
+`expiration_time` and `expiration_time + expiration_check_period` — which is exactly why setting
+the first below the firewall's idle timeout achieves nothing if the second is longer than the gap
+it is meant to close. A candidate who spots that there are two numbers, not one, is ahead.
 
-Verified: JCo has sent CPIC keepalive pings to the gateway during long-running RFC client calls
-since 3.0.14, specifically to stop network devices closing the socket under an in-flight call.
-That is a different case from a connection sitting unused in the pool overnight — do not let the
-two be conflated, and note it means a candidate on a modern JCo will not have seen the in-flight
-variant of this symptom.
+Verified, and this replaces the previous flag: **JCo can test a pooled connection before handing
+it out, and by default it does not.** The property is `jco.destination.pool_check_connection`
+(`com.sap.conn.jco.ext.DestinationDataProvider.JCO_POOL_CHECK_CONNECTION`). `RfcDestination`
+reads it through `JCoRuntime.toBoolean`, which returns `false` for a missing value, so the check
+is off unless configured. When it is on, `PoolingFactory.getClient` applies it only to a
+connection taken from the idle list — never to one it has just created — and a candidate that is
+valid and passes `isAlive()` but fails `isPartnerReachable()` is disconnected, deallocated, and
+the loop takes the next one.
 
-NEEDS-REVIEW — confirmed as genuinely unverifiable rather than merely unchecked. Whether JCo
-tests that a pooled connection is still alive before handing it out, or only discovers the dead
-socket when the call is sent, is not stated in any reachable documentation, and no property
-governing such a check could be found. The documented behaviour is only the idle expiry above.
-Do not hold a candidate to either version; the observable behaviour in the field is that the
-first call fails, which is all the card needs.
+The two checks are not the same thing, and the distinction is the good part of this card.
+`com.sap.conn.jco.rt.AbstractConnection.isAlive()` is `rfcHandle.RfcIsValidHandle()`, a purely
+local test of the handle — it cannot see a socket a firewall dropped. `isPartnerReachable()`
+goes through `com.sap.conn.rfc.engine.RfcIoOpenCntl` to
+`com.sap.conn.rfc.driver.CpicDriver.isPartnerReachable`, which issues `SAP_CMKEEPALIVE(200)` — a
+real round trip to the partner. So with the defaults a socket dropped overnight is discovered on
+the first real call; with the check enabled JCo pings first and silently swaps the dead connection
+out, at the cost of a round trip on every pooled hand-out. That is a genuine third option
+alongside the expiry setting and the firewall rule, and a candidate who asks for it should be
+asked what the extra round trip costs at their call rate.
+
+Correction to what this card previously said about keepalives. The properties exist —
+`jco.cpic_keep_alive_period` defaults to 300 and `jco.cpic_keep_alive_timeout` to 100 in
+`com.sap.conn.jco.rt.JCoRuntime`, and the period must be 0 or in `[10..86400]`. But in 3.1.14 they
+are pushed into the native layer through a method called
+`com.sap.conn.rfc.api.RfcRuntime.setupRegKeepAlive`, and the read budget derived from them,
+`CpicDriver.maxReadTimeoutInMillis`, is consumed only by
+`com.sap.conn.rfc.driver.RfcTypeRegisterCpic` — the **registered server** connection type. The
+client type, `RfcTypeDirectCpic`, does not use it. Whether the native CPIC library also pings on
+an outbound client conversation is not visible from the Java side, so do not tell a candidate
+that client calls are protected by it. What the card needs stands either way: a keepalive during
+an in-flight call is a different case from a connection sitting unused in the pool overnight, and
+the two should not be conflated.
 
 ## Sources
 

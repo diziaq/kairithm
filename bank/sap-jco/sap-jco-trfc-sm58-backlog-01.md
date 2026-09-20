@@ -99,6 +99,13 @@ delivery, and can predict both the recovery and its effect on their own service.
 `SM58` shows transactional RFC units recorded in the SAP system, including those bound for an
 external receiver. Re-sending is not the recovery path; the units are already recorded.
 
+Verified in the decompiled JCo 3.1.14, supporting the second `## Expected knowledge` bullet:
+`com.sap.conn.jco.server.JCoServerTIDHandler` declares exactly four methods — `checkTID`,
+`confirmTID`, `commit` and `rollback` — each taking the `JCoServerContext` and the transaction id
+as a string. `checkTID` is the only one that returns anything, a `boolean`. It is registered on
+the server through `JCoServer.setTIDHandler`. A candidate who describes "asked before, told when
+done, told again when the sender confirms" without the method names has answered this card.
+
 Verified: which mechanism retries the backlog depends on how the destination is set up. For a
 destination registered with the tRFC scheduler in `SMQS`, the scheduler dispatches and retries
 units on its own. For a destination that is not registered there, the classic report `RSARFCEX`

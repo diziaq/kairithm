@@ -123,11 +123,28 @@ SAP side at a given load.
 
 ## Notes
 
-Verified: `jco.destination.peak_limit` is the maximum number of connections that may be active
-for a destination simultaneously, and `jco.destination.pool_capacity` is the maximum number of
-idle connections kept open, where 0 disables pooling entirely. Defaults have moved between JCo
-versions — `pool_capacity` went from 0 to 1 in 3.0.8 — so do not build any part of the question
-on a default value, and do not hold a candidate to one.
+Verified in the decompiled JCo 3.1.14. `jco.destination.peak_limit` bounds the connections
+allocated — checked out and in use — at one time: `com.sap.conn.jco.rt.PoolingFactory.getClient`
+opens a new one only while `getNumUsed() < peakLimit`. `jco.destination.pool_capacity` bounds only
+the idle list, the `available` ring buffer in the same class. Defaults have moved between JCo
+versions, so do not build any part of the question on a default value or hold a candidate to one.
+
+Verified, and it is exactly the mechanism the Ask describes: `PoolingFactory.releaseClient` opens
+with `if (this.capacity <= 0 || ... || !client.isAlive())` and disconnects on the spot, so a
+capacity of zero really does close every connection on return. Above zero, the returned
+connection is pushed into the fixed-size `available` list; when that list is already full,
+`com.sap.conn.jco.util.LimitedList.push` overwrites a slot and hands back the **displaced**
+entry, which the caller then disconnects. With capacity 1 and a wave of forty, one connection
+survives each release and the other thirty-nine are closed — the count in the Ask is right, and
+the small surprise is that the one kept is the most recently returned, not the first.
+
+Verified, and a good trap to keep in reserve: `pool_capacity` is not the only way to switch
+pooling off by accident. `PoolingFactory.setDestinationProperties` contains
+`if (this.expirationTime == 0L) { this.setCapacity(0); }` and, symmetrically,
+`if (this.capacity == 0 && this.expirationTime != 0L) { this.setExpirationTime(0L); }`. So setting
+`jco.destination.expiration_time` to 0 — which reads like "never expire an idle connection" —
+silently disables pooling entirely and produces this card's symptom. If a candidate proposes 0 for
+either property, ask what they expect it to do.
 
 The arithmetic in the Ask is an idealisation and is meant to be: real traffic does not arrive in
 clean waves of forty, so "thirty-nine fresh logons per wave" is the shape of the answer, not a

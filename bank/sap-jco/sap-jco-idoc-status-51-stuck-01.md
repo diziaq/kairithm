@@ -106,6 +106,26 @@ Contrast with the tRFC backlog card in the trfc-qrfc topic, which looks similar 
 the units are held by the sending system and are retried automatically, so the work is to survive
 the burst when they drain. Here nothing retries on its own and somebody has to decide.
 
+Verified in the decompiled SAP IDoc library 3.1.4, and it settles why re-sending duplicates. A
+send is a transactional unit: every `com.sap.conn.idoc.jco.JCoIDoc.send(...)` overload takes a
+transaction id, and internally it calls `JCoFunction.execute(destination, tid)` — or
+`execute(destination, tid, queueName)` for the queued variants — against one of
+`IDOC_INBOUND_ASYNCHRONOUS`, `IDOC_INBOUND_IN_QUEUE` or `INBOUND_IDOC_PROCESS`. A second send of
+the same file is a new transaction id and therefore a genuinely new unit, which lands as a second
+IDoc. There is nothing in the library that would recognise it as a repeat. Also worth knowing:
+`com.sap.conn.idoc.jco.rt.JCoIDocDocument.createJCoIDocNumber` invents a synthetic 16-digit
+number when `getIDocNumber()` is empty, so the sender's own number is not a business key either.
+
+Verified, and a useful correction if a candidate reaches for it: the IDoc library knows nothing
+about status codes. `com.sap.conn.idoc.IDocDocument.getStatus()` returns the raw two-character
+`STATUS` field of the control record as a `String` — the implementation in
+`com.sap.conn.idoc.rt.DefaultIDocDocument` is a plain field read — and there is no constant,
+enum, classification or validation for 51, 53, 64 or any other value anywhere in the jar. Status
+is also not among the fields `checkMandatoryFields()` requires. So the meaning of 51 is entirely
+an ABAP-side fact, as the sources here have it, and a candidate who suggests their Java code will
+"check the status" of a sent IDoc has to be asked where that status would come from — it would
+need separate RFC calls that this library does not make.
+
 ## Sources
 
 - https://sapintegrationhub.com/sap-s4-hana/sap-idoc-status-codes-guide/

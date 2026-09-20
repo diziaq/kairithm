@@ -91,9 +91,22 @@ somewhere other than in their own log.
 ## Notes
 
 The client-side API is `JCoDestination.createTID()` followed by
-`JCoFunction.execute(destination, tid)`; return parameters cannot be delivered, which is why
-BAPIs with a return structure are a poor fit for this style of call. A candidate who describes
-the behaviour without the method names has answered well.
+`JCoFunction.execute(destination, tid)`. A candidate who describes the behaviour without the
+method names has answered well.
+
+Verified in the decompiled JCo 3.1.14, and this is the load-bearing claim of the card: return
+parameters are not merely ignored, they are never collected. In
+`com.sap.conn.jco.rt.ClientConnection`, the block that marshals the export parameters is guarded
+by `if (!isTransactional && exp != null)`, so on a transactional call the export list is not built
+at all before the request goes to the driver. That is why a BAPI with a return structure is a poor
+fit for this style of call — there is nowhere for the structure to come back to.
+
+Verified: `com.sap.conn.jco.JCoDestination` declares `createTID()`, `confirmTID(String)` and,
+alongside them, the bgRFC pair `confirmFunctionUnit(JCoUnitIdentifier)` and
+`getFunctionUnitState(JCoUnitIdentifier)`. `com.sap.conn.jco.JCoFunction` declares three
+`execute` overloads: destination only (synchronous), destination plus tid (tRFC), and destination
+plus tid plus queue name (qRFC). The `confirmTID` call is what the strong-signal bullet about
+clearing the sender's record refers to, and a candidate who reaches it has gone beyond the card.
 
 ## Sources
 

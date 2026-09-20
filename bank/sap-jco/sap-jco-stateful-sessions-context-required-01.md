@@ -92,18 +92,37 @@ why that turns a correctness bug into a concurrency-dependent one.
 
 ## Notes
 
-Verified: `JCoContext.begin(destination)` starts a stateful call sequence, and the same physical
-connection is reserved for exclusive use by that sequence until it ends — which is what keeps the
-ABAP session, and therefore the registered changes and the locks, alive across the two calls.
-Contexts nest: `end` has to be called as many times as `begin` was, and the connection is
-released only when the outermost one ends.
+Verified in the decompiled JCo 3.1.14. `com.sap.conn.jco.JCoContext.begin(destination)` is a
+one-line delegate to `JCo.get().beginSequence(destination)`, which reaches
+`com.sap.conn.jco.rt.Context.beginSequence`. That method does not take a connection — it only
+creates a `Context.DestinationEntry` for the destination. The connection is reserved on the
+**first call after** `begin`, in `Context.getConnection`, which pulls one from the pool, stores it
+in `destEntry.conn` and calls `client.setStateful(true)`; `Context.releaseConnection` then
+deliberately does **not** hand it back while the entry exists. That is what keeps the ABAP
+session, and therefore the registered changes and the locks, alive across the two calls.
 
-Verified: the scope is bound to the calling thread by default. In a managed environment where a
-unit of work may move between threads, an application registers a `SessionReferenceProvider`
-through `Environment.registerSessionReferenceProvider`, and JCo then asks that provider whether
-the session is still alive rather than relying on the thread. This resolves the question the
-previous review flag left open — a candidate who says "it follows the thread unless you tell JCo
-otherwise" is correct.
+Verified: contexts nest, and the counter is `Context.DestinationEntry.stateCounter`, which starts
+at 1 and is incremented by every further `begin` on the same destination in the same session.
+`Context.endSequence` decrements it and only releases the connection when it reaches zero — so
+`end` has to be called as many times as `begin` was, and it is the **outermost** `end` that
+releases.
+
+Verified, and useful on the third follow-up: `end` on a destination that is not stateful in the
+current session is a **silent no-op**. `Context.endSequence` guards the whole decrement-and-release
+block with `if (destEntry != null)` and throws nothing. Since the session is resolved from the
+current thread, calling `end` from a different thread than `begin` finds a different `Context`,
+does nothing, and leaks the sequence without any error. So "hand the second step to another
+thread" does not just break the session — it breaks the cleanup too, and silently.
+
+Verified: the scope is bound to the calling thread by default.
+`com.sap.conn.jco.ext.DefaultSessionReferenceProvider` holds the session in a `ThreadLocal` and
+builds the session id from `Thread.currentThread().getId()`. In a managed environment where a unit
+of work may move between threads, an application registers its own provider through
+`com.sap.conn.jco.ext.Environment.registerSessionReferenceProvider`, and JCo then asks that
+provider whether the session is still alive instead of looking at the thread. Only one may be
+registered per JVM — `com.sap.conn.jco.rt.RuntimeEnvironment` throws
+`IllegalStateException("SessionReferenceProvider already registered [...]")` on a second attempt.
+A candidate who says "it follows the thread unless you tell JCo otherwise" is correct.
 
 ## Sources
 

@@ -31,8 +31,8 @@ in front of them defeats it, and can say what the waste costs on the SAP side.
   its job
 - Building a new destination each time means the pool has nothing to reuse, so it degenerates to
   connect-and-disconnect
-- The interface metadata cached behind the destination is thrown away with it, so some calls also
-  pay for re-reading it
+- A destination is not really "thrown away" either: the runtime holds on to it, so a new name per
+  request leaves a trail of destinations and pools behind inside the process
 - Under load this is visible to the SAP side as a stream of logons, not as your problem alone
 
 ## Expected knowledge
@@ -84,6 +84,22 @@ in front of them defeats it, and can say what the waste costs on the SAP side.
 
 A candidate who has only used JCo through a framework may not know the pool exists. Give credit
 for reasoning about logon cost even if they cannot name the configuration.
+
+Correction to a claim this card used to make, checked against the decompiled JCo 3.1.14: the
+interface metadata is **not** thrown away with the destination. Repositories live in
+`com.sap.conn.jco.rt.RepositoryManager`, keyed by system key rather than by destination name, and
+there is no method on that class that removes one — `releaseRepository` only detaches the
+destination from the repository's own list. So the metadata survives for the life of the process
+and the second call to the same system does not pay to re-read it. Do not credit or expect that
+answer, and do not offer it yourself.
+
+What is true, and is the better version of the same point: the destination is not discarded
+either. `com.sap.conn.jco.rt.DefaultDestinationManager` caches destinations in a per-tenant
+`Hashtable` and removes one only in `removeFromCache`, which runs when the data provider fires a
+`deleted` event. Dropping the Java reference frees nothing. So a service that invents a fresh
+destination name per request accumulates a destination and a `PoolingFactory` per name inside the
+runtime, with no eviction — a slow leak on top of the logon storm. A candidate who gets to "the
+library is keeping these, not me" is above the level of this card.
 
 ## Sources
 

@@ -31,7 +31,7 @@ sections are also what the interview screen renders directly.
 | `id` | slug | yes | Stable unique identity. Lower-case words joined by single hyphens. |
 | `schema_version` | integer | yes | Currently `1`. |
 | `title` | string | yes | Short label for lists, navigation and the scorecard. |
-| `category` | enum | yes | `general`, `java`, `spring`, `microservices`, `kafka`, `sap-jco`. Must match the directory. |
+| `category` | enum | yes | `general`, `java`, `spring`, `microservices`, `kafka`, `database`, `sap-jco`. Must match the directory. |
 | `topic` | string | yes | Narrower area inside the category: `concurrency`, `transactions`, `delivery-semantics`. |
 | `level` | enum | yes | `junior`, `mid`, `senior`, `lead`. The seniority **the question** aims at. |
 | `tags` | list | no | Free-form. Used for filtering, and to chain related cards — see below. |
@@ -99,6 +99,11 @@ print(sorted({q.level for q in b.questions.values()
 ## IDs
 
 `java-concurrency-happens-before-01`
+
+The set of categories is not fixed in code — it is the set of directories under `bank/`. Adding
+a category means adding a directory and cards whose `category` field matches its name; nothing
+else has to change. Keep the list short enough that an interviewer can pick from it in one
+glance.
 
 Roughly `<category>-<topic>-<subject>-<number>`, but the only hard rule is lower-case words
 joined by single hyphens.

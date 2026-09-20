@@ -111,9 +111,25 @@ mapping can be configured in `SBGRFCCONF` without code changes, but that does no
 calling code across. A candidate who reaches for bgRFC as the answer should be asked who writes
 that ABAP and when it ships — the outage in the scenario is tomorrow.
 
+Verified in the decompiled JCo 3.1.14, and it sharpens that point rather than softening it: the
+**Java** side of bgRFC needs no new library. JCo 3.1 already ships `JCoFunctionUnit`,
+`JCoRequestUnit`, `JCoUnitIdentifier`, `JCoFunctionUnitState` and `JCoBackgroundUnitAttributes`,
+`JCoDestination` declares `confirmFunctionUnit` and `getFunctionUnitState`, and
+`com.sap.conn.jco.rt.StaticFunctionTemplates` carries built-in templates for `BGRFC_DEST_SHIP`,
+`BGRFC_DEST_CONFIRM` and `BGRFC_CHECK_UNIT_STATE_SERVER`. So if a candidate says "the connector
+does not support it", they are wrong; the cost is on the ABAP side and in the operating model,
+which is exactly where the card wants the conversation.
+
 Verified: a qRFC queue is processed strictly in order by the scheduler, which starts the next
 unit only when the current one has finished, so a failed unit at the head blocks the whole queue.
-Encoding a business key into the queue name is the documented, standard remedy.
+Encoding a business key into the queue name is the documented, standard remedy, and on the Java
+side it is genuinely cheap: the queue name is an argument to
+`JCoFunction.execute(destination, tid, queueName)` — `com.sap.conn.jco.rt.AbapFunction` passes it
+straight through, and `com.sap.conn.jco.rt.ClientConnection` turns the call into `RfcQueueInsert`
+rather than the plain transactional insert. Choosing the queue per call is a code change of one
+argument, not a configuration project. That is useful when a candidate assumes the split has to
+be negotiated with Basis first — the negotiation is about the ordering guarantee and the number
+of queues, not about the mechanism.
 
 ## Sources
 
