@@ -265,6 +265,23 @@ the nearest exit, not an unrelated card.
 
 Manual mode is untouched. Re-sorting an order somebody picked by hand would throw the work away.
 
+### A disabled Next has to say why
+
+Reported from a real session: three questions asked, Next did nothing, the page otherwise
+responsive. Nothing was broken — the pool was a category filter over a bank that held three
+matching cards, all three had been answered, and the interviewer was on the last one. Next was
+correctly disabled.
+
+The defect was that the screen said nothing. A button that is disabled without explanation is
+indistinguishable from one that is broken, and the interviewer had no way to know the two ways
+forward were to end the interview or open the picker.
+
+The line under the band row now carries whichever reason applies, and the adaptive-exhausted
+notice moved there too — it used to be tucked into the status bar and only appeared after a
+click. Verified by driving the real browser and reading the DOM, since the gating is browser-side
+and this repository has no JavaScript test runner; the server-side contract the screen reads is
+covered by tests.
+
 ### Next is gated on a band or a skip
 
 Moving on without recording anything loses the evidence silently, and afterwards nobody can tell

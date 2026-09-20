@@ -933,3 +933,40 @@ def test_a_card_already_answered_is_not_suggested_again(client):
     assert "java-coll-mid-01" not in offered, "already banded"
     assert "java-conc-mid-01" not in offered, "already skipped"
     assert offered, "the rest of the queue is still on offer"
+
+
+def test_next_at_the_end_of_the_pool_is_a_no_op_the_screen_can_explain(client):
+    """A reported bug: Next appeared dead at the last question of a small filtered pool.
+
+    It was correctly disabled — there was nothing to move to — but nothing said so. The server
+    contract the screen reads is that the position does not move and the item count does not
+    grow, so the interview screen can tell the interviewer they have reached the end instead of
+    leaving them with a button that does nothing.
+    """
+    session = make_session(client, mode="sequential", filters={"categories": ["kafka"]})
+    session_id = session["id"]
+    total = len(session["items"])
+
+    for _ in range(total + 2):
+        client.post(f"/api/sessions/{session_id}/next", json={}, headers=JSON)
+
+    state = client.get(f"/api/sessions/{session_id}").json()
+    assert state["position"] == total - 1, "the run stops at the last card, it does not wrap"
+    assert len(state["items"]) == total, "a non-adaptive pool never grows"
+    assert state["mode"] != "adaptive"
+
+
+def test_the_whole_bank_stays_reachable_from_a_finished_pool(client):
+    """The way out of an exhausted pool is the picker, so jumping must still work there."""
+    session = make_session(client, mode="sequential", filters={"categories": ["kafka"]})
+    session_id = session["id"]
+    for _ in range(len(session["items"])):
+        client.post(f"/api/sessions/{session_id}/next", json={}, headers=JSON)
+
+    state = client.post(
+        f"/api/sessions/{session_id}/jump",
+        json={"question_id": "java-conc-senior-01"},
+        headers=JSON,
+    ).json()
+    assert state["items"][-1]["qid"] == "java-conc-senior-01"
+    assert state["position"] == len(state["items"]) - 1

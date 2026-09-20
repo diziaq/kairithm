@@ -345,8 +345,19 @@ function renderStatus() {
   const atTheEnd =
     (lastServed && view.state.mode !== "adaptive") ||
     (view.state.adaptive_exhausted && lastServed);
+
+  // A disabled button that says nothing reads as a broken one. Whenever Next will not move,
+  // say which of the two reasons it is, and what to do instead.
   el("btn-next").disabled = gated || atTheEnd;
-  el("next-gate").classList.toggle("hidden", !gated);
+  const gate = el("next-gate");
+  if (gated) {
+    gate.textContent = "Assign a band, or skip the question, before moving on.";
+  } else if (atTheEnd) {
+    gate.textContent =
+      `That was the last question in the pool — ${total} of ${total}. ` +
+      `End the interview, or use "Pick any question" to carry on with anything in the bank.`;
+  }
+  gate.classList.toggle("hidden", !(gated || atTheEnd));
 }
 
 // --- calibration and suggestions ----------------------------------------------------------------
@@ -522,7 +533,7 @@ async function goNext() {
   const before = view.state.items.length;
   view.state = await api.next(view.sessionId);
   if (view.state.adaptive_exhausted && view.state.items.length === before && view.index >= before - 1) {
-    el("budget-label").textContent = "no questions left in the pool";
+    renderStatus();
     return;
   }
   await loadPosition(view.state.position);

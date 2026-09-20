@@ -270,6 +270,10 @@ key back on screen.
 a question without recording anything loses the evidence silently, and an hour later nobody can
 tell whether it went badly or was never really asked.
 
+Whenever Next will not move, the line under the band row says which of the two reasons it is —
+nothing recorded yet, or the pool is finished. A disabled button that says nothing reads as a
+broken one.
+
 Skip is the other way out, and it is a different kind of statement. A band is a judgement about
 the answer; **a skip is your decision to move on and records nothing about the candidate**. It is
 coloured as a warning rather than as a sixth band, it never enters the range or the profile, and
