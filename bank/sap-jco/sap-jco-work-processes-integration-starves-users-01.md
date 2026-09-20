@@ -91,9 +91,19 @@ knows the levers that exist on both sides before agreeing to a schedule change.
 
 ## Notes
 
-Verified: the SAP side can be configured to keep a minimum number of dialog work processes free
-of RFC load, and RFC resource quotas can be enabled, so parallel RFC traffic cannot occupy every
-dialog process. Treat parameter names as interviewer background, not as something to test.
+Verified, as interviewer background and never as a recall test: `rdisp/rfc_min_wait_dia_wp`
+reserves a number of dialog work processes that RFC load may not take, and the dispatcher only
+hands an RFC request to a dialog work process if that many would still be free afterwards. A
+quota family exists alongside it — `rdisp/rfc_use_quotas` switches it on, and
+`rdisp/rfc_max_own_used_wp`, `rdisp/rfc_max_login` and `rdisp/rfc_max_own_login` cap, as
+percentages, how much one caller may occupy. The point for the card is that the system can
+protect itself rather than depending on the integration team behaving, so "we promise to be
+careful" is the weaker half of the answer.
+
+This card is about negotiating a share of a shared SAP instance with evidence, and about the
+levers that exist on the SAP side and in the landscape. The connection-pooling capacity card
+looks similar and is not: that one is about where a client-side limit can be enforced at all
+once the instance count is dynamic. Do not run both in the same interview.
 
 ## Sources
 

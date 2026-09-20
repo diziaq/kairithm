@@ -5,7 +5,7 @@ title: The injected object is not the class you wrote
 category: spring
 topic: proxying
 level: senior
-tags: [correctness, failure-modes, testing, observability]
+tags: [correctness, failure-modes, testing, configuration]
 time_estimate_min: 9
 order: 51
 links:

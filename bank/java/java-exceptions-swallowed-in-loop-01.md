@@ -9,7 +9,7 @@ tags: [failure-modes, observability, correctness]
 time_estimate_min: 5
 order: 500
 links:
-  deeper: [java-exceptions-client-library-contract-01]
+  deeper: [java-exceptions-lost-in-cleanup-01]
 ---
 
 ## Ask

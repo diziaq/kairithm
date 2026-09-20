@@ -77,6 +77,44 @@ one directory per interview, holding the session file and the scorecard, under `
 Renaming it would cost the session-id pattern and the resolved-path containment check, which are
 two of the four reasons this tool is safe without a password, and buys nothing.
 
+### The bank was read card by card, and about a quarter of it was wrong
+
+The validator proves a card is well-formed, not that it is right or that it earns its place. So
+every one of the 158 cards was read against the section 8 bar — what capability it tests, what
+evidence to collect, what a shallow answer sounds like, what a strong answer adds — and 45 were
+changed.
+
+A mechanical pass first ruled out the things a machine can see: no near-duplicates (the closest
+of 12,403 card pairs scored 0.198 on shared vocabulary), no copy-paste band prose, no lecture
+prompts, no malformed bands. All of that came back clean, which is exactly why the reading pass
+was necessary — everything it found was invisible to the checks.
+
+What reading found, and a machine could not:
+
+- **Three cards were factually wrong.** A Kafka schema-evolution card had the compatibility
+  direction backwards — an old reader drops a writer field it does not know, so the scenario as
+  written could not happen. A Spring card claimed `@Component` on a record fails silently when it
+  fails loudly. A Java comparator card used a fifty-row sample, which is *above* the sort's
+  insertion-sort threshold, so the card contradicted its own explanation.
+- **Cards bled into their neighbours.** A follow-up on one card was another card's weak signal
+  verbatim; two cards shared a `lead` band; a Spring follow-up was the self-invocation card in
+  substance. Each was invisible from inside the card that contained it.
+- **Arithmetic did not add up.** "153 queries" decomposed to 152.
+- **Bands did not escalate.** Several `mid` and `senior` bands could have been swapped without a
+  reader noticing, which means they were not bands.
+- **Tags were subjects, not ideas.** The whole `idempotency` ladder was missing the `idempotency`
+  tag, which in this tool is not cosmetic — tags are what carry a session across categories.
+
+Two cross-category duplicates survived their own reviews because each reviewer was told not to
+touch the other card, and had to be resolved afterwards: a microservices cascade card that was a
+Spring card with a different label, and a JCo pooling card that had drifted onto the
+microservices autoscaling card's ground. Both are now distinct; the closest pair in the bank fell
+from 0.198 to 0.170 after the pass.
+
+Ten SAP/JCo cards carried `NEEDS-REVIEW`. Four were resolved with verified answers, one new flag
+was added for a claim that had been asserted without basis, and the rest were resharpened to name
+the exact unverified sentence. Seven remain, which is the honest number.
+
 ### The running calibration has memory; the brief's table does not
 
 The brief's section 6 table is a function of one answer, and it is still implemented exactly that
@@ -114,7 +152,7 @@ Three rules earned their place by failing first:
   answers minimum.
 
 The same four candidates, run against a pool matching the role, now land where they should:
-junior 17, solid mid 50, borderline senior 64, strong senior 92 — and the labels read junior,
+junior 20, solid mid 50, borderline senior 67, strong senior 90 — and the labels read junior,
 mid, senior and lead respectively.
 
 ### The pool is part of the measurement

@@ -99,11 +99,23 @@ delivery, and can predict both the recovery and its effect on their own service.
 `SM58` shows transactional RFC units recorded in the SAP system, including those bound for an
 external receiver. Re-sending is not the recovery path; the units are already recorded.
 
-NEEDS-REVIEW — unverified claim about the exact retry job and whether it applies: `RSARFCEX` is
-commonly scheduled to reprocess failed units, but for destinations registered for tRFC scheduling
-the scheduler handles them instead. Do not hold a candidate to a report name.
+Verified: which mechanism retries the backlog depends on how the destination is set up. For a
+destination registered with the tRFC scheduler in `SMQS`, the scheduler dispatches and retries
+units on its own. For a destination that is not registered there, the classic report `RSARFCEX`
+is the scheduled sweep that reprocesses failed units. The two are complementary, not
+alternatives. Do not hold a candidate to either name — "something on the SAP side retries them"
+is the answer this card wants.
+
+Interviewer accuracy warning, because this one catches interviewers out too: SAP's own
+documentation describes the *application-level outcome* of tRFC as "exactly once". The
+*mechanism* underneath is redelivery until confirmed, with duplicate execution prevented only
+because the receiver checks the transaction id. A candidate who says "SAP calls this exactly
+once, but the receiver still has to de-duplicate by transaction id" is more right than one who
+says either half alone. Do not mark down the phrase; mark down the belief that no de-duplication
+is needed.
 
 ## Sources
 
-- https://help.sap.com/saphelp_nwpi711/helpdata/en/48/88b5c5521672d3e10000000a42189c/content.htm
-- https://community.sap.com/t5/application-development-blog-posts/transactional-rfc-and-common-issues/ba-p/13080776
+- https://help.sap.com/doc/saphelp_nw74/7.4.16/en-US/48/99b963ee2b73e7e10000000a42189b/content.htm
+- https://help.sap.com/doc/saphelp_em92/9.2/en-US/48/821b412ddd3cb8e10000000a42189d/content.htm
+- https://help.sap.com/docs/SAP_NETWEAVER_700/108f625f6c53101491e88dc4cf51a6cc/6273241e03337442b1bc1932c2ff8196.html

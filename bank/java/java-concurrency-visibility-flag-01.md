@@ -5,7 +5,7 @@ title: A flag one thread writes and another never sees
 category: java
 topic: concurrency
 level: senior
-tags: [memory-model, jmm, threads]
+tags: [correctness, failure-modes, memory-model]
 time_estimate_min: 7
 order: 20
 links:

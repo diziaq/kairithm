@@ -41,11 +41,18 @@ and the minimum in-sync set, and say what each one does during a real outage.
 ## Expected knowledge
 
 - A copy drops out of the in-sync set when it falls too far behind the leader
-- A produce request fails when the in-sync set is smaller than the configured minimum
+- A produce request waiting for all in-sync copies fails when that set is smaller than the
+  configured minimum
+- The minimum is set on the topic and is unrelated to how many copies the topic has; it is only
+  consulted when the producer is waiting for all of them
 
 ## Strong signals
 
-- Points out that `acks=all` with a minimum of one is no stronger than a single copy
+- Points out that with the minimum at one, waiting for all in-sync copies promises nothing beyond
+  the leader's own copy, because the set is allowed to shrink to the leader and writes still
+  succeed
+- Notices that a producer asking only for the leader's confirmation bypasses the minimum
+  altogether, so one team's client setting can undo the topic's guarantee
 - Asks where the three copies physically sit before calling them three independent failures
 - Says what the calling service sees when the topic refuses writes, and whether that is acceptable
   for payments
@@ -87,6 +94,10 @@ and the minimum in-sync set, and say what each one does during a real outage.
 - The team turns on the option that lets a copy which has fallen behind take over when no current
   one is left. What have they agreed to?
   probes: unclean leader election, and silent data loss, without being handed the term
+- One of the teams publishing to this topic changes its client so that a single copy having the
+  record is enough for it to move on. Does the promise you signed off still hold?
+  probes: that the topic-level floor is only consulted for producers waiting on the whole in-sync
+  set, so a single client setting can quietly undo it
 
 ## Sources
 
@@ -98,5 +109,13 @@ and the minimum in-sync set, and say what each one does during a real outage.
 
 The three settings are independent and candidates routinely merge them. Replication factor is how
 many copies exist; `acks` is what the producer waits for; `min.insync.replicas` is the point at
-which the partition stops accepting writes. `acks=all` means all copies currently in sync, which
-is why it is meaningless without the minimum.
+which the partition stops accepting writes. `acks=all` means all copies *currently in sync*, not
+every copy in the assignment, which is why it is meaningless without the minimum — the in-sync
+set may legitimately be one.
+
+Two further points to hold a candidate to. `min.insync.replicas` is a topic (or broker default)
+setting and carries no relationship to the replication factor: setting it to three on a topic
+with three copies removes all tolerance for a single failure, and setting it above the
+replication factor makes the partition unwritable. And it is enforced only for producers waiting
+on all in-sync copies — `acks=1` or `acks=0` ignores it entirely, so the topic-level guarantee
+depends on every client asking for it.

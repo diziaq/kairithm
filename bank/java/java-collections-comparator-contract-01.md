@@ -16,7 +16,7 @@ links:
 
 A nightly job that sorts a few thousand results has started failing with
 `IllegalArgumentException: Comparison method violates its general contract!`. It has never failed on
-the fifty-row sample the developer works with. Where do you look, and why does the input size matter?
+the twenty-row sample the developer works with. Where do you look, and why does the input size matter?
 
 ## Tests
 
@@ -29,8 +29,9 @@ and explain why a defect stays hidden below a certain scale.
   comparator, not about the data being unsortable
 - Names a concrete way to break it: a subtraction that overflows, a rule that is not transitive,
   several fields with special cases stitched together, or a field another thread is changing
-- The merge sort only takes its more elaborate path — and only checks its invariants — above a small
-  input, so tiny inputs run a plain insertion sort and never notice
+- The sort only takes its merging path — and only checks its invariants there — once the input is
+  over a threshold of a few dozen elements; below it the whole thing is an insertion sort, which
+  never notices
 - The fix is to make the ordering total and self-consistent, by composing on stable fields, not by
   catching the exception
 - Knows what returning zero claims, and what a tie does to a sorted set or map ordered the same way
@@ -90,9 +91,15 @@ and explain why a defect stays hidden below a certain scale.
 
 ## Notes
 
-Small arrays are sorted with a binary insertion sort, which never detects the inconsistency; the
-merge path that raises this is only entered above the threshold. So "it works on my sample" is
-expected, not reassuring.
+In current OpenJDK the threshold is 32: below it the sort is a binary insertion sort end to end,
+which never detects the inconsistency, and the merge path that raises this is never entered. So
+"it works on my sample" is expected, not reassuring. The number is an implementation detail of one
+library's sort, not something the specification promises — do not hold out for it. What the card
+wants is that the candidate reaches for "the small case takes a different path" rather than
+concluding the data is at fault, and a candidate who says "a few dozen" has answered it.
+
+An exception is also not guaranteed for a broken comparator above the threshold: an inconsistent
+ordering may simply produce a wrongly ordered result. The exception is the lucky outcome.
 
 ## Sources
 

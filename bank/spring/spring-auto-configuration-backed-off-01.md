@@ -48,6 +48,8 @@ when the application defines its own, and can name the report that shows what st
 - Says a contract test on the response shape would have caught it and the unit tests could not
 - Notices that the same shape of accident is waiting for anyone who defines their own data
   source, template builder or message converter
+- Asks how the replacement was actually constructed, because a bare one would have failed on
+  those fields outright rather than quietly changing their shape
 
 ## Weak signals
 
@@ -99,7 +101,11 @@ when the application defines its own, and can name the report that shows what st
 ## Notes
 
 `JacksonAutoConfiguration` defines its `ObjectMapper` with `@ConditionalOnMissingBean`, built
-through `Jackson2ObjectMapperBuilder`, which registers the java.time module and disables writing
-dates as timestamps. Define your own and all of that goes. The customisation hook is
-`Jackson2ObjectMapperBuilderCustomizer`. The report is `--debug` at startup or
-`/actuator/conditions` at runtime.
+through `Jackson2ObjectMapperBuilder`, which registers the discoverable modules including
+java.time and disables `SerializationFeature.WRITE_DATES_AS_TIMESTAMPS`. Define your own and all
+of that goes. The number-shaped output in the scenario is what you get when the replacement
+registers the modules — `findAndRegisterModules()`, or a builder — but not the feature settings,
+because that feature is enabled by default in Jackson itself and only Boot's builder turns it off.
+A mapper with no modules at all fails on those fields instead, which is a useful thing to notice.
+The customisation hook is `Jackson2ObjectMapperBuilderCustomizer`. The report is `--debug` at
+startup or `/actuator/conditions` at runtime.

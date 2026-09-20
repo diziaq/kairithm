@@ -1,7 +1,7 @@
 ---
 id: spring-persistence-n-plus-one-01
 schema_version: 1
-title: Fifty orders, one hundred and fifty-three queries
+title: Fifty orders, one hundred and fifty-two queries
 category: spring
 topic: persistence
 level: senior
@@ -15,7 +15,7 @@ links:
 ## Ask
 
 `GET /orders?page=0&size=50` takes 1.8 seconds. Someone enabled statement logging and counted
-153 queries for one call. Operations tripled the connection pool and it made no difference.
+152 queries for one call. Operations tripled the connection pool and it made no difference.
 Take me from that log to a fix, and tell me what you would check about the fix before merging
 it.
 
@@ -27,8 +27,9 @@ assume it.
 
 ## Listen for
 
-- The count is one query for the page plus one per row per lazily fetched relation; 153 tells
-  you roughly how many relations are being touched
+- Decomposes the number rather than reacting to it: one query for the page, one to count the
+  total for the paged response, then one per row for each lazily fetched relation that gets
+  touched — fifty rows across three relations, plus those two
 - A bigger pool cannot help, because the queries are sequential on one connection inside one
   request
 - Names more than one way to fix it and picks on shape: fetching the relation in the same query,
@@ -63,11 +64,11 @@ assume it.
 ### weak
 
 - Blames the database or the pool.
-- Cannot account for where 153 comes from.
+- Cannot account for where 152 comes from.
 
 ### mid
 
-- Decomposes the count into one query plus one per row.
+- Decomposes the number into the page query plus one per row for each relation touched.
 - Knows a bigger pool cannot help because the calls are sequential within one request.
 - Fetches the relation together with the page, or batches the follow-ups.
 

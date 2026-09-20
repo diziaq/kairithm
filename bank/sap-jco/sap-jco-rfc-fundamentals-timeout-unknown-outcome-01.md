@@ -96,10 +96,27 @@ side, rather than as a failure they can assume away or retry blindly.
 
 ## Notes
 
-NEEDS-REVIEW — unverified claim about exactly when the ABAP session is terminated after the
-client disconnects. What is safe to assert: the work is not automatically rolled back on the
-client's behalf, and a document already saved stays saved. Do not let a candidate be marked down
-for being unsure about the precise moment the ABAP side notices.
+Verified: JCo 3 has no per-call execution timeout. There is no way to say "give up on this
+`JCoFunction.execute` after thirty seconds". `jco.destination.max_get_client_time` is the setting
+candidates usually reach for and it is not this — it bounds how long a caller waits to be handed
+a pooled connection when the peak limit is already allocated, and expires before the function
+module has been called at all. The only documented way to bound an execution is indirectly,
+through the lifetime of a session: when JCo sees a session end it cancels the calls belonging to
+it. So a candidate who says "we set a timeout on the call" should be asked which property, and
+the honest answer is that the communication error in the scenario came from the network or the
+gateway, not from a JCo timer.
 
-If a candidate asserts JCo has a per-call timeout setting, ask which one and what it does. Do not
-assume such a parameter exists.
+NEEDS-REVIEW — narrowed after review. What is verified and can be asserted: a document that was
+already committed stays committed, because nothing issues a rollback on the client's behalf; and
+uncommitted work is never persisted, because no commit ever ran. What could not be confirmed from
+public documentation is the *timing and mechanics* on the SAP side — whether an in-flight, not
+yet committed unit is torn down the moment the socket is lost, or only when the work process is
+later reused, and how gateway timeouts interact with that. Do not ask a candidate to state the
+moment, and do not state it yourself. The card does not depend on it: the three possible outcomes
+stand either way.
+
+## Sources
+
+- https://help.sap.com/doc/abapdocu_752_index_htm/7.52/en-US/abenrfc_context.htm
+- https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-us/abapcommit.htm
+- https://support.sap.com/content/dam/support/en_us/library/ssp/products/connectors/jco/jco_30_documentation_en.pdf

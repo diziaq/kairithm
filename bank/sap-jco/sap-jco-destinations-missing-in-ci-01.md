@@ -92,3 +92,5 @@ production setups replace it; a candidate who only knows the file is fine at thi
 ## Sources
 
 - https://support.sap.com/content/dam/support/en_us/library/ssp/products/connectors/jco/jco_30_documentation_en.pdf
+
+- https://github.com/rafaelfvalim/JcoAbapDojo/blob/main/ABAP_AS1.jcoDestination

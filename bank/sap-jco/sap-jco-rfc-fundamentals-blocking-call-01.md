@@ -27,8 +27,8 @@ both sides at the same time, rather than as a method call that is simply slow.
 
 - The calling thread is blocked for the whole ninety seconds; nothing in JCo makes the call
   asynchronous on its own
-- On the SAP side the request is executed by a work process that is busy until the function
-  module returns
+- On the SAP side the request is executed by a dialog work process, which is occupied until the
+  function module returns — the same pool of processes interactive users are served from
 - Both sides have a finite number of those, so concurrency is what turns a slow call into an
   outage
 - There is no partial result: you get everything when the function module finishes, or you get an
@@ -85,3 +85,17 @@ both sides at the same time, rather than as a method call that is simply slow.
 
 The card is about resource ownership, not about JCo syntax. A candidate who only says "it blocks"
 has answered half of it; the SAP half is the half that costs money.
+
+Interviewer background: the call in this scenario is a synchronous RFC — sRFC — where the caller
+waits for the result and nothing is stored or forwarded anywhere. That is exactly what separates
+it from the transactional calls in the tRFC topic, where the return is an acknowledgement that
+the unit was recorded. Do not hand the candidate either term.
+
+Verified: a synchronous inbound RFC from an external client is executed in a dialog work process
+by default. That is why the work-processes topic, where the dialog runtime limit lives, is the
+natural place to take a candidate who answers this one well.
+
+## Sources
+
+- https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/abenrfc_dialog.htm
+- https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/abenapp_server_resources.htm

@@ -94,10 +94,29 @@ adding people.
 
 ## Notes
 
-Inbound queues are monitored in `SMQ2` and outbound in `SMQ1`; the stuck entry sits at the head
-with an error status. Do not turn this into a transaction-code question — the design answer is
-the queue key and the detection time.
+The mechanism in the scenario is qRFC: queued RFC, which adds serialisation on top of tRFC by
+placing units in a named queue and processing that queue strictly in order. Inbound queues are
+monitored in `SMQ2` and outbound in `SMQ1`; the stuck entry sits at the head with an error
+status. Do not hand the candidate the term, and do not turn this into a transaction-code
+question — the design answer is the queue key and the detection time.
 
-NEEDS-REVIEW — unverified claim about migrating an existing flow to the newer background
-communication framework: availability and effort depend on the release and on the ABAP side, so
-treat "it is a project, not a switch" as the safe position.
+The successor referred to in `## Expected knowledge` is bgRFC, which supersedes both tRFC and
+qRFC and offers ordered and unordered units under one API. It is monitored in `SBGRFCMON` and
+configured in `SBGRFCCONF`.
+
+Verified: moving an existing qRFC flow to bgRFC is a development effort, not a switch. bgRFC has
+its own API and data model on the ABAP side, so a flow built on `CALL FUNCTION ... IN BACKGROUND
+TASK` with `TRFC_SET_QUEUE_NAME` has to be rewritten against it; some destination and queue-name
+mapping can be configured in `SBGRFCCONF` without code changes, but that does not carry the
+calling code across. A candidate who reaches for bgRFC as the answer should be asked who writes
+that ABAP and when it ships — the outage in the scenario is tomorrow.
+
+Verified: a qRFC queue is processed strictly in order by the scheduler, which starts the next
+unit only when the current one has finished, so a failed unit at the head blocks the whole queue.
+Encoding a business key into the queue name is the documented, standard remedy.
+
+## Sources
+
+- https://help.sap.com/doc/saphelp_snc70/7.0/en-US/76/e12041c877f623e10000000a155106/content.htm
+- https://help.sap.com/docs/SAP_NETWEAVER_701/6da114706c4b1014bfedc1de475963c2/48927c2caa6b17cee10000000a421937.html
+- https://help.sap.com/doc/saphelp_nw74/7.4.16/en-US/48/99b963ee2b73e7e10000000a42189b/content.htm

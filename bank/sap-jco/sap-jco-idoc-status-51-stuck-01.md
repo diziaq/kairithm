@@ -29,6 +29,8 @@ why re-sending is the wrong recovery.
 - So re-sending the file produces a second IDoc for the same business document, and if the cause
   is then fixed you get two postings
 - The recovery is to fix the cause and reprocess the stored IDocs, which creates no duplicate
+- Nothing will move these on its own: a failed IDoc sits in that status until a person or a job
+  reprocesses it, so "leave it and see" is a decision to leave three hundred documents unposted
 - Reads the status text to separate a data problem from a setup problem: missing master data, a
   locked object, a partner or authorisation issue
 - Three hundred at once is usually one cause; group by message before touching anything
@@ -94,3 +96,18 @@ why re-sending is the wrong recovery.
 Status 51 is "application document not posted". 53 is posted, 64 is ready to be passed to the
 application. Do not turn this into a status-number quiz: the point is the difference between the
 IDoc existing and the business document existing.
+
+Interviewer background only, never as a recall test: the documents and their status texts are
+listed in `WE02`, and reprocessing failed inbound IDocs is a standard action in `BD87`. A
+candidate who says "they can be pushed through again from the SAP side" without naming either
+has answered this card.
+
+Contrast with the tRFC backlog card in the trfc-qrfc topic, which looks similar and is not: there
+the units are held by the sending system and are retried automatically, so the work is to survive
+the burst when they drain. Here nothing retries on its own and somebody has to decide.
+
+## Sources
+
+- https://sapintegrationhub.com/sap-s4-hana/sap-idoc-status-codes-guide/
+- https://community.sap.com/t5/technology-blog-posts-by-members/how-to-use-transaction-bd87-to-reprocess-failed-idocs/ba-p/13641328
+- https://help.sap.com/docs/SUPPORT_CONTENT/abap/3353525129.html

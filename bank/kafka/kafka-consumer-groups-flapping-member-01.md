@@ -26,8 +26,8 @@ a stalled handler from a network problem.
 - Asks how long handling one batch takes, and compares that against `max.poll.interval.ms`
 - Knows the heartbeat is sent from its own thread, so a stuck handler shows up as a missed poll
   rather than a missed heartbeat
-- Says the whole group stops because everything is handed out again when a member leaves or
-  arrives
+- Connects the group-wide pause to every member's partitions being taken away and handed out
+  again, which is what the long-standing protocol does on each departure and each return
 - Suggests fetching fewer records at a time, or moving slow work off the main thread, before
   raising any timeout
 - Asks whether one unusual record is what takes minutes to get through
@@ -36,7 +36,8 @@ a stalled handler from a network problem.
 
 - A member is dropped when it stops sending heartbeats, or when it goes too long without asking
   for more records
-- Every departure and arrival makes the group hand out the partitions again
+- A member leaving or arriving makes the group divide the partitions again; how much of the group
+  has to stop while that happens depends on which protocol the clients are using
 
 ## Strong signals
 
@@ -88,9 +89,19 @@ a stalled handler from a network problem.
 
 - https://cwiki.apache.org/confluence/display/KAFKA/KIP-62%3A+Allow+consumer+to+send+heartbeats+from+a+background+thread
 - https://kafka.apache.org/documentation/#consumerconfigs_max.poll.interval.ms
+- https://cwiki.apache.org/confluence/display/KAFKA/KIP-429%3A+Kafka+Consumer+Incremental+Rebalance+Protocol
 
 ## Notes
 
 Worth separating out loud if the candidate blurs them: the heartbeat runs on a background thread
-and keeps the member alive while the handler is busy; the poll interval is the separate limit that
-catches a handler which has stopped making progress.
+and keeps the member alive while the handler is busy (KIP-62); the poll interval is the separate
+limit that catches a handler which has stopped making progress. Because of that split, a stuck
+handler is evicted for missing the poll deadline, not for missing a heartbeat — which is the part
+candidates most often get backwards.
+
+The scenario states that the whole group pauses, and that is what the long-standing eager
+protocol does: every member gives up every partition before anything is handed out. It is not
+universal. With a cooperative assignor only the partitions that actually move are revoked, and
+the newer broker-driven protocol (KIP-848) changes the picture again, so the size of the pause
+depends on the client version and the assignor configured. A candidate who asks which is in use
+before explaining the pause is ahead, not pedantic.

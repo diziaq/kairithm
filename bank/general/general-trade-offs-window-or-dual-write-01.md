@@ -7,7 +7,7 @@ topic: trade-offs
 level: senior
 tags: [correctness, consistency, operations, failure-modes]
 time_estimate_min: 8
-order: 150
+order: 155
 links:
   related: [microservices-consistency-two-services-disagree-01]
   deeper: [general-trade-offs-ship-the-shortcut-01]
@@ -58,6 +58,13 @@ modern.
 - Leaves removal of the old column as tidying up that somebody will get to
 
 ## Answer bands
+
+### weak
+
+- Picks a side on principle — we never take the system down, or we never carry two shapes of the
+  same data — without asking how long the script would take.
+- Treats a quick run against a development database as evidence that it fits in the window.
+- Cannot say what state the table is in half way through either plan, or how to get back.
 
 ### junior
 

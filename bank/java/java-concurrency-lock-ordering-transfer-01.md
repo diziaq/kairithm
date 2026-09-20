@@ -5,7 +5,7 @@ title: Threads that stop without failing
 category: java
 topic: concurrency
 level: mid
-tags: [threads, failure-modes, operations]
+tags: [failure-modes, operations, observability]
 time_estimate_min: 7
 order: 15
 links:

@@ -5,7 +5,7 @@ title: Two threads increment the same counter
 category: java
 topic: concurrency
 level: junior
-tags: [threads, correctness, memory-model]
+tags: [correctness, failure-modes, memory-model]
 time_estimate_min: 5
 order: 10
 links:
@@ -14,19 +14,23 @@ links:
 
 ## Ask
 
-Two threads each run `counter++` on the same plain `int` field, ten thousand times each. At the
-end you print the field. What do you expect to see, and why?
+Two threads each run `counter++` on the same plain `int` field, ten thousand times each, and then
+the program prints the field. A colleague ran it twenty times, got twenty thousand every time, and
+says the code is fine. What is actually going on?
 
 ## Tests
 
 Whether the candidate can take apart a single line of code into the machine steps it becomes, and
-reason about two threads interleaving inside it.
+tell a result that came out right from code that is right.
 
 ## Listen for
 
 - `counter++` is three steps — fetch the value, add one, store it back — and the other thread can
   run in the middle
-- The printed figure comes out under twenty thousand, and differs from run to run
+- The figure can come out below twenty thousand and vary between runs; twenty clean runs describe
+  the timing on that laptop, not the code
+- Says why the clean runs are unsurprising: ten thousand iterations is over in no time, so the two
+  threads may barely overlap at all
 - Names a mechanism that makes the three steps indivisible, and says what it costs
 
 ## Expected knowledge
@@ -36,8 +40,7 @@ reason about two threads interleaving inside it.
 
 ## Strong signals
 
-- Points out that a small loop may well print twenty thousand on the first few runs, so passing
-  once proves nothing
+- Says what would have to change about the experiment before a clean run meant anything
 - Separates the two problems living in that one line: the interleaving, and whether the other
   thread ever sees the store at all
 
@@ -51,26 +54,27 @@ reason about two threads interleaving inside it.
 
 ### weak
 
+- Agrees the code is fine, because the figure came out right twenty times.
 - Says the result is random, with no account of the steps inside `counter++`.
-- Asserts the figure will be twenty thousand because the loops both finish.
 - Confuses this with the threads running slowly or out of order at the method level.
 
 ### junior
 
 - States that the increment is not indivisible and that one thread can overwrite the other.
-- Predicts a figure at or under twenty thousand, varying between runs.
+- Says the twenty clean runs prove nothing, and that the figure can land under twenty thousand.
 - Suggests `synchronized` or `AtomicInteger` as a fix.
 
 ### mid
 
 - Walks the fetch, add and store apart and shows where the second thread lands.
-- Notes that a short run can hide the fault entirely, so the test has to be built to provoke it.
+- Accounts for the clean runs specifically: the loops are too short for the threads to overlap
+  much on that machine.
 - Compares locking against an atomic type on contention, not just on syntax.
 
 ## Follow-ups
 
-- Suppose you run it and it prints twenty thousand every time on your laptop. Are you finished?
-  probes: whether the candidate understands that this fault is timing-dependent and intermittent
+- Make it come out wrong in front of me. What do you change about how it is run?
+  probes: more iterations, more threads, widening the window between the fetch and the store
 - You change the field so that only one thread ever writes it and the other only reads it. Is
   there still anything to think about?
   probes: opens the door to the visibility question without naming it

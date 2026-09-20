@@ -216,14 +216,14 @@ two specialities they had never worked in:
 
 | Candidate | Pool matched the role | Whole bank |
 |---|---|---|
-| junior | 17, reads junior | 17, reads junior |
-| solid mid | 50, reads mid | 37, reads junior |
-| borderline senior | 64, reads senior | 60, reads mid |
-| strong senior | 92, reads lead | 92, reads lead |
+| junior | 20, reads junior | 8, reads weak |
+| solid mid | 50, reads mid | 46, reads mid |
+| borderline senior | 67, reads senior | 62, reads mid |
+| strong senior | 90, reads lead | 90, reads lead |
 
 Matched to the role, every candidate lands on the level they actually are. Against the whole bank
-the two in the middle drop about a band, because questions from a speciality they have never
-worked in still count as evidence. The ordering survives either way, but the number only means
+they drop, because questions from a speciality they have never worked in still count as evidence —
+and the further a candidate is from that speciality the more it costs them. The ordering survives either way, but the number only means
 what it says if the categories in stage 1 are the ones the job needs.
 
 ## During the interview

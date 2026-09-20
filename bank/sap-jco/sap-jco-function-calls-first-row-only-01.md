@@ -85,3 +85,8 @@ the line that causes it rather than blaming the far side.
 
 Reject an answer that stops at "they forgot a loop". The point is that the cursor makes a wrong
 program look right, which is why the count matched.
+
+## Sources
+
+- https://github.com/cemeng/sap-integration/blob/master/sapjco3-darwinintel64-3.0.14/javadoc/com/sap/conn/jco/JCoTable.html
+- https://support.sap.com/content/dam/support/en_us/library/ssp/products/connectors/jco/jco_30_documentation_en.pdf

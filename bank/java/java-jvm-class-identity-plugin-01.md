@@ -84,3 +84,8 @@ a rule about how things are built and shipped.
   probes: retained loaders and everything they defined; one stray reference pinning the old one
 - How would the build stop this reaching production next time?
   probes: enforcing scope, duplicate-class checks, making it a failure rather than a convention
+
+## Sources
+
+- https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-5.html#jvms-5.3
+- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/ClassLoader.html

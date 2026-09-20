@@ -89,3 +89,8 @@ work actually runs.
   probes: races invisible at small sizes; repeatability as weak evidence
 - Where would this change genuinely have paid off?
   probes: work that keeps a core busy, a source that divides cheaply, and a measurement
+
+## Sources
+
+- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ForkJoinPool.html#commonPool()
+- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/stream/package-summary.html

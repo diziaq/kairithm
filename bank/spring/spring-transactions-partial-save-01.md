@@ -22,8 +22,9 @@ there, and what do you change?
 
 ## Tests
 
-Whether the candidate knows that without a declared boundary each write commits on its own, and
-can name the one change that makes the two writes succeed or fail together.
+Whether the candidate treats a transaction boundary as something somebody has to draw around a
+unit of business work, rather than assuming consecutive writes are already grouped — and whether
+they can say where that boundary belongs and how they would prove it holds.
 
 ## Listen for
 

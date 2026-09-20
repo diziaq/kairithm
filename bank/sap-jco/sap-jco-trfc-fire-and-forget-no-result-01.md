@@ -97,5 +97,6 @@ the behaviour without the method names has answered well.
 
 ## Sources
 
-- https://help.hana.ondemand.com/javadoc/com/sap/conn/jco/JCoDestination.html
-- https://community.sap.com/t5/technology-q-a/way-of-functioning-of-sap-jco-library/qaq-p/13632153
+- https://github.com/cemeng/sap-integration/blob/master/sapjco3-darwinintel64-3.0.14/javadoc/com/sap/conn/jco/JCoDestination.html
+- https://help.sap.com/doc/saphelp_nw74/7.4.16/en-US/48/99b963ee2b73e7e10000000a42189b/content.htm
+- https://help.sap.com/doc/saphelp_em92/9.2/en-US/48/821b412ddd3cb8e10000000a42189d/content.htm

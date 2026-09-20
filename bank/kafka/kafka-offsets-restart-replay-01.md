@@ -27,8 +27,11 @@ is no position for it to resume from.
 
 - Asks what group id the new deployment uses, since a group nobody has seen before has no stored
   position
-- Knows `auto.offset.reset` decides what a group does when it has no stored position for a
-  partition, and that `earliest` produces exactly this
+- Knows `auto.offset.reset` is consulted only when there is no usable stored position for a
+  partition — none at all, or one that no longer falls inside what the topic still holds — and
+  that `earliest` produces exactly this
+- Says the setting is never consulted on an ordinary restart with a valid stored position, so the
+  question is what happened to that position
 - Distinguishes the position stored for the group in the cluster from anything kept on the pod
 - Asks whether positions were being recorded at all before the restart
 
@@ -36,6 +39,8 @@ is no position for it to resume from.
 
 - A group's position is stored in the cluster, one per partition
 - Records stay available until they age out, whether or not anyone has read them
+- A stored position that has aged out, or that points before the start of what the topic still
+  holds, is treated the same as having none
 
 ## Strong signals
 
@@ -66,6 +71,8 @@ is no position for it to resume from.
 ### mid
 
 - Asks whether the deploy changed the group id, and how that id is put together.
+- Says that setting only comes into play when there is no usable position, so something must have
+  removed or invalidated one.
 - Checks whether positions were being recorded at all before the restart.
 - Treats the flood as its own defect and says what should have held it back.
 
@@ -83,3 +90,17 @@ is no position for it to resume from.
 
 - https://kafka.apache.org/documentation/#consumerconfigs_auto.offset.reset
 - https://kafka.apache.org/documentation/#brokerconfigs_offsets.retention.minutes
+- https://cwiki.apache.org/confluence/display/KAFKA/KIP-211%3A+Revise+Expiration+Semantics+of+Consumer+Group+Offsets
+
+## Notes
+
+Two things candidates state too broadly. `auto.offset.reset` is not "where a consumer starts"; it
+is the fallback for a partition with no usable committed position, which means either no stored
+offset for the group or one that is out of range for what the topic still holds. An ordinary
+restart of a healthy group never reaches it.
+
+How long a stored position survives is version-dependent and worth hedging rather than asserting:
+the broker default was raised from a day to seven days in Kafka 2.0, and since KIP-211 offsets
+for a group with live members are not aged out while the group is active — the clock starts when
+the group empties. A candidate who says "it depends on the broker setting and the version" is
+answering better than one who quotes a number.

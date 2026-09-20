@@ -15,11 +15,10 @@ links:
 
 ## Ask
 
-A service keeps a lookup table in a plain `HashMap` field. Request threads read it, and a scheduled
-task refreshes a few entries every minute by putting into the same map. It has run like this for a
-year. In the last month a lookup twice returned null for a code that is definitely in the table, and
-once a request thread was stuck burning CPU inside the map. What do you change, and what do you tell
-the team about the year it worked?
+A service keeps a lookup table in a plain `HashMap` field. Request threads read it; a scheduled
+task puts a few fresh entries into it every minute. It has run like that for a year. Last month a
+lookup returned null for a code that is definitely there, and a request thread got stuck spinning
+inside the map. What do you change, and what do you tell the team about the year it worked?
 
 ## Tests
 
@@ -93,6 +92,11 @@ as a risk that the absence of incidents has already measured for them.
   probes: rare timing faults; evidence versus absence of evidence
 
 ## Notes
+
+The rates, if the candidate asks: the null result has happened twice in the last month and the
+spinning thread once, against roughly four thousand entries with about five refreshed a minute. A
+candidate who asks how often before deciding how serious it is has earned the numbers — and the
+answer "twice" should not make it less serious, which is the point of the last follow-up.
 
 The infinite loop on resize that people quote is a Java 7 story; Java 8 changed how a bucket is
 split. Neither version promises anything about a map mutated without coordination, so "that bug was

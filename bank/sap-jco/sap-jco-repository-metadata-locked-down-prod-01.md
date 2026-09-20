@@ -89,14 +89,35 @@ can turn that into a precise authorisation request instead of a demand for a wid
 
 ## Notes
 
-NEEDS-REVIEW — unverified claim about the exact metadata function modules. Newer systems use a
-single-roundtrip metadata call; older ones use several individual lookups, and the names differ
-by release. Accept any answer that has the mechanism right and do not test names.
+Verified, replacing the previous flag on the metadata function modules. JCo's own release notes
+state that it normally calls several function modules to assemble the description of one
+function and its structures, and that `RFC_METADATA_GET` — introduced by SAP Note 1456826, in
+function group `RFC_METADATA` — reduces that to a single roundtrip. JCo uses it only if the
+backend has it and the property `jco.use_repository_roundtrip_optimization` is set. The older
+multi-roundtrip path involves function modules such as `RFC_GET_FUNCTION_INTERFACE` and
+`DDIF_FIELDINFO_GET`, and the function group `SDIFRUNTIME` is one that shows up in exactly this
+kind of authorisation failure. So the card's premise is sound and the name in the error genuinely
+does vary. Still do not test names — the mechanism is the point, and the exact release in which
+each backend gained `RFC_METADATA_GET` is not publicly pinned down.
 
-NEEDS-REVIEW — unverified claim about how a locally described interface is wired into a
-destination in current JCo versions. The capability exists; the exact API is version-dependent.
+Verified: `S_RFC` carries the fields `RFC_TYPE`, `RFC_NAME` and `ACTVT`, where `ACTVT` only ever
+takes the value for execute. Function-group granularity is the normal usage; single-function
+granularity is also possible but rarely used. On newer releases UCON, the unified connectivity
+framework, adds a separate allow-list layer on top of `S_RFC` rather than changing it — if a
+candidate raises UCON, that is a strong signal, not a confusion.
+
+NEEDS-REVIEW — narrowed. The API for describing an interface locally is confirmed for JCo 3.0.x:
+`JCo.createCustomRepository(name)`, then `addFunctionTemplateToCache(...)`, with
+`JCoCustomRepository.setDestination(...)` for cache misses and
+`JCoCustomDestination.setRepositoryDestination(...)` to point a destination elsewhere. Note there
+is no `setRepository` on a plain `JCoDestination` — only a getter. What could not be confirmed is
+that this is unchanged in JCo 3.1, because the 3.1 documentation ships only inside the SDK
+download behind an S-user login. Treat the capability as certain and the exact call sequence as
+"check against the version in use".
 
 ## Sources
 
+- https://help.sap.com/doc/saphelp_snc700_ehp01/7.0.1/en-US/60/305140c770cd01e10000000a155106/content.htm?no_cache=true
+- https://github.com/cemeng/sap-integration/blob/master/sapjco3-darwinintel64-3.0.14/javadoc/releasenotes.html
+- https://github.com/cemeng/sap-integration/blob/master/sapjco3-darwinintel64-3.0.14/javadoc/com/sap/conn/jco/JCoCustomRepository.html
 - https://www.ibm.com/support/pages/webmethods-knowlegebase-wmsap-jco-error-no-rfc-authorization-function-module-rfcmetadataget-1806159
-- https://javadoc.io/static/com.sap.cloud/neo-java-web-api/2.42.18/com/sap/conn/jco/JCoCustomRepository.html

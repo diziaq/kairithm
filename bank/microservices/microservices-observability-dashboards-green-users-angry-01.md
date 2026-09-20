@@ -15,13 +15,16 @@ links:
 ## Ask
 
 Every dashboard is green: CPU at 30%, error rate 0.2%, average response time 40ms. The support
-queue has been filling up all morning with people saying checkout is broken. What is your
-monitoring not telling you, and what do you change?
+queue has been filling up all morning with people saying checkout is broken. Your observability
+bill has doubled this year and the platform team have said no to any new dimension unless
+something else comes out. What is your monitoring not telling you, what do you add, and what do
+you take away to pay for it?
 
 ## Tests
 
 Whether the candidate can distinguish measuring the machinery from measuring what the user is
-trying to do, and can turn that into what a team would actually build.
+trying to do, and then buy the second inside a fixed budget rather than asking for more of
+everything.
 
 ## Listen for
 
@@ -34,6 +37,8 @@ trying to do, and can turn that into what a team would actually build.
 - Wants a signal on the outcome — completed orders against what this hour normally looks like
 - Treats the support queue arriving first as the failure: the monitoring should have beaten it
 - Asks what changed this morning before redesigning anything
+- Every new slice has a price, so it has to be chosen: which dimension earns its keep, and which
+  existing metric or dashboard nobody has looked at in a year pays for it
 
 ## Expected knowledge
 
@@ -58,22 +63,25 @@ trying to do, and can turn that into what a team would actually build.
 
 - Points at the average and asks to see the distribution instead.
 - Wants the failing requests sliced to find what they share.
-- Suggests a check that exercises the whole flow rather than one service.
+- Asks for the new signals without saying what is given up to pay for them.
 
 ### senior
 
-- Frames the gap as component health versus journey health and gives a concrete signal for the
-  second.
+- Frames the gap as component health against journey health, and names one concrete signal for the
+  second — completed checkouts against what this hour normally looks like.
 - Uses the 0.2% as a lead and describes how they would find what those requests have in common.
 - Notices that a request can succeed on every hop and still not do what the user wanted.
 - Handles today's incident and the measurement gap as two separate pieces of work.
+- Names one dimension worth its cost and one that is not.
 
 ### lead
 
 - Decides what the team will be woken for and what it will not, and says what happens to the rest.
-- Accepts an explicit cost — cardinality, retention, sampling — to get the slices that matter.
+- Makes the trade explicit: names what is switched off, sampled or shortened to fund the slices
+  that matter, and who has to agree to that.
 - Defines the small number of signals the business would recognise, and who owns each one.
 - Says how the team finds out that a new signal has itself gone stale or stopped reporting.
+- Accounts for what the new signals cost the on-call rota, not only the bill.
 
 ## Follow-ups
 

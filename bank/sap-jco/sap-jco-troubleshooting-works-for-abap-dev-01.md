@@ -92,3 +92,15 @@ and knows which differences produce a silent empty result rather than an error.
 The core insight is that an authorisation failure inside application code frequently manifests as
 a missing row rather than an exception. A candidate who only reaches for connectivity has not
 answered this card.
+
+Verified: `S_RFC` carries `RFC_TYPE`, `RFC_NAME` and `ACTVT`, and `ACTVT` only ever takes the
+execute value. Function-group granularity is the usual configuration; individual function modules
+can be named too, but rarely are. On releases from 7.40 UCON, the unified connectivity framework,
+adds a separate allow-list in front of `S_RFC` — so on a UCON-enabled system a call can be
+refused even though `S_RFC` permits it, which is worth knowing before you promise a candidate
+that the authorisation trace tells the whole story.
+
+## Sources
+
+- https://help.sap.com/doc/saphelp_snc700_ehp01/7.0.1/en-US/60/305140c770cd01e10000000a155106/content.htm?no_cache=true
+- https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/abenrfc_dialog.htm

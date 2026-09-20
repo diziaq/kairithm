@@ -78,8 +78,8 @@ finished before the run moves on.
 
 Adaptive mode climbs and drops the level as the interview goes. When a topic has a card at every
 level the run can follow a candidate up and down *inside one subject*, which is both a better
-conversation and better evidence. Twelve topics currently span junior → mid → senior → lead;
-the rest span two. If you are deciding where to add a card, completing a ladder beats starting a
+conversation and better evidence. 12 topics currently span junior → mid → senior → lead; most of the rest
+span three or two. If you are deciding where to add a card, completing a ladder beats starting a
 new topic.
 
 Check any topic with:

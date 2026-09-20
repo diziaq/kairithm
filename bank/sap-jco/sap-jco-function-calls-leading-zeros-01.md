@@ -94,3 +94,16 @@ system is set up, and I would check" as a better answer than a confident rule.
 
 In newer releases the material number field is wider than the classic eighteen characters, which
 is exactly why hard-coded padding is a poor fix.
+
+Interviewer background, not a recall test: the generic routine that pads numeric-looking keys
+with leading zeros is `ALPHA`, but material numbers have their own routine, `MATN1`, whose
+behaviour — including whether numbers are handled lexicographically — is driven by a
+configuration setting on the SAP side. That is the mechanism behind "it depends how the system is
+set up". A candidate who never names either routine but knows the stored key and the displayed
+key can differ, and that the difference is configured rather than fixed, has answered this card
+fully.
+
+## Sources
+
+- https://help.sap.com/doc/saphelp_em900/9.0/en-US/4a/547e956a8a1cd4e10000000a421937/content.htm?no_cache=true
+- https://help.sap.com/doc/saphelp_nw75/7.5.5/en-US/4a/547e686a8a1cd4e10000000a421937/content.htm?no_cache=true

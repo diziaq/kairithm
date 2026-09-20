@@ -87,3 +87,8 @@ for the lookup to work at all.
 The card is about the mechanism, not about the two method names. A candidate who says "equals and
 hashCode" in the first breath and then cannot say why iteration still finds the object has not
 answered it.
+
+## Sources
+
+- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()
+- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html

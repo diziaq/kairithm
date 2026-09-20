@@ -84,3 +84,8 @@ Whether the candidate can turn a single failure line into a routed, evidenced re
 
 Transaction-code recall is not the point. A candidate who says "there will be a dump, ask them
 for it" without naming `ST22` has answered well.
+
+## Sources
+
+- https://github.com/cemeng/sap-integration/blob/master/sapjco3-darwinintel64-3.0.14/javadoc/com/sap/conn/jco/JCoException.html
+- https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/abenrfc_dialog.htm

@@ -93,3 +93,8 @@ knows the limits on both of the obvious fixes.
 
 A good answer treats "six hours" as a fact to be explained, not a problem to be attacked. The
 candidate who asks for the cost of one call before proposing anything is already ahead.
+
+## Sources
+
+- https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/abenrfc_dialog.htm
+- https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/abenapp_server_resources.htm

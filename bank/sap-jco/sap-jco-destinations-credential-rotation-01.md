@@ -31,8 +31,8 @@ failure mode of a rotation against a cache and a shared account.
   the provider tells JCo the entry changed
 - Existing pooled connections may keep working while every new logon fails, which makes the
   outage look intermittent and delays diagnosis
-- Repeated failed logons with a stale password lock the SAP user — and if all six services share
-  one account, all six go down together
+- Repeated failed logons with a stale password can lock the SAP user, depending on how the system
+  is configured — and if all six services share one account, all six go down together
 - Rotation has to be coordinated with Basis; changing the password in the vault alone changes
   nothing in SAP
 
@@ -65,7 +65,8 @@ failure mode of a rotation against a cache and a shared account.
 ### senior
 
 - Names where JCo takes configuration from and what has to happen for a change to take effect.
-- Predicts the intermittent phase where old connections work and new logons fail.
+- Expects a messy partial failure rather than a clean outage, and can say why a connection that
+  is already open might behave differently from one being established.
 - Separates the account model from the mechanism, and argues for accounts that fail
   independently.
 - Says who has to be involved on the SAP side and in what order the change happens.
@@ -88,10 +89,30 @@ failure mode of a rotation against a cache and a shared account.
 
 ## Notes
 
-NEEDS-REVIEW — unverified claim about account locking: whether and after how many failures a user
-is locked is governed by system policy and differs per landscape. Treat "the account can lock" as
-the point, not a specific threshold.
+Verified, replacing the previous flag on account locking: `login/fails_to_user_lock` sets the
+number of consecutive failed logons before a user is locked. It is a configurable integer, the
+current default is 5 where older releases defaulted to 12, and by default the lock clears at
+midnight. So "the account can lock, and I would ask what the policy is here" is the correct
+answer; a candidate quoting a specific number as universal is wrong, and so is an interviewer
+expecting one.
+
+Verified: JCo caches destination configuration. A provider that implements event support tells
+JCo an entry changed through `DestinationDataEventListener` (`updated` / `deleted`); where the
+provider does not, the JCo runtime re-checks cached configuration periodically instead. No public
+documentation gives a fixed interval for that fallback, so do not let the candidate — or
+yourself — depend on a number. Note this is destination *configuration* caching, which is a
+different thing from the pool's idle-connection expiry settings; candidates conflate the two.
+
+NEEDS-REVIEW — new flag added by this review, replacing an assertion the card previously made
+flatly. The claim that connections already open keep working through a password change while
+every new logon fails could not be confirmed in any SAP documentation or note. It is a reasonable
+inference from the password being checked at the logon handshake rather than on each call, and it
+matches what people report in the field, but it is not documented. Treat it as a hypothesis the
+candidate is credited for reaching, not as a fact the card knows. A candidate who instead
+predicts a total outage at the moment of rotation has not said anything wrong.
 
 ## Sources
 
 - https://support.sap.com/content/dam/support/en_us/library/ssp/products/connectors/jco/jco_30_documentation_en.pdf
+- https://help.sap.com/docs/SAP_NETWEAVER_AS_ABAP_751_IP/f7dd32926c1c4fcf889a4303d833a22b/4ac3f18f8c352470e10000000a42189c.html
+- http://www.novell.com/documentation/ncmp_sap10/sap_user_jco3/data/bldfbln.html

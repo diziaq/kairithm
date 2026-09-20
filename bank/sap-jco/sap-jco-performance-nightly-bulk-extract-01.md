@@ -94,7 +94,21 @@ fit.
 
 ## Notes
 
-NEEDS-REVIEW — unverified claim about alternative extraction mechanisms. Products, names and
-their licensing differ by release and by contract; a candidate should be credited for knowing
-that dedicated extraction and replication paths exist and that the choice is commercial as well
-as technical, not for naming a specific product.
+Verified: the runtime ceiling the chunking argument rests on is real. A call from an external
+client is executed in a dialog work process, which has a maximum runtime, and work that needs
+longer belongs in background processing, which is not bound by it. The dialog-timeout card in the
+work-processes topic owns that mechanism in detail.
+
+NEEDS-REVIEW — retained deliberately, and this one will not be resolved by more research. The
+card asks the candidate when a function-call interface is the wrong tool and what else exists.
+Product names, their availability on a given release, and above all what a customer is licensed
+for differ per landscape and per contract, so no verifiable general statement is possible here.
+Credit a candidate for knowing that dedicated extraction and replication paths exist, that
+choosing one is a commercial decision as much as a technical one, and that the decision is not
+theirs alone. Do not credit or penalise a specific product name, and do not name one yourself —
+whatever you have in mind may not be what this customer owns.
+
+## Sources
+
+- https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/abenrfc_dialog.htm
+- https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/abenapp_server_resources.htm

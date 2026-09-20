@@ -5,7 +5,7 @@ title: Another team agreed three weeks ago, and nothing has happened
 category: general
 topic: collaboration
 level: mid
-tags: [api-design, delivery, collaboration]
+tags: [ownership, delivery, collaboration]
 time_estimate_min: 7
 order: 130
 links:

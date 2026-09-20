@@ -77,12 +77,15 @@ defence to where it belongs instead of asking everyone to look harder.
 
 ### lead
 
-- Changes what the team does so this class of defect is caught cheaply and repeatedly, and says
-  how they will know it is working.
+- Treats reviewer attention as a budget rather than a virtue, and says what the team will stop
+  reading closely so that changes able to cause this get read hard.
+- Prices the alternatives against each other: what a second approver, a longer checklist and a
+  staged rollout each cost every person on the team per week, and what each one would actually
+  have caught here.
+- Names which classes of risk they are deliberately moving from prevention to detection in
+  production, and says what that signs the on-call rota up for.
 - Keeps the discussion off individuals in a way the team can see, because the next person will
-  only report it if this one was survivable.
-- Decides what not to do: rejects process that costs everybody and catches nothing.
-- Says which risks they are consciously choosing to detect in production rather than prevent.
+  only report their own near miss if this one was survivable.
 
 ## Follow-ups
 

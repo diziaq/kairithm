@@ -26,6 +26,7 @@ evidence in front of them says it works.
 - A thread can be handed a reference to an object that is not finished, and then read defaults out
   of it while the field itself is not null
 - The write that publishes the reference can become visible before the writes that fill the object in
+- Asks what is actually inside the object, because that decides whether the hole is open at all
 - Marking the field `volatile` makes the outer check legal, because the publishing write and the
   unlocked read are then ordered against each other
 - Names the alternative that gets laziness from class initialisation, where the JVM does the locking
@@ -36,11 +37,16 @@ evidence in front of them says it works.
 
 - What the lock was providing before the change: mutual exclusion and ordering, not just exclusion
 - An uncontended lock is not the cost people assume, so the premise deserves a measurement
+- Final fields are frozen when the constructor returns, and that guarantee reaches a reader even
+  through a race
 
 ## Strong signals
 
 - Says a month in production is not evidence, and can say why the fault is rarely seen on a common
   server architecture
+- Raises that an object whose entire state sits in `final` fields is covered by the freeze at the
+  end of construction even when the reference reaches the reader through a race, and says what
+  that does and does not make safe here
 - Prefers the holder idiom or eager creation over repairing the double check, and argues the simpler
   construct is worth more than the cleverness
 - Asks what the constructor actually does before agreeing the work is worth deferring at all
@@ -82,8 +88,24 @@ evidence in front of them says it works.
   probes: guarantee versus observation; inability to provoke it is not a defence
 - A month later the same shape turns up in four more classes. What do you do beyond this review?
   probes: review versus mechanism; making the safe form the default
+- Suppose every value inside that object is set once where it is declared, and nothing else gets a
+  look at it before it is fully built. Does your objection survive?
+  probes: what the freeze at the end of construction reaches, and how far it travels through a race
+
+## Notes
+
+The freeze is why this shape so often appears to work: an object whose entire state is fixed at
+construction is safe to hand over through the race, so the hole only really opens for a value
+assigned later, for an object that lets itself escape while it is still being built, or for the
+lazy field somebody adds two years from now. That makes the defect rare, not the shape defensible
+— and a candidate who reaches that nuance unprompted is well above the senior band.
+
+Distinct from the settings-object card on this ladder, which comes at the same guarantee from the
+other side: there the object is already immutable and the question is whether the reader ever sees
+the new reference at all. Here the reference is seen and the question is what is behind it.
 
 ## Sources
 
 - https://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
 - https://docs.oracle.com/javase/specs/jls/se21/html/jls-12.html#jls-12.4.2
+- https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html#jls-17.5

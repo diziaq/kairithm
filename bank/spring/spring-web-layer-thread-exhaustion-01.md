@@ -23,9 +23,10 @@ happening, and what do you do?
 
 ## Tests
 
-Whether the candidate can reason about a thread-per-request server as a finite resource, sees
-that a slow dependency propagates backwards into an unrelated caller, and fixes it with bounds
-rather than with capacity.
+Whether the candidate can reason about this one application's thread-per-request server as a
+finite resource shared by every endpoint it serves, sees that a slow dependency converts directly
+into occupied threads, and fixes it with bounds it can set in its own configuration rather than
+with capacity.
 
 ## Listen for
 
@@ -84,8 +85,9 @@ rather than with capacity.
 
 ### lead
 
-- Decides what the service should do when that dependency is down: degrade, queue, or refuse,
-  and states which the business wants.
+- Decides, endpoint by endpoint, what this service does while that dependency is slow — answer
+  without the enriched part, refuse quickly, or keep waiting — and says which the business wants
+  for each.
 - Weighs isolating the pool against a non-blocking rewrite on cost and on who maintains it.
 - Names the alert that should have fired before the pages did.
 
@@ -109,8 +111,8 @@ rather than with capacity.
 
 ## Notes
 
-Tomcat's default maximum request-handling threads is 200. `SimpleClientHttpRequestFactory`, the
-default behind a plain `RestTemplate`, has connect and read timeouts of zero, meaning no timeout
-at all. Spring Boot 3.4 added `spring.http.client.*` properties to set them centrally. The health
-endpoint being slow is the detail that separates a candidate who has seen this from one who has
-read about it.
+Tomcat's default maximum number of request-handling threads is 200 (`server.tomcat.threads.max`).
+A plain `RestTemplate` uses `SimpleClientHttpRequestFactory`, which applies no connect or read
+timeout unless one is configured, so the call can wait indefinitely. Spring Boot 3.4 added
+`spring.http.client.*` properties for setting those centrally. The health endpoint being slow is
+the detail that separates a candidate who has seen this from one who has read about it.

@@ -5,9 +5,9 @@ title: Four services, four ways of not paying twice
 category: microservices
 topic: idempotency
 level: lead
-tags: [correctness, retries, failure-modes, operations]
+tags: [idempotency, correctness, retries, failure-modes, operations]
 time_estimate_min: 10
-order: 60
+order: 55
 links:
   related: [microservices-distributed-transactions-compensation-cannot-undo-01, spring-proxying-retry-transaction-order-01]
 ---
@@ -57,7 +57,7 @@ choose between them under a stated budget, and name the running cost each one le
 ## Strong signals
 
 - Asks what the callers send today, because nothing works until two attempts can be tied together
-- Says out loud which of the four he will not touch this quarter, and why that is the right call
+- Says out loud which of the four they will not touch this quarter, and why that is the right call
 - Sorts the flows into those where a repeat must never happen and those where it only has to be
   found by the next morning
 - Treats the ninety refunds as evidence to be explained — which of the four let them through —

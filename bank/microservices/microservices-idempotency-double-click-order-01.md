@@ -5,7 +5,7 @@ title: Double-click on Place Order creates two orders
 category: microservices
 topic: idempotency
 level: junior
-tags: [correctness, retries, api-design]
+tags: [idempotency, correctness, retries, api-design]
 time_estimate_min: 6
 order: 30
 links:

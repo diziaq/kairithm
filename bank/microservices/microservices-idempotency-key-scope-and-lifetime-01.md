@@ -5,7 +5,7 @@ title: Where the request reference lives and how long it lasts
 category: microservices
 topic: idempotency
 level: mid
-tags: [correctness, api-design, transactions, operations]
+tags: [idempotency, correctness, api-design, transactions, operations]
 time_estimate_min: 8
 order: 40
 links:

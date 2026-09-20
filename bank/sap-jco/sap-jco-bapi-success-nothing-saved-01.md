@@ -29,8 +29,8 @@ absence of a Java exception says nothing about what SAP did.
 - The number in the result is allocated during the call and proves nothing about the outcome
 - The `RETURN` table has to be read first: message type `E` or `A` means do not save, and call
   `BAPI_TRANSACTION_ROLLBACK` instead
-- A Java exception means the call itself failed; a business refusal arrives as data, not as an
-  exception
+- A BAPI is specified to report business problems as rows in `RETURN` rather than by raising, so
+  a call that raises nothing has told you nothing yet — the result has to be inspected
 
 ## Expected knowledge
 
@@ -86,4 +86,5 @@ call it is meant to save — that is the deeper card.
 
 ## Sources
 
-- https://www.se80.co.uk/sap-function-modules/?name=bapi_transaction_commit
+- https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-us/abapcommit.htm
+- https://help.sap.com/doc/abapdocu_752_index_htm/7.52/en-US/abensap_luw_update_task_abexa.htm

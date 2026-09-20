@@ -9,7 +9,7 @@ tags: [performance, operations, integration]
 time_estimate_min: 5
 order: 40
 links:
-  deeper: [sap-jco-connection-pooling-capacity-across-nodes-01]
+  deeper: [sap-jco-connection-pooling-logons-despite-pool-01]
 ---
 
 ## Ask
@@ -84,3 +84,8 @@ in front of them defeats it, and can say what the waste costs on the SAP side.
 
 A candidate who has only used JCo through a framework may not know the pool exists. Give credit
 for reasoning about logon cost even if they cannot name the configuration.
+
+## Sources
+
+- https://support.sap.com/content/dam/support/en_us/library/ssp/products/connectors/jco/jco_30_documentation_en.pdf
+- https://github.com/rafaelfvalim/JcoAbapDojo/blob/main/ABAP_AS1.jcoDestination

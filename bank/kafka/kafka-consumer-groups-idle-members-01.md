@@ -35,13 +35,14 @@ wide a consumer can be scaled.
 ## Expected knowledge
 
 - A group divides the partitions of the subscribed topics among its members
+- The division is over every partition the group subscribes to taken together, not topic by topic
 - Two separate groups on one topic each get their own full copy of the records
 
 ## Strong signals
 
 - Asks whether the lag is spread evenly or sitting on one partition, before suggesting anything
-- Points out that the extra pods are not free, because each one arriving makes the group hand
-  everything out again
+- Points out that the extra pods are not free, because each one arriving makes the group divide
+  the work up again
 - Asks how long one record takes to handle, since that may be the real ceiling
 
 ## Weak signals
@@ -74,9 +75,10 @@ wide a consumer can be scaled.
 
 - Someone suggests giving each pod its own group id so that they all get work. What happens then?
   probes: that a second group gets a full copy of everything, not a share
-- They add partitions, lag finally falls, and a report that used to be right is now wrong. What
-  changed?
-  probes: connects the width change back to per-key sequence
+- The same six pods also subscribe to a second topic, that one with nine partitions. Does the
+  picture change?
+  probes: that the division is over every partition the group subscribes to, not topic by topic,
+  so the idle pods now have work
 - The three busy pods each take four hundred milliseconds per record. Is adding partitions still
   the right move?
   probes: whether they can locate the limit in the handler rather than in the topic

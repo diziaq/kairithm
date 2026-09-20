@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 from .bank import Bank, Problem, Question, load_bank
@@ -302,6 +303,36 @@ def _check_filename(question: Question) -> list[Problem]:
     ]
 
 
+def _check_order_collisions(bank: Bank) -> list[Problem]:
+    """Two cards in one category claiming the same position in sequential mode.
+
+    Not fatal — the sort falls back to the id, so a run is still deterministic — but the author
+    asked for a position and did not get it, and nothing else would ever tell them.
+    """
+    claimed: dict[tuple[str, int], list[Question]] = defaultdict(list)
+    for question in bank.questions.values():
+        if question.order is not None:
+            claimed[(question.category, question.order)].append(question)
+
+    found: list[Problem] = []
+    for (category, order), questions in claimed.items():
+        if len(questions) < 2:
+            continue
+        for question in sorted(questions, key=lambda q: q.id):
+            others = [q.id for q in questions if q.id != question.id]
+            found.append(
+                Problem(
+                    question.path,
+                    f"order {order} is also claimed in {category} by {', '.join(sorted(others))}; "
+                    f"sequential mode will fall back to the id",
+                    card_id=question.id,
+                    field="order",
+                    severity=WARNING,
+                )
+            )
+    return found
+
+
 def validate_bank(bank: Bank) -> list[Problem]:
     """Every problem in the bank: the loader's, plus everything only visible across cards."""
     found: list[Problem] = list(bank.warnings)
@@ -310,6 +341,7 @@ def validate_bank(bank: Bank) -> list[Problem]:
         found += _check_links(bank, question)
         found += _check_follow_ups(question)
         found += _check_filename(question)
+    found += _check_order_collisions(bank)
     return sorted(found, key=lambda p: (p.severity != ERROR, p.path, p.field, p.problem))
 
 

@@ -23,8 +23,9 @@ the restart habit with a control the team can see and enforce.
 
 ## Listen for
 
-- A stateful sequence reserves its connection until it is explicitly released; if the release is
-  skipped on an exception path, that connection is gone for the life of the process
+- A stateful sequence reserves its connection for its exclusive use until it is explicitly
+  released; if the release is skipped on an exception path, nothing in the default setup ever
+  takes it back, so it is gone until the process dies
 - Restarting clears it because the process dies, which is why it looks like a memory problem and
   is not
 - Two weeks after a release, growing slowly, points at a rare error path rather than at traffic
@@ -93,10 +94,26 @@ the restart habit with a control the team can see and enforce.
 
 ## Notes
 
-Verified: failing to close a stateful sequence leaves that connection reserved and open for the
-life of the process.
+Verified: failing to close a stateful sequence leaves that connection reserved and open. In the
+default, thread-bound setup nothing reclaims it, so it is held until the process ends — which is
+why a restart appears to fix the problem.
 
-NEEDS-REVIEW — unverified claim about automatic cleanup on the SAP side: whether an idle stateful
-RFC session is timed out, and which profile parameter governs it, should be confirmed with Basis
-for the specific system. Do not let a candidate rely on it, and do not mark them wrong for
-asking.
+Verified, and worth having in your pocket as a ceiling probe: a leaked sequence is not
+irrecoverable by design. If the application registers a `SessionReferenceProvider`, JCo checks
+periodically whether the session is still alive and releases the context and cancels its calls
+when it is not. That is a second, structural answer to this card beyond the `finally` block, and
+a candidate who reaches it is well above the bar. Do not expect it.
+
+NEEDS-REVIEW — genuinely unverifiable rather than merely unchecked. Whether the SAP application
+server itself times out an idle *stateful* RFC session held open by an external client, and which
+profile parameter would govern that, could not be confirmed from any public SAP documentation;
+the SAP notes that discuss the symptom are behind a login wall. The gateway parameters that do
+exist govern registered-program and CPIC connections, which is a different layer, and
+`jco.session_timeout` is a client-side setting, not a server one. So: a candidate who assumes SAP
+tidies up after them is making an unsupported assumption and should be pushed on it — but do not
+assert the opposite either. Confirm with Basis per system.
+
+## Sources
+
+- https://support.sap.com/content/dam/support/en_us/library/ssp/products/connectors/jco/jco_30_documentation_en.pdf
+- https://github.com/cemeng/sap-integration/blob/master/sapjco3-darwinintel64-3.0.14/javadoc/com/sap/conn/jco/JCoContext.html

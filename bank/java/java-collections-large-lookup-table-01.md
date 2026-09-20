@@ -14,25 +14,26 @@ links:
 
 ## Ask
 
-A pricing service keeps forty million quotes in a `HashMap<Long, Quote>`, rebuilt from scratch
-every hour and never written to in between. It is read about a hundred thousand times a second. A
-heap dump says two of its six gigabytes are the map itself rather than the quotes. Three proposals
-are on the table: a primitive-keyed map from a third-party library, two sorted arrays the team
-would search themselves, or moving the table out into a shared cache. How do you decide, and what
-do you tell the team about living with whichever one you pick?
+A pricing service keeps a huge lookup table in a `HashMap<Long, Quote>`, rebuilt hourly and
+read-only in between. A heap dump says a third of the heap is the map's own structure, not the
+quotes. The proposals: a primitive-keyed map from a library, two sorted arrays we search
+ourselves, or a shared cache outside the process. How do you choose, and what is the team
+signing up for?
 
 ## Tests
 
-Whether the candidate drives the choice from the constraints that are actually binding and can
+Whether the candidate establishes which constraints are actually binding before choosing, and can
 name what each option costs the people who maintain it afterwards, rather than ranking the three
 on lookup speed.
 
 ## Listen for
 
+- Asks for the numbers the question withholds: how many rows, how many reads a second, how much
+  heap there is, what the hourly rebuild is allowed to cost
 - Asks what the reads look like before anything else: single keys or ranges, how the key is
-  distributed, whether a miss is normal, what the hourly rebuild is allowed to cost
-- Says where the two gigabytes go — a boxed key and an entry object per row, plus the table slot,
-  all of it per row and none of it proportional to the data
+  distributed, whether a miss is normal
+- Says where the map's own bytes go — a boxed key and an entry object per row, plus the table
+  slot, all of it per row and none of it proportional to the data
 - Uses "never written between rebuilds" as the thing that rules options in: a structure built once
   and only read is a different problem from one changed in place
 - The shared cache is a different shape of answer, not a faster one: a lookup becomes a call that
@@ -56,7 +57,8 @@ on lookup speed.
 - Treats a new dependency as something to track, upgrade and eventually remove, and checks whether
   its types would spread through signatures across the codebase
 - Says which measured result would make them leave the current map alone
-- Notices that six gigabytes is also a collector question and asks what the pauses look like today
+- Notices that a heap this size is also a collector question and asks what the pauses look like
+  today
 
 ## Weak signals
 
@@ -106,11 +108,21 @@ on lookup speed.
 
 ## Notes
 
+The figures, if the candidate asks — and a good one asks: forty million rows, six gigabytes of
+heap with two of them the map's own structure, about a hundred thousand reads a second, and an
+hourly rebuild that currently takes a couple of minutes. Hand them over one at a time rather than
+reading them out, and note which ones they went looking for.
+
 Rough arithmetic for the map: a boxed key, an entry object and a table slot come to something like
 fifty bytes a row under a compressed heap, before the value. The order of magnitude is the point,
 not the figure — a candidate who wants to measure it rather than accept it is answering well. The
 card is not looking for a particular winner; the arrays are a defensible choice if the candidate
 says what the team is signing up for.
+
+Distinct from the in-process cache card, which shares the words but not the question: there the
+structure is a partial, expiring copy of something authoritative elsewhere, and the subject is
+staleness and what a wrong answer costs. Here the table is complete and correct by construction,
+and the subject is which representation to pay for and who lives with it.
 
 ## Sources
 

@@ -9,7 +9,7 @@ tags: [testing, correctness, failure-modes]
 time_estimate_min: 6
 order: 90
 links:
-  deeper: [spring-testing-context-cache-01]
+  deeper: [spring-testing-rollback-never-commits-01]
   related: [spring-configuration-property-precedence-01]
 ---
 

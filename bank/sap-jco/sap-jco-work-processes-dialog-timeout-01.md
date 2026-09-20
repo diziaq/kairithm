@@ -87,6 +87,20 @@ runtime limit, and treats that limit as a design constraint rather than a settin
 
 ## Notes
 
-The default for `rdisp/max_wprun_time` is commonly 600 seconds but is site-specific; the point is
-that a limit exists and is shared, not its value. Newer kernels expose additional parameters for
-the same purpose — do not fail a candidate on the parameter name.
+Verified: `rdisp/max_wprun_time` is the maximum uninterrupted runtime of a dialog step, the
+common default is 600 seconds, it applies instance-wide, and exceeding it terminates the session
+with a `TIME_OUT` short dump visible in `ST22`. Background work processes are not subject to it,
+which is the whole basis of the third follow-up.
+
+Verified, and the reason not to test the parameter name: from kernel 7.40 the limit moved to
+priority-based parameters — `rdisp/scheduler/prio_high/max_runtime`,
+`rdisp/scheduler/prio_normal/max_runtime` and `rdisp/scheduler/prio_low/max_runtime` — with
+`rdisp/max_wprun_time` taking precedence where it is still set, and it is removed from the kernel
+altogether as of `SAP_BASIS` 755. A candidate on a recent system may correctly not recognise the
+classic name. Accept "there is a runtime limit on the dialog side and Basis owns it".
+
+## Sources
+
+- https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/abenapp_server_resources.htm
+- https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/abenrfc_dialog.htm
+- https://help.sap.com/doc/saphelp_nw73ehp1/7.31.19/en-us/4b/2b3c3e8eb51780e10000000a42189c/content.htm

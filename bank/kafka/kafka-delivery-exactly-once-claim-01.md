@@ -5,7 +5,7 @@ title: A team claims their pipeline is exactly once
 category: kafka
 topic: delivery-semantics
 level: senior
-tags: [transactions, correctness, consumers]
+tags: [transactions, correctness, idempotency, consistency]
 time_estimate_min: 8
 order: 30
 links:

@@ -15,10 +15,11 @@ links:
 ## Ask
 
 To survive database deadlocks, a team puts `@Retryable` and `@Transactional` on the same service
-method. It works in their integration tests. In production every deadlock produces three
-attempts that all fail, and the exception the caller finally sees is not the deadlock at all —
-it is thrown on the way out, by code that never appears in their stack trace. You are the tech
-lead reviewing this. What is wrong, and what do you require before it ships?
+method, with a `@Recover` method that returns a fallback so the caller still gets an answer. It
+works in their integration tests. In production every deadlock produces three attempts that all
+fail, the fallback runs — and the caller still gets an exception, one that is not the deadlock,
+thrown on the way out, by code that never appears in their stack trace. You are the tech lead
+reviewing this. What is wrong, and what do you require before it ships?
 
 ## Tests
 
@@ -32,8 +33,9 @@ order structural rather than incidental.
   outside of the other
 - With retry on the inside, every attempt runs inside the one unit of work that the first
   failure already doomed, so the retries cannot succeed
-- The unfamiliar exception at the end comes from the commit attempt on a unit of work that had
-  already been marked as unable to commit
+- The recovery returned normally, so the boundary tried to commit a unit of work that the first
+  failure had already marked as unable to commit — that is where the unfamiliar exception is
+  thrown, and it is why the fallback made things worse rather than better
 - The retry has to be outside, so each attempt gets a fresh unit of work
 - Making the order explicit: two beans, or driving the unit of work in code inside the retried
   block, rather than relying on relative ordering of the wrappers
@@ -70,7 +72,8 @@ order structural rather than incidental.
 
 ### senior
 
-- Explains why the final exception comes from the commit and not from the deadlock.
+- Explains why the final exception comes from the commit and not from the deadlock, and why
+  returning a fallback from inside the boundary could not rescue it.
 - Puts the retry outside by splitting the method across two beans, or by driving the unit of
   work explicitly inside the retried block.
 - Specifies the test: provoke the failure twice, assert separate attempts reached the database.
@@ -102,8 +105,12 @@ order structural rather than incidental.
 
 ## Notes
 
-`@EnableRetry`, `@EnableTransactionManagement` and `@EnableCaching` all take an `order` whose
-default is `Ordered.LOWEST_PRECEDENCE`, so when two advisors share an order the relative order is
-not defined by anything the author wrote. The failure described is
-`UnexpectedRollbackException`: a participating unit of work that failed marks the shared
-transaction rollback-only, and the commit at the outer boundary then throws.
+`@EnableTransactionManagement` and `@EnableCaching` both expose an `order` attribute defaulting to
+`Ordered.LOWEST_PRECEDENCE`, and Spring Retry's `@EnableRetry` exposes the same attribute; when two
+advisors share an order, their relative position is not determined by anything the author wrote.
+
+The failure described is `UnexpectedRollbackException`. The chain matters: the repository call that
+deadlocked ran in a participating transaction, whose failure marks the shared transaction
+rollback-only; the recovery method then returns normally, and the commit at the outer boundary
+throws. Without the recovery the caller would simply see the deadlock exception after three useless
+attempts — it is the fallback returning normally that turns it into the unfamiliar one.

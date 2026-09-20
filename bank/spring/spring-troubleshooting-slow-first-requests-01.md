@@ -111,5 +111,6 @@ Boot exposes liveness and readiness groups on the health endpoint, enabled autom
 detects Kubernetes or via `management.endpoint.health.probes.enabled`; readiness moves to
 accepting traffic after `ApplicationReadyEvent`, and `AvailabilityChangeEvent` lets the
 application push itself out of rotation. Hikari's `minimum-idle` defaults to the maximum pool
-size but the pool is still filled lazily. `spring.main.lazy-initialization=true` is the setting
+size, but connections are opened on demand rather than up front, so the pool is nowhere near full
+at the moment the process reports itself started. `spring.main.lazy-initialization=true` is the setting
 behind the last follow-up.

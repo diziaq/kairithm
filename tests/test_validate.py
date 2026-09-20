@@ -234,3 +234,23 @@ def test_the_cli_exits_non_zero_on_an_error_and_zero_on_a_clean_bank(tmp_path, c
 def test_the_shipped_bank_validates_clean():
     problems = validate_bank(load_bank())
     assert problems == [], [p.line() for p in problems]
+
+
+def test_two_cards_claiming_the_same_position_is_a_warning(tmp_path):
+    write(tmp_path, "java/a.md", card(card_id="java-a-01", extra_frontmatter="order: 20"))
+    write(tmp_path, "java/b.md", card(card_id="java-b-01", extra_frontmatter="order: 20"))
+    found = problems_for(tmp_path, "order")
+
+    assert len(found) == 2, "both cards are named, because either one could move"
+    assert all(p.severity == WARNING for p in found)
+    assert "also claimed in java by java-b-01" in found[0].problem
+
+
+def test_the_same_position_in_two_different_categories_is_fine(tmp_path):
+    write(tmp_path, "java/a.md", card(card_id="java-a-01", extra_frontmatter="order: 20"))
+    write(
+        tmp_path,
+        "kafka/b.md",
+        card(card_id="kafka-b-01", category="kafka", topic="delivery", extra_frontmatter="order: 20"),
+    )
+    assert problems_for(tmp_path, "order") == []

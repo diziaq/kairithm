@@ -9,7 +9,7 @@ tags: [collaboration, delivery, failure-modes]
 time_estimate_min: 6
 order: 50
 links:
-  deeper: [general-estimation-date-for-unknown-system-01]
+  deeper: [general-estimation-three-numbers-one-ticket-01]
 ---
 
 ## Ask

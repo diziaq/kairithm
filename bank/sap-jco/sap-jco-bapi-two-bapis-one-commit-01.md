@@ -94,11 +94,16 @@ will refuse to promise atomicity across systems instead of inventing it.
 
 ## Notes
 
-Verified: with the wait flag set, the commit is performed so that the changed data is readable
-afterwards; without it, an immediate read can still see the old state, and an update failure
-surfaces in the update queue rather than in the caller's result.
+Verified: `BAPI_TRANSACTION_COMMIT` issues `COMMIT WORK` with `WAIT` blank and `COMMIT WORK AND
+WAIT` with `WAIT` set. `AND WAIT` means processing does not continue until the update work
+process has run the update modules, which is what makes the data reliably readable on an
+immediate read afterwards; without it the caller resumes while the update is still running, so
+an immediate read-back can legitimately return the old state. An update-task failure is recorded
+in the update queue, visible in `SM13`, and does not appear in the caller's `RETURN` table. Treat
+`SM13` as interviewer background — the candidate needs the concept, not the code.
 
 ## Sources
 
-- https://community.sap.com/t5/application-development-and-automation-discussions/how-and-when-to-use-wait-parameter-in-bapi-transaction-commit-help/td-p/4473620
+- https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-us/abapcommit.htm
+- https://help.sap.com/doc/abapdocu_752_index_htm/7.52/en-US/abensap_luw_update_task_abexa.htm
 - https://github.com/SAP-samples/abap-cheat-sheets/blob/main/17_SAP_LUW.md

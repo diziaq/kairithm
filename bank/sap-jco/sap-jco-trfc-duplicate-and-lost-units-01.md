@@ -110,12 +110,24 @@ The receiver-side callbacks are `JCoServerTIDHandler` — `checkTID`, `commit`, 
 unit that failed on a previous attempt, or it will never be delivered again. A candidate who
 describes the state machine without the method names has answered this card.
 
-NEEDS-REVIEW — unverified claim about the exact conditions under which the sending system
-re-sends a unit whose confirmation was lost, and about the behaviour when the commit callback
-itself throws. Treat the safe position as: a repeat is possible until the sender has confirmed,
-so keep the record until then.
+Verified, and the load-bearing half of this card: the documented contract is that `checkTID` has
+to return `true` for a transaction id that failed on a previous attempt, or the unit will never
+be delivered again. `false` is the answer only for one that definitely committed. Returning
+`false` for a unit that did not complete is a permanent data-loss bug in the handler — which is
+exactly the three missing movements in the scenario.
+
+NEEDS-REVIEW — narrowed after review, and now genuinely unverifiable rather than merely
+unchecked. Two specific things could not be confirmed from public SAP documentation: (a) the
+precise conditions and timing under which the sending system re-sends a unit whose `confirmTID`
+was lost — what is documented is only that the sender keeps the record while the unit is
+unconfirmed, and that a stale record is eventually cleaned up, not the retry schedule; (b) what
+happens when the `commit` callback itself throws, which is not specified anywhere reachable and
+appears to be implementation-dependent. Do not ask a candidate to state either. The safe position
+the card is built on — a repeat is possible until the sender has confirmed, so keep the record
+until then — is sound regardless of how (a) and (b) resolve.
 
 ## Sources
 
-- https://community.sap.com/t5/technology-q-a/sap-jco-v3-with-idoc-what-happens-if-destination-confirmtid-method-fails/qaq-p/11534455
-- https://help.hana.ondemand.com/javadoc/com/sap/conn/jco/JCoDestination.html
+- https://help.sap.com/doc/saphelp_nwpi711/7.1.1/en-US/48/88b5c5521672d3e10000000a42189c/content.htm
+- https://help.sap.com/doc/saphelp_nw73ehp1/7.31.19/en-US/41/c78586b4f349dc90d522a75cb1a5bd/content.htm
+- https://help.sap.com/doc/saphelp_nw74/7.4.16/en-US/48/99b963ee2b73e7e10000000a42189b/content.htm

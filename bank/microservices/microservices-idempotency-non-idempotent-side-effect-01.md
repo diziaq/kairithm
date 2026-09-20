@@ -5,7 +5,7 @@ title: The write is safe to repeat, the email and the warehouse are not
 category: microservices
 topic: idempotency
 level: senior
-tags: [correctness, retries, failure-modes, transactions]
+tags: [idempotency, correctness, retries, failure-modes, transactions]
 time_estimate_min: 9
 order: 50
 links:
@@ -15,30 +15,34 @@ links:
 
 ## Ask
 
-Your order handler is retried by the platform whenever it throws, and you have already made the
-database write safe to repeat. The same handler also sends a confirmation email and calls the
-warehouse API, which has no notion of a repeat. A retry fires. What actually goes wrong, and what
-do you do about those two steps?
+Your order handler writes the order, sends a confirmation email, and calls the warehouse API to
+create a shipment. You have already made the database write safe to repeat — the same order twice
+leaves one row. Last night the handler threw after the warehouse call and the platform ran it
+again. This morning one customer has two confirmation emails, and a second pallet has left the
+building. The warehouse API has no notion of a repeat. What do you change about those two steps?
 
 ## Tests
 
-Whether the candidate understands that safety against repeats is a property of each effect, not
-of the handler, and can design for effects they do not control.
+Whether the candidate treats safety against repeats as a property of each individual effect rather
+than of the handler, and can design for effects that land in systems they do not control and
+cannot take back.
 
 ## Listen for
 
 - The safe write buys nothing for the other two: the guarantee stops at the edge of their own
-  store
-- The handler now has three effects with three different behaviours on a repeat, and the retry
-  replays all of them
+  store, and a pallet is not a database row
+- The handler has three effects with three different behaviours on a repeat, and a rerun replays
+  all of them regardless of which one failed
 - Splits the work: commit local state first, then drive the outside effects from a durable record
-  that remembers which ones are done
+  that remembers which ones are already done
 - Sends the warehouse a reference of their own choosing so the other side can recognise a repeat,
   and asks the warehouse team for that if it does not exist
 - Where a lookup exists, asks the other side whether the shipment is already there before creating
   one
-- Weighs the two effects differently: a second email annoys a customer, a second shipment costs
-  real money
+- Weighs the two effects differently: a second email costs an apology, a second pallet costs the
+  freight, the stock and somebody's afternoon
+- Separates preventing the second pallet from noticing it went out — the second is cheaper and
+  works even on a system you cannot change
 
 ## Expected knowledge
 
@@ -63,9 +67,9 @@ of the handler, and can design for effects they do not control.
 
 ### mid
 
-- Sees that the retry replays all three effects and names the visible damage.
+- Sees that the rerun replays all three effects and that only one of them was made safe.
 - Suggests sending something the warehouse can match on, or checking before creating.
-- Treats the email as the lesser problem, with a reason.
+- Treats the email as the lesser problem, with a reason in money or effort.
 
 ### senior
 

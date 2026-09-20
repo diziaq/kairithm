@@ -92,3 +92,8 @@ change that can actually be rolled out.
 
 The binary contract point is the one people miss: a caller compiled against the two-component
 constructor does not recompile magically, and the old constructor no longer exists in the new jar.
+
+## Sources
+
+- https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.10
+- https://docs.oracle.com/javase/specs/jls/se21/html/jls-13.html

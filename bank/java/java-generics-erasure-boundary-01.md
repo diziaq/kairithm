@@ -91,3 +91,9 @@ stops and a runtime failure starts.
   probes: what is retained in signatures, and the empty-subclass trick for capturing an argument
 - When is passing the class object genuinely not worth it?
   probes: judgement — a confined cast with a stated invariant can be the right call
+
+## Sources
+
+- https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.6
+- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/SafeVarargs.html
+- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/ParameterizedType.html

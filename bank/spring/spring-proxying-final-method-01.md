@@ -46,8 +46,8 @@ having memorised a list of rules.
 - Says the framework does log that it could not wrap the method, and that nobody reads that log
   line, so the real defence is a test that asserts behaviour
 - Points out the test passed because the test never exercised a rollback
-- Mentions that the generated subclass is created without running the constructor, so its own
-  fields are empty and code reading a field off the injected object sees nothing
+- Notes that in a language where classes and members are final unless explicitly opened, this is
+  the default outcome rather than an accident, and knows what has to be added to make it work
 
 ## Weak signals
 
@@ -78,15 +78,17 @@ having memorised a list of rules.
 - Derives the rule for other unoverridable shapes instead of listing them.
 - Points out the test suite proved nothing because it never provoked a rollback, and says what
   the test should assert.
-- Connects it to the injected object being a different instance from the one written.
+- Says which of the two mechanisms was in play and why the class having no interface chose it,
+  rather than treating the keyword as the whole cause.
 
 ## Follow-ups
 
 - The reviewer says the tests all passed, so the change is safe. What is wrong with that?
   probes: the tests never provoked the behaviour the annotation provides
-- Same class, and someone calls the method from a `private` helper in the same file. Any
-  difference?
-  probes: whether the rule generalises to any call that never leaves the object
+- The class is changed so it implements an interface, and the context is configured to wrap
+  through that instead. Does the keyword still matter?
+  probes: whether the limitation follows from the mechanism or is believed to be a rule about
+  the keyword itself
 - How would you stop this shape of change reaching production again?
   probes: a behavioural test, or a build-time check, rather than reviewer vigilance
 
@@ -98,6 +100,9 @@ having memorised a list of rules.
 ## Notes
 
 With no interface the container uses a generated subclass; a `final` method cannot be overridden
-so it is not advised, and Spring logs that it could not proxy it. A `final` class cannot be
-subclassed at all and bean creation fails at startup. Since Spring 4, the generated subclass is
-instantiated without invoking the constructor, so its own fields are at their default values.
+so it is not advised, and Spring logs at INFO that it could not proxy it — which nobody reads. A
+`final` class cannot be subclassed at all and bean creation fails at startup, which is the loud
+half of the pair. With an interface-based proxy the limitation disappears for methods declared on
+the interface, because the proxy implements the interface rather than extending the class. In
+Kotlin, classes and members are final unless opened, which is why Spring ships a compiler plugin
+that opens the annotated ones.

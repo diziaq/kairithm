@@ -35,7 +35,7 @@ cached, and can act on that without reaching for a redeploy.
 ## Expected knowledge
 
 - `JCoDestination.getRepository()` and the function template it hands out
-- `JCoRepository.clear()` and removing a single cached template
+- `JCoRepository.clear()`, and `removeFunctionTemplateFromCache(String)` for a single template
 
 ## Strong signals
 
@@ -92,6 +92,13 @@ cached, and can act on that without reaching for a redeploy.
 If a candidate says "I would just redeploy", ask what they would do if the service could not be
 restarted during business hours. That is where the interesting answer starts.
 
+Verified: `JCoRepository.clear()` empties both the function template cache and the record
+metadata cache. The targeted call is `removeFunctionTemplateFromCache(String functionName)`, with
+`removeRecordMetaDataFromCache` and `removeClassMetaDataFromCache` alongside it. Do not test the
+spelling — a candidate who knows a single template can be dropped without clearing everything has
+made the point.
+
 ## Sources
 
-- https://javadoc.io/static/com.sap.cloud/neo-java-web-api/2.21.5/com/sap/conn/jco/JCoRepository.html
+- https://github.com/cemeng/sap-integration/blob/master/sapjco3-darwinintel64-3.0.14/javadoc/com/sap/conn/jco/JCoRepository.html
+- https://support.sap.com/content/dam/support/en_us/library/ssp/products/connectors/jco/jco_30_documentation_en.pdf

@@ -15,10 +15,11 @@ links:
 ## Ask
 
 A team makes their settings class immutable: a Java record annotated
-`@ConfigurationProperties(prefix = "billing")`, and they keep `@Component` on it so it is still
-picked up. The application starts, nothing is logged, and every field holds the default from the
-record's compact constructor — none of the values in `application.yml` are applied. What is going
-on, and how would you have caught this in a test?
+`@ConfigurationProperties(prefix = "billing")`. To be certain it exists as a bean, they declare it
+from a `@Bean` method in a configuration class, constructing it with sensible defaults. The
+application starts, nothing is logged, and every field still holds the default that `@Bean` method
+passed in — none of the values in `application.yml` are applied. What is going on, and how would
+you have caught this in a test?
 
 ## Tests
 
@@ -29,9 +30,10 @@ creating that object, and whether they know the failure mode is silence rather t
 
 - Filling an immutable object means passing the values in when it is created, so whoever creates
   the object has to do the binding
-- A bean picked up by scanning is created the ordinary way, so nothing binds into it
-- Names the registration route that does do it: declaring the settings type where the framework
-  is told to bind it, or scanning specifically for settings types
+- Because the application constructed the object itself, the framework can only fill it
+  afterwards, by setting properties on an object that already exists — and there are none to set
+- Names the registration route where the framework creates the object itself, so it can pass the
+  values through the constructor
 - Knows a missing key is not an error by default, which is why this is silent
 - Would assert on the bound object in a test rather than trusting startup
 
@@ -63,9 +65,9 @@ creating that object, and whether they know the failure mode is silence rather t
 
 ### mid
 
-- Separates creating the object from filling it, and says the ordinary creation path does not
-  fill it.
-- Names a registration route that does bind, and removes the scanning annotation.
+- Separates creating the object from filling it, and says an object the application built itself
+  cannot be filled through its constructor afterwards.
+- Names a registration route that does bind, and takes the hand-written declaration back out.
 - Points out that nothing complained, and adds a test that asserts on the values.
 
 ### senior
@@ -86,6 +88,10 @@ creating that object, and whether they know the failure mode is silence rather t
   probes: whether they know a list is replaced wholesale, not merged
 - How would you prove the mapping works without starting the service?
   probes: a focused test over the binder rather than a full context
+- Somebody suggests marking the record so it is picked up by scanning instead. What do you expect
+  to happen?
+  probes: whether they can predict a different, loud failure — the container trying to satisfy the
+  record's parameters from the bean graph — rather than another silent one
 
 ## Sources
 
@@ -94,8 +100,11 @@ creating that object, and whether they know the failure mode is silence rather t
 
 ## Notes
 
-Constructor binding is not used for a bean created through regular mechanisms such as
-`@Component` or a `@Bean` method — this is stated in the reference documentation. The working
-routes are `@EnableConfigurationProperties(BillingProperties.class)` or
-`@ConfigurationPropertiesScan`. In Spring Boot 3, `@ConstructorBinding` may only be placed on a
-constructor, and is only needed when the type has more than one.
+Constructor binding is not used for a bean created through regular mechanisms such as a `@Bean`
+method, `@Component` or `@Import` — this is stated in the reference documentation. Such a bean
+falls back to JavaBean binding onto the instance that already exists; a record has nothing to set,
+so the bind is a no-op and nothing is reported. The working routes are
+`@EnableConfigurationProperties(BillingProperties.class)` or `@ConfigurationPropertiesScan`, where
+the framework instantiates the type and can pass the values to the constructor. In Spring Boot 3,
+`@ConstructorBinding` may only be placed on a constructor, and is only needed when the type has
+more than one.

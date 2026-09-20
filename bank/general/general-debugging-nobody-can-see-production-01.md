@@ -1,7 +1,7 @@
 ---
 id: general-debugging-nobody-can-see-production-01
 schema_version: 1
-title: A week of every hard bug goes on seeing what production did
+title: A week per bug, and most of it spent working out what production did
 category: general
 topic: debugging
 level: lead

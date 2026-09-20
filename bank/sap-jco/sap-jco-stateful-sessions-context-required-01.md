@@ -92,14 +92,20 @@ why that turns a correctness bug into a concurrency-dependent one.
 
 ## Notes
 
-Verified: JCo treats all calls between `begin` and `end` as coherent and sends them over the same
-connection, and a missing `end` leaks that connection for the life of the process.
+Verified: `JCoContext.begin(destination)` starts a stateful call sequence, and the same physical
+connection is reserved for exclusive use by that sequence until it ends — which is what keeps the
+ABAP session, and therefore the registered changes and the locks, alive across the two calls.
+Contexts nest: `end` has to be called as many times as `begin` was, and the connection is
+released only when the outermost one ends.
 
-NEEDS-REVIEW — unverified claim about how the scope is defined in managed environments, where a
-session provider rather than the plain thread may determine it. In a plain standalone application
-the scope is the calling thread.
+Verified: the scope is bound to the calling thread by default. In a managed environment where a
+unit of work may move between threads, an application registers a `SessionReferenceProvider`
+through `Environment.registerSessionReferenceProvider`, and JCo then asks that provider whether
+the session is still alive rather than relying on the thread. This resolves the question the
+previous review flag left open — a candidate who says "it follows the thread unless you tell JCo
+otherwise" is correct.
 
 ## Sources
 
-- https://help.hana.ondemand.com/javadoc/com/sap/conn/jco/JCoContext.html
 - https://support.sap.com/content/dam/support/en_us/library/ssp/products/connectors/jco/jco_30_documentation_en.pdf
+- https://github.com/cemeng/sap-integration/blob/master/sapjco3-darwinintel64-3.0.14/javadoc/com/sap/conn/jco/JCoContext.html

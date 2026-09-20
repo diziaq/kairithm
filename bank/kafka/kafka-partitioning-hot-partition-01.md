@@ -9,7 +9,7 @@ tags: [performance, ordering, observability]
 time_estimate_min: 6
 order: 10
 links:
-  deeper: [kafka-partitioning-widen-live-topic-01]
+  deeper: [kafka-partitioning-second-writer-other-client-01]
   related: [kafka-ordering-missing-key-01]
 ---
 
@@ -63,7 +63,8 @@ why adding more pods cannot move this particular graph.
 
 - Names the key as what decides where a record is stored.
 - Says one dominant key value explains a single busy partition.
-- Knows a thirteenth pod in the group would be left with nothing to read.
+- Says no amount of extra capacity can be pointed at the busy partition, because one member reads
+  it from end to end.
 
 ### mid
 

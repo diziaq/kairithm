@@ -16,13 +16,13 @@ links:
 
 You have taken over an internal HTTP client library that thirty services depend on. Today every
 failure comes out as a `RuntimeException` with a message, and callers are matching on the message
-text to decide whether to send the request again. What do you change, and how do you get thirty
-teams there?
+text to decide whether to send the request again. What do you change, and what do you stop those
+thirty teams from having to decide for themselves?
 
 ## Tests
 
-Whether the candidate designs failure as part of the published contract, and can sequence that
-change across consumers they do not control.
+Whether the candidate derives a failure taxonomy from what a caller can actually do about each
+case, and decides what the library absorbs itself rather than passing every failure outward.
 
 ## Listen for
 
@@ -72,18 +72,36 @@ change across consumers they do not control.
 
 ### lead
 
-- Starts from what the thirty callers do today and designs to that evidence.
-- Chooses defaults that are safe when a caller ignores the distinction entirely.
-- Owns the rollout: window, communication, who chases, what happens to a team that cannot move.
-- Says what the library should handle itself so most callers never have to decide.
+- Starts from what the thirty callers do today, reading their matching rules, and designs to that
+  evidence rather than to a taxonomy they like.
+- Draws the line between what the library retries on its own and what it must surface, and says
+  who owns the time and the load that its own retrying spends.
+- Chooses defaults that stay safe when a caller ignores the distinction entirely, and says what
+  that costs the caller who did care.
+- Weighs a checked hierarchy against an unchecked one by what each costs the layers in between and
+  the next person to add a case, rather than from doctrine.
+- Says what a team that cannot move for two quarters gets, without making that everyone's problem.
 
 ## Follow-ups
 
-- One team cannot upgrade for two quarters. Does that change the shape of what you build?
-  probes: coexistence and versioning rather than a single cut-over
 - A caller treats anything it does not recognise as safe to send again. What do you have to be
   careful about?
   probes: idempotency of the underlying call; defaults that stay safe when the caller is careless
+- Half the failures are the dependency being briefly unavailable, and every one of the thirty has
+  written its own loop for that. What do you do with that observation?
+  probes: what the library should absorb; thirty uncoordinated retry policies aimed at one service
 - Six months on, someone adds a new kind of failure to the library. What do you want to happen at
   the thirty call sites?
   probes: complete handling versus silent fall-through; whether adding a case breaks compilation
+
+## Notes
+
+The nearby card on adding a component to a shared record also has consumers who cannot be made to
+move, and a candidate can spend this whole card on rollout mechanics. That is the other card's
+subject. Steer back to the design: which failures the caller can act on, which the library should
+never have shown them, and what the type is supposed to make impossible to get wrong.
+
+## Sources
+
+- https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.1.1.2
+- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Throwable.html

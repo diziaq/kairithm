@@ -9,7 +9,7 @@ tags: [testing, failure-modes, correctness]
 time_estimate_min: 5
 order: 900
 links:
-  deeper: [java-testing-slow-suite-strategy-01]
+  deeper: [java-testing-mocks-assert-the-calls-01]
   related: [java-concurrency-shared-counter-01, spring-testing-leaky-state-01]
 ---
 

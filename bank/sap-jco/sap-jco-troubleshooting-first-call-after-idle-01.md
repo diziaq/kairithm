@@ -98,15 +98,29 @@ was using it, and can say which calls they would let a machine repeat.
 
 ## Notes
 
-The JCo release notes describe keepalive pings sent during long-running RFC client calls to stop
-network devices closing the socket under an in-flight call. That is a different case from a
-connection sitting unused in the pool overnight — do not let the two be conflated.
+Verified: the two pool settings behind the second half of the answer are
+`jco.destination.expiration_time`, the time in milliseconds after which an idle pooled connection
+may be closed, and `jco.destination.expiration_check_period`, the interval in milliseconds at
+which the checker thread looks for expired connections. Both matter: setting the first below the
+firewall's idle timeout achieves nothing if the second is longer than the gap it is meant to
+close. A candidate who spots that there are two numbers, not one, is ahead.
 
-NEEDS-REVIEW — unverified claim about whether JCo tests that a pooled connection is still alive
-before handing it out, or only discovers the dead socket when the call is sent. Do not hold a
-candidate to either version; the observable behaviour in the field is that the first call fails.
+Verified: JCo has sent CPIC keepalive pings to the gateway during long-running RFC client calls
+since 3.0.14, specifically to stop network devices closing the socket under an in-flight call.
+That is a different case from a connection sitting unused in the pool overnight — do not let the
+two be conflated, and note it means a candidate on a modern JCo will not have seen the in-flight
+variant of this symptom.
+
+NEEDS-REVIEW — confirmed as genuinely unverifiable rather than merely unchecked. Whether JCo
+tests that a pooled connection is still alive before handing it out, or only discovers the dead
+socket when the call is sent, is not stated in any reachable documentation, and no property
+governing such a check could be found. The documented behaviour is only the idle expiry above.
+Do not hold a candidate to either version; the observable behaviour in the field is that the
+first call fails, which is all the card needs.
 
 ## Sources
 
-- https://userapps.support.sap.com/sap/support/knowledge/en/2005477
 - https://github.com/cemeng/sap-integration/blob/master/sapjco3-darwinintel64-3.0.14/javadoc/releasenotes.html
+- https://support.sap.com/content/dam/support/en_us/library/ssp/products/connectors/jco/jco_30_documentation_en.pdf
+- SAP KBA 2005477, "Configurable SAP JCo pooling parameters" — names every pool property, but the
+  full text is behind an S-user login, so it is cited by number rather than linked.

@@ -5,7 +5,7 @@ title: A common library fourteen teams depend on and nobody owns
 category: microservices
 topic: ownership
 level: senior
-tags: [ownership, operations, api-design, testing]
+tags: [ownership, operations, api-design, maintainability]
 time_estimate_min: 9
 order: 230
 links:

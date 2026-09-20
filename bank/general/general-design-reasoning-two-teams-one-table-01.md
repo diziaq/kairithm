@@ -84,9 +84,10 @@ about the mechanics of getting access to it.
 
 ## Follow-ups
 
-- Six months later you need to split that column in two. Walk me through how that goes under
-  your proposal.
-  probes: whether the chosen shape survives change, and what coordination it forces
+- Six months later your team has to add a field that must never be empty, and the other team's
+  writes know nothing about it. How does that go under your proposal?
+  probes: whether the chosen shape survives a change of schema, and who has to be asked before
+  the change can happen at all
 - They agree to go through your service, and now their page takes forty milliseconds longer and
   goes down whenever you deploy. What do you do about that?
   probes: whether they take the coupling they created seriously, and reach for a copy or an
