@@ -87,7 +87,7 @@ def test_killing_the_server_mid_session_loses_nothing(tmp_path, stop_signal):
     base = f"http://127.0.0.1:{port}"
     env = {**os.environ, "PYTHONPATH": str(REPO_ROOT)}
     process = subprocess.Popen(
-        [sys.executable, "run.py", "--port", str(port)],
+        [sys.executable, "run.py", "--port", str(port), "--no-browser"],
         cwd=REPO_ROOT,
         env=env,
         stdout=subprocess.DEVNULL,
@@ -121,7 +121,7 @@ def test_killing_the_server_mid_session_loses_nothing(tmp_path, stop_signal):
         process.wait(timeout=10)
 
         process = subprocess.Popen(
-            [sys.executable, "run.py", "--port", str(port)],
+            [sys.executable, "run.py", "--port", str(port), "--no-browser"],
             cwd=REPO_ROOT,
             env=env,
             stdout=subprocess.DEVNULL,

@@ -17,8 +17,9 @@ files you edit and commit.
 ./run.sh           # starts the tool and prints the address to open
 ```
 
-The address is `http://127.0.0.1:8765/` unless you change it. `run.sh` passes its arguments to the
-server, so `./run.sh --port 9000` works. Both scripts work from any directory and `init.sh` can be
+`run.sh` opens `http://127.0.0.1:8765/` in your browser once the server is listening. It passes
+its arguments through, so `./run.sh --port 9000` works, and `./run.sh --no-browser` starts the
+server without opening anything. Both scripts work from any directory and `init.sh` can be
 run again at any time.
 
 Python 3.11 or newer is required. Set `PYTHON` if the interpreter is not on the path as `python3`,

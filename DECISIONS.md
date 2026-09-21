@@ -265,6 +265,20 @@ the nearest exit, not an unrelated card.
 
 Manual mode is untouched. Re-sorting an order somebody picked by hand would throw the work away.
 
+### `run.sh` opens the browser, because "open <url>" was never a promise
+
+The startup line read `open http://127.0.0.1:8765/`, which looks like an instruction to a reader
+and like a shell command to a macOS user. It was neither — nothing ever opened anything. A user
+reasonably reported the tool as not opening the browser.
+
+It does now, from a background thread that waits for the port to accept rather than sleeping a
+fixed interval, and not from an application startup hook: the tests build the application
+directly, and a browser window per test run would be its own bug. `--no-browser` suppresses it,
+and the crash-safety test — the only automated caller of `run.py` — passes it.
+
+The startup banner also now prints the validator's list rather than only the loader's warnings,
+so the terminal and the home screen never disagree about whether the bank is healthy.
+
 ### A disabled Next has to say why
 
 Reported from a real session: three questions asked, Next did nothing, the page otherwise
