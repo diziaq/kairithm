@@ -1,0 +1,114 @@
+{
+  "id": "2026-09-19_2024_z_senior",
+  "revision": 42,
+  "created_utc": "2026-09-19T16:24:03+00:00",
+  "updated_utc": "2026-09-19T16:31:25+00:00",
+  "finished_utc": null,
+  "candidate": "z",
+  "role": "senior",
+  "interviewer": "user",
+  "context": "",
+  "mode": "adaptive",
+  "seed": 3009791979,
+  "pacing": {
+    "kind": "untimed",
+    "default_minutes": 5,
+    "total_minutes": 45
+  },
+  "setup": {
+    "candidate": "z",
+    "role": "senior",
+    "interviewer": "user",
+    "context": "",
+    "mode": "adaptive",
+    "seed": null,
+    "start_difficulty": 2,
+    "filters": {
+      "topics": [
+        "architecture",
+        "java",
+        "kafka",
+        "sap"
+      ],
+      "include_tags": [],
+      "exclude_tags": [],
+      "difficulty_min": 1,
+      "difficulty_max": 5,
+      "limit": null
+    },
+    "exclude_asked_to": "",
+    "pacing": {
+      "kind": "untimed",
+      "default_minutes": 5,
+      "total_minutes": 45
+    }
+  },
+  "pool_ids": [
+    "java/equals-hashcode-contract",
+    "kafka/ordering-and-keys",
+    "architecture/observability-one-transaction",
+    "java/concurrency-volatile",
+    "kafka/consumer-rebalance",
+    "sap/rfc-timeout-retry",
+    "java/gc-tuning",
+    "kafka/exactly-once-claims"
+  ],
+  "items": [
+    {
+      "qid": "java/equals-hashcode-contract",
+      "target_difficulty": 2,
+      "reason": "target difficulty 2, new tag"
+    },
+    {
+      "qid": "kafka/ordering-and-keys",
+      "target_difficulty": 2,
+      "reason": "target difficulty 2, new tag"
+    },
+    {
+      "qid": "architecture/observability-one-transaction",
+      "target_difficulty": 3,
+      "reason": "target difficulty 3, new tag"
+    },
+    {
+      "qid": "kafka/consumer-rebalance",
+      "target_difficulty": 2,
+      "reason": "nearest level 3 to target 2, new tag"
+    },
+    {
+      "qid": "java/concurrency-volatile",
+      "target_difficulty": 2,
+      "reason": "nearest level 3 to target 2, new tag"
+    }
+  ],
+  "answers": {
+    "java/equals-hashcode-contract": {
+      "elapsed_seconds": 31,
+      "updated_utc": "2026-09-19T16:24:35+00:00",
+      "rating": 3,
+      "skipped": false
+    },
+    "kafka/ordering-and-keys": {
+      "elapsed_seconds": 27,
+      "updated_utc": "2026-09-19T16:25:03+00:00",
+      "rating": 4,
+      "skipped": false
+    },
+    "architecture/observability-one-transaction": {
+      "elapsed_seconds": 16,
+      "updated_utc": "2026-09-19T16:25:20+00:00",
+      "rating": 2,
+      "skipped": false
+    },
+    "kafka/consumer-rebalance": {
+      "elapsed_seconds": 7,
+      "updated_utc": "2026-09-19T16:25:27+00:00"
+    },
+    "java/concurrency-volatile": {
+      "elapsed_seconds": 358,
+      "updated_utc": "2026-09-19T16:31:25+00:00"
+    }
+  },
+  "position": 4,
+  "finish": {},
+  "adaptive_exhausted": false
+}
