@@ -1,6 +1,6 @@
 ---
 id: general-estimation-date-for-unknown-system-01
-schema_version: 1
+schema_version: 2
 title: They want a date today, for a system you have never touched
 category: general
 topic: estimation
@@ -8,6 +8,8 @@ level: lead
 tags: [delivery, collaboration, failure-modes]
 time_estimate_min: 8
 order: 240
+links:
+  related: [general-legacy-rewrite-in-four-months-01]
 ---
 
 ## Ask
@@ -19,6 +21,13 @@ worked with. They want the number before the end of the day. What do you give th
 
 Whether the candidate can express genuine uncertainty in a form a business can plan against,
 instead of either refusing to commit or inventing a number they will be held to.
+
+## Ideal minimal answer
+
+Asks what decision the number is being used for and answers that. Gives a range with its
+assumptions attached, says plainly which part is a forecast and which part they will commit to,
+holds that line when pushed, and sets an agreed rhythm for re-forecasting so a slip is news
+early.
 
 ## Listen for
 

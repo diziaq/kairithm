@@ -1,6 +1,6 @@
 ---
 id: microservices-idempotency-key-scope-and-lifetime-01
-schema_version: 1
+schema_version: 2
 title: Where the request reference lives and how long it lasts
 category: microservices
 topic: idempotency
@@ -23,6 +23,13 @@ comes back with a completely different body.
 
 Whether the candidate can turn a one-line rule into a design that survives multiple instances,
 restarts, concurrency and time.
+
+## Ideal minimal answer
+
+The reference and the order are written in one transaction in the shared database, or the
+service can create the order and forget that it did. A repeat gets the original order identifier
+back, not an acknowledgement and not a second order; the same reference with a different body is
+rejected; and retention is set from how long a client may still be retrying.
 
 ## Listen for
 

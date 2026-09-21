@@ -1,6 +1,6 @@
 ---
 id: spring-persistence-lazy-initialization-01
-schema_version: 1
+schema_version: 2
 title: The collection that is sometimes there
 category: spring
 topic: persistence
@@ -23,6 +23,13 @@ behaves differently in the two places.
 
 Whether the candidate knows that a lazy field is only loadable while the session that produced
 the entity is still open, and can identify what keeps it open in one case and not the other.
+
+## Ideal minimal answer
+
+The lines are fetched on demand, and that needs the session which loaded the order to still be
+open. In the running application something holds it open past the service call, so writing the
+response can still fetch them; in the test it closed when the method returned, which is why
+reading the collection throws.
 
 ## Listen for
 

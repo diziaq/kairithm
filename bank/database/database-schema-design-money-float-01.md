@@ -1,6 +1,6 @@
 ---
 id: database-schema-design-money-float-01
-schema_version: 1
+schema_version: 2
 title: The monthly total is a few cents out, every month
 category: database
 topic: schema-design
@@ -23,6 +23,13 @@ you agree?
 
 Whether the candidate knows a binary floating point column cannot hold an ordinary decimal amount,
 and can say where the error is introduced rather than where it is noticed.
+
+## Ideal minimal answer
+
+No — `double precision` cannot hold 0.10 exactly, so the error is already in the stored rows and
+rounding on display only tidies one figure while a million of them accumulate either side of the
+truth. Store an exact decimal (`numeric` in PostgreSQL, `DECIMAL` in MySQL) or an integer count
+of minor units, and note the rows already written are not fixed by changing the column.
 
 ## Listen for
 

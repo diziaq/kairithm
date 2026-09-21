@@ -1,6 +1,6 @@
 ---
 id: kafka-rebalancing-rolling-deploy-01
-schema_version: 1
+schema_version: 2
 title: A rolling deploy costs the group four minutes
 category: kafka
 topic: rebalancing
@@ -23,6 +23,13 @@ Why does a rolling deploy cost the group four minutes?
 
 Whether the candidate knows what happens to the other members when one of them leaves, and can
 account for the total cost of a rolling restart.
+
+## Ideal minimal answer
+
+With the protocol that takes every partition off every member, each pod leaving and coming back
+stops the whole group, not only the pod being replaced. Twelve restarts, two of those pauses
+apiece, plus the wait before a member that did not leave cleanly is declared missing, is where
+the four minutes goes.
 
 ## Listen for
 

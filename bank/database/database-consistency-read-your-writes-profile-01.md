@@ -1,6 +1,6 @@
 ---
 id: database-consistency-read-your-writes-profile-01
-schema_version: 1
+schema_version: 2
 title: The operator saved the opening hours; the list shows the old ones
 category: database
 topic: consistency
@@ -25,6 +25,14 @@ wait for the standby. Talk me through what you would do.
 Whether the candidate can state the guarantee this one session needs, scope it to that session,
 and say what the engine can actually promise — instead of buying a global guarantee to fix one
 screen.
+
+## Ideal minimal answer
+
+After her own commit this operator must not be shown older data, so scope the fix to that
+session — its next reads pinned to the primary, or her write's position compared with the
+standby's — rather than making every commit wait. In PostgreSQL only
+`synchronous_commit = remote_apply` makes a commit visible to queries on a standby, and only on
+the standbys named in `synchronous_standby_names`.
 
 ## Listen for
 

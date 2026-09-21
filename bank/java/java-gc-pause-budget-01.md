@@ -1,6 +1,6 @@
 ---
 id: java-gc-pause-budget-01
-schema_version: 1
+schema_version: 2
 title: A blog post's flags against a latency budget
 category: java
 topic: garbage-collection
@@ -23,6 +23,13 @@ anywhere near production?
 
 Whether the candidate treats collector behaviour as something measured against a stated budget and
 changed with a way back, rather than as a set of flags to copy.
+
+## Ideal minimal answer
+
+Wants the budget stated, the collector log read and a way back in place before any flag is
+changed, and one change at a time against a production-shaped load test. Asks who is actually
+harmed by the spikes, and says what would make them reject the proposal outright and go after
+the code that allocates instead.
 
 ## Listen for
 

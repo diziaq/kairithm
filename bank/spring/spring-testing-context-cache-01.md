@@ -1,6 +1,6 @@
 ---
 id: spring-testing-context-cache-01
-schema_version: 1
+schema_version: 2
 title: The banner printed sixty times
 category: spring
 topic: testing
@@ -23,6 +23,13 @@ come back?
 
 Whether the candidate knows that the test framework reuses application contexts, what makes two
 tests get different ones, and can turn that into a policy a team can follow.
+
+## Ideal minimal answer
+
+A context is built once and reused by every test whose configuration is identical, so sixty
+banners means sixty distinct ones; reuse is bounded, so past that bound they are evicted and
+rebuilt, which is why the growth was not linear. Converge on a handful of shared setups, push
+most tests down to plain objects, and make a new distinct setup a reviewed decision.
 
 ## Listen for
 

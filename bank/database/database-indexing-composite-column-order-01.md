@@ -1,6 +1,6 @@
 ---
 id: database-indexing-composite-column-order-01
-schema_version: 1
+schema_version: 2
 title: Reverse the index, or add a second one?
 category: database
 topic: indexing
@@ -10,6 +10,7 @@ time_estimate_min: 8
 order: 131
 links:
   deeper: [database-indexing-index-not-used-01]
+  related: [database-query-performance-plan-row-estimates-01]
 ---
 
 ## Ask
@@ -24,6 +25,13 @@ is right?
 Whether the candidate reasons about what a composite index is actually ordered by, and can say
 which query shape each column order serves, rather than treating an index as an unordered set of
 columns.
+
+## Ideal minimal answer
+
+The index is ordered by `tenant_id` first, so one day's rows sit in as many separate runs as
+there are tenants and the export has nothing contiguous to read. Reversing it just moves the
+problem onto the dashboard; a second index serves both, at the price of maintaining it on every
+write to a table that takes every event.
 
 ## Listen for
 

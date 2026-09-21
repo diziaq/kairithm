@@ -1,6 +1,6 @@
 ---
 id: general-collaboration-two-engineers-stuck-01
-schema_version: 1
+schema_version: 2
 title: A week of argument, and the work has stopped
 category: general
 topic: collaboration
@@ -8,6 +8,8 @@ level: lead
 tags: [collaboration, delivery, maintainability]
 time_estimate_min: 8
 order: 250
+links:
+  related: [microservices-ownership-paged-for-someone-elses-data-01]
 ---
 
 ## Ask
@@ -20,6 +22,13 @@ end it?
 
 Whether the candidate can convert a stalled disagreement into a decision — with criteria, an
 owner and a way back — without either steamrolling it or letting it run.
+
+## Ideal minimal answer
+
+Weighs the stopped work against how expensive the wrong structure would be, and on that basis
+sets a deadline and names who decides if the two do not converge. Expects both to commit in
+public to the outcome, records the reasoning and what would reopen it, and changes something so
+the next argument is stopped on day two.
 
 ## Listen for
 

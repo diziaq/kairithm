@@ -1,6 +1,6 @@
 ---
 id: spring-persistence-n-plus-one-01
-schema_version: 1
+schema_version: 2
 title: Fifty orders, one hundred and fifty-two queries
 category: spring
 topic: persistence
@@ -10,6 +10,7 @@ time_estimate_min: 9
 order: 81
 links:
   deeper: [spring-persistence-optimistic-locking-01]
+  related: [database-hibernate-batch-insert-01]
 ---
 
 ## Ask
@@ -24,6 +25,13 @@ it.
 Whether the candidate can read a query count as a structural property of how the data is
 fetched, pick a fetching strategy on the shape of the data, and verify the fix rather than
 assume it.
+
+## Ideal minimal answer
+
+152 is one query for the page, one for the total, and one per row for each lazy relation touched;
+a bigger pool cannot help because those run one after another on one connection. Choose between
+fetching in the same query, batching the follow-ups and selecting only the fields needed. A
+collection fetch with paging loses the page boundary, so assert the query count in a test.
 
 ## Listen for
 

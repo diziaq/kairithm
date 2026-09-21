@@ -1,6 +1,6 @@
 ---
 id: java-collections-large-lookup-table-01
-schema_version: 1
+schema_version: 2
 title: Forty million quotes and three proposals
 category: java
 topic: collections
@@ -25,6 +25,13 @@ signing up for?
 Whether the candidate establishes which constraints are actually binding before choosing, and can
 name what each option costs the people who maintain it afterwards, rather than ranking the three
 on lookup speed.
+
+## Ideal minimal answer
+
+Asks for the numbers the question withholds — rows, reads a second, heap, what the hourly
+rebuild may cost — and puts the lookup behind one narrow interface first, so the choice is cheap
+to get wrong. Names the standing cost of each option, a dependency somebody has to follow or
+code only its author can read, and sets the bar it must clear on real data.
 
 ## Listen for
 

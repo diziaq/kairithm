@@ -1,6 +1,6 @@
 ---
 id: database-jooq-mixed-with-entities-01
-schema_version: 1
+schema_version: 2
 title: The read side sees the old value
 category: database
 topic: jooq
@@ -21,6 +21,13 @@ invisible to code holding that same order. Explain both.
 
 Whether the candidate can reason about two data access paths sharing one transaction, and say
 which one is holding state the other cannot see.
+
+## Ideal minimal answer
+
+First ask whether jOOQ is handed the transaction-bound connection. If it is, the change is still
+pending in memory and Hibernate 6 flushes only before its own queries over overlapping tables,
+so a query it did not issue reads the old row; the jOOQ update then leaves the managed order
+stale, and the flush at the end writes the old value back over it.
 
 ## Listen for
 

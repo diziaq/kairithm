@@ -1,6 +1,6 @@
 ---
 id: sap-jco-destinations-credential-rotation-01
-schema_version: 1
+schema_version: 2
 title: The SAP password now rotates every thirty days
 category: sap-jco
 topic: destinations
@@ -8,6 +8,8 @@ level: senior
 tags: [security, operations, failure-modes]
 time_estimate_min: 8
 order: 140
+links:
+  related: [sap-jco-repository-metadata-locked-down-prod-01]
 ---
 
 ## Ask
@@ -20,6 +22,14 @@ and what breaks the first time it rotates?
 
 Whether the candidate knows how JCo takes configuration from the application, and can predict the
 failure mode of a rotation against a cache and a shared account.
+
+## Ideal minimal answer
+
+Supply the properties through your own destination data provider reading the secret store, and
+tell JCo the entry changed, because it caches it. Credentials are presented only when a
+connection is opened, so after a rotation the connections already in the pool keep working while
+new logons fail — unless SAP tears those sessions down, which I would check — and repeated
+failures can lock a shared account.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: java-runtime-string-identity-01
-schema_version: 1
+schema_version: 2
 title: The tests all pass and production says unknown id
 category: java
 topic: runtime-behaviour
@@ -21,6 +21,13 @@ production it reports "unknown id" for ids that plainly match. Why do the tests 
 
 Whether the candidate can explain why this defect is systematically invisible to the tests that were
 written alongside it.
+
+## Ideal minimal answer
+
+`==` asks whether the two references point at the same object, not whether they hold the same
+characters. The test compares text written directly in the source, which is shared, so both
+sides really are one object; an id that arrived over the wire is a different object. Compares
+contents instead.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: kafka-consumer-groups-flapping-member-01
-schema_version: 1
+schema_version: 2
 title: One pod keeps dropping out and the whole group stalls
 category: kafka
 topic: consumer-groups
@@ -20,6 +20,13 @@ is fine, and the brokers are healthy. Where do you look?
 
 Whether the candidate knows the two different reasons a member is declared dead, and can separate
 a stalled handler from a network problem.
+
+## Ideal minimal answer
+
+Handling one batch is taking longer than the member is allowed to go quiet, so the group throws
+it out; every departure and return makes the group hand out the partitions again, and that
+redistribution is the pause everyone else sees. Fetch fewer records per poll, or move the slow
+work off the loop, before raising any timeout.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: database-mybatis-no-persistence-context-01
-schema_version: 1
+schema_version: 2
 title: Two bugs the week after the mapping layer came out
 category: database
 topic: mybatis
@@ -23,6 +23,13 @@ The team wants both fixed. What do you tell them?
 
 Whether the candidate can state what a hand-written mapping layer deliberately does not do, and
 design around the absence rather than rebuilding it badly in the service.
+
+## Ideal minimal answer
+
+Neither is a defect: MyBatis watches nothing, so a change only reaches the database when a
+statement is run, and two queries for the same row give two objects because there is no identity
+map — that is the trade for every write being visible in a mapper. Do not hand-build a register
+of loaded rows: write explicitly, read once, and assert on the row.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: spring-web-layer-error-contract-01
-schema_version: 1
+schema_version: 2
 title: Three shapes of error from one service
 category: spring
 topic: web-layer
@@ -23,6 +23,13 @@ fix — and tell me why the HTML one is the odd case.
 
 Whether the candidate can move error handling from scattered catch blocks to one boundary, and
 whether they know where that boundary's reach ends in the request path.
+
+## Ideal minimal answer
+
+Replace the catch block in each controller with one place that turns failures into responses,
+with a single body shape and a status code chosen per failure rather than 500 for everything.
+The HTML appears because the expired token failed before the request reached the dispatching
+machinery, so that shared handler was never consulted.
 
 ## Listen for
 

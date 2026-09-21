@@ -1,6 +1,6 @@
 ---
 id: kafka-consumer-groups-idle-members-01
-schema_version: 1
+schema_version: 2
 title: Six pods, three partitions, three doing nothing
 category: kafka
 topic: consumer-groups
@@ -23,6 +23,12 @@ three partitions. What do you tell them?
 
 Whether the candidate knows what a group hands out to its members, and what actually limits how
 wide a consumer can be scaled.
+
+## Ideal minimal answer
+
+A partition is handed to exactly one member of the group, and the topic has three, so the three
+extra pods are given nothing and sit there doing no work. To go wider they need more partitions
+on the topic, or each pod has to get through more records.
 
 ## Listen for
 

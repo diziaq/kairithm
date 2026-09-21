@@ -254,3 +254,48 @@ def test_the_same_position_in_two_different_categories_is_fine(tmp_path):
         card(card_id="kafka-b-01", category="kafka", topic="delivery", extra_frontmatter="order: 20"),
     )
     assert problems_for(tmp_path, "order") == []
+
+
+# --- the ideal minimal answer -------------------------------------------------------------------
+
+
+def test_a_version_one_card_is_warned_at_so_a_migration_is_visible(tmp_path):
+    write(tmp_path, "java/a.md", card(card_id="java-a-01", schema_version=1))
+    found = problems_for(tmp_path, "schema_version")
+    assert found and found[0].severity == WARNING
+    assert "set schema_version to 2" in found[0].problem
+
+
+def test_a_verdict_for_an_ideal_answer_is_an_error(tmp_path):
+    write(tmp_path, "java/a.md", card(card_id="java-a-01", ideal_answer="Good understanding."))
+    found = problems_for(tmp_path, "ideal_answer")
+    assert found and found[0].severity == ERROR
+    assert "is a verdict, not an answer" in found[0].problem
+
+
+def test_an_over_long_ideal_answer_is_a_warning(tmp_path):
+    long_answer = "the candidate says " + " ".join(f"thing{n}" for n in range(80))
+    write(tmp_path, "java/a.md", card(card_id="java-a-01", ideal_answer=long_answer))
+    found = problems_for(tmp_path, "ideal_answer")
+    assert found and found[0].severity == WARNING
+    assert "read while a candidate is talking" in found[0].problem
+
+
+def test_a_follow_up_repeating_the_ideal_answer_leaks_too(tmp_path):
+    write(
+        tmp_path,
+        "java/a.md",
+        card(
+            card_id="java-a-01",
+            ideal_answer="The write needs idempotency to be safe.",
+            follow_ups="## Follow-ups\n\n- Did you consider idempotency?\n- And what else?\n",
+        ),
+    )
+    leaks = [p for p in problems_for(tmp_path, "follow_ups") if "idempotency" in p.problem]
+    assert leaks and leaks[0].severity == WARNING
+
+
+def test_a_good_ideal_answer_passes(tmp_path):
+    write(tmp_path, "java/a.md", card(card_id="java-a-01"))
+    assert problems_for(tmp_path, "ideal_answer") == []
+    assert problems_for(tmp_path, "schema_version") == []

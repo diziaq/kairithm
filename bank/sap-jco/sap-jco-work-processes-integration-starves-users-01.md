@@ -1,6 +1,6 @@
 ---
 id: sap-jco-work-processes-integration-starves-users-01
-schema_version: 1
+schema_version: 2
 title: Basis want a meeting about your afternoon load
 category: sap-jco
 topic: work-processes
@@ -8,6 +8,8 @@ level: lead
 tags: [capacity, performance, operations]
 time_estimate_min: 10
 order: 230
+links:
+  related: [kafka-performance-mixed-workloads-01]
 ---
 
 ## Ask
@@ -20,6 +22,13 @@ night. What do you bring to that meeting?
 
 Whether the candidate treats SAP capacity as a shared budget to be negotiated with evidence, and
 knows the levers that exist on both sides before agreeing to a schedule change.
+
+## Ideal minimal answer
+
+Bring measurements: how many calls run in parallel, how long each holds a work process, when,
+and what share of the instance that is, since the load lands in the dialog processes the users
+need. Then negotiate a monitored allocation with an owner on each side, starting from how fresh
+the data must be rather than from the load graph, and say what is delayed when the cap bites.
 
 ## Listen for
 

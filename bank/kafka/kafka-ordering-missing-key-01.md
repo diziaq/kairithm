@@ -1,6 +1,6 @@
 ---
 id: kafka-ordering-missing-key-01
-schema_version: 1
+schema_version: 2
 title: An account was closed before it was opened
 category: kafka
 topic: ordering
@@ -22,6 +22,13 @@ downstream reader complains that for one account it handled the "closed" event b
 
 Whether the candidate knows the exact scope of the ordering guarantee and can connect it to how
 the producer chose where to put each record.
+
+## Ideal minimal answer
+
+No: the sequence is only guaranteed inside one partition, not across a topic. With no key set the
+two events for that account were stored in different partitions, and the reader works through
+those independently. Putting the account identifier in the key keeps that account's events
+together and in sequence.
 
 ## Listen for
 

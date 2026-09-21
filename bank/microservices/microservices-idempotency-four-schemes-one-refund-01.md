@@ -1,6 +1,6 @@
 ---
 id: microservices-idempotency-four-schemes-one-refund-01
-schema_version: 1
+schema_version: 2
 title: Four services, four ways of not paying twice
 category: microservices
 topic: idempotency
@@ -25,6 +25,13 @@ people who keep it running afterwards?
 
 Whether the candidate can rank mechanisms by how they fail rather than by how modern they are,
 choose between them under a stated budget, and name the running cost each one leaves behind.
+
+## Ideal minimal answer
+
+A cached marker pays a customer twice when a failover loses it, and comparing recent rows misses
+a later repeat; only a rule inside the database is enforced by the store. In one quarter, fix
+the flows where a double payment hurts most, leave the others with a stated reason, get the
+callers sending a stable reference first, and give the daily comparison an owner.
 
 ## Listen for
 

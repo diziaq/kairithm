@@ -1,6 +1,6 @@
 ---
 id: java-exceptions-lost-in-cleanup-01
-schema_version: 1
+schema_version: 2
 title: The morning spent on disk space
 category: java
 topic: exceptions
@@ -25,6 +25,13 @@ saw it. How did that error disappear, and what do you change?
 
 Whether the candidate knows that a cleanup block which throws replaces the failure already on its
 way out, and can say what a failure from closing something being written actually means.
+
+## Ideal minimal answer
+
+Whatever the `finally` block throws leaves the method in place of the error already travelling,
+so the first one is gone; closing the same thing with try-with-resources keeps the second
+attached to the first. Adds that closing a buffered output flushes it, so the failure may mean
+the bytes never landed, and asks what the upload step then found.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: kafka-offsets-commit-window-01
-schema_version: 1
+schema_version: 2
 title: A handful of duplicate rows after every deploy
 category: kafka
 topic: offsets
@@ -23,6 +23,13 @@ record its position on a timer. Walk me through how one of those duplicate rows 
 
 Whether the candidate can place the recording of the position relative to the side effect and
 describe the exact window a shutdown has to land in.
+
+## Ideal minimal answer
+
+The rows go into the table and the process stops before the position is recorded, so whoever
+picks the partition up starts behind and writes those rows again. The recording runs on a timer
+while records are being fetched, so it never lines up with what the handler finished; the repair
+is a write that lands on the same row instead of a new one.
 
 ## Listen for
 

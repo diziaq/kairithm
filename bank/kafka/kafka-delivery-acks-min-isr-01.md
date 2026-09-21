@@ -1,6 +1,6 @@
 ---
 id: kafka-delivery-acks-min-isr-01
-schema_version: 1
+schema_version: 2
 title: Signing off the durability of a payments topic
 category: kafka
 topic: delivery-semantics
@@ -23,6 +23,13 @@ week. What are you actually promising the business, and where does the promise b
 
 Whether the candidate can separate the number of copies, the confirmation the producer waits for
 and the minimum in-sync set, and say what each one does during a real outage.
+
+## Ideal minimal answer
+
+With three copies, a floor of two and producers waiting on every copy currently in sync, a write
+the producer was told about is on at least two brokers, so the patch window survives; below the
+floor the partition refuses writes rather than quietly taking a fragile one. Then say what the
+paying caller does with a refused write, and who is allowed to accept less.
 
 ## Listen for
 

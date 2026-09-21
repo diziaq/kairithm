@@ -1,6 +1,6 @@
 ---
 id: sap-jco-idoc-error-ownership-01
-schema_version: 1
+schema_version: 2
 title: Forty failed documents a week and a customer finds them first
 category: sap-jco
 topic: idoc
@@ -20,6 +20,13 @@ how does anyone know the backlog is empty?
 
 Whether the candidate can build an ownership and detection model around an integration, rather
 than describing tools, and whether they separate failures by who can actually resolve them.
+
+## Ideal minimal answer
+
+Two populations with two owners: documents that never reached SAP, and documents that arrived
+and failed to post — business errors like missing master data to the business, technical ones to
+IT. Reconcile sent against posted daily so an empty backlog is measured, alert on age as well as
+count, name who acts out of hours, and say who may declare a document dead.
 
 ## Listen for
 

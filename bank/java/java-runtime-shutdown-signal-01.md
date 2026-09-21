@@ -1,6 +1,6 @@
 ---
 id: java-runtime-shutdown-signal-01
-schema_version: 1
+schema_version: 2
 title: Thirty seconds between the signal and the exit
 category: java
 topic: runtime-behaviour
@@ -21,6 +21,13 @@ you would add.
 
 Whether the candidate knows what the runtime actually guarantees on the way out, and can design a
 drain that does not depend on luck.
+
+## Ideal minimal answer
+
+Registered hooks are started as threads all at once, in no defined order, and the process leaves
+when they finish or when the platform stops waiting — and a hard kill runs none of them, so the
+design has to survive that. Takes the instance out of routing before draining, and treats the
+truncated responses and the repeated jobs as two separate defects.
 
 ## Listen for
 

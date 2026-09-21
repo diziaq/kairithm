@@ -1,6 +1,6 @@
 ---
 id: database-indexing-index-not-used-01
-schema_version: 1
+schema_version: 2
 title: The index is right there and login is still getting slower
 category: database
 topic: indexing
@@ -22,6 +22,13 @@ booked a maintenance window to rebuild the index. Before they do — what do you
 
 Whether the candidate can say what an index is keyed on, recognise the predicate shapes that put a
 query outside it, and separate an index that cannot be used from one the engine declines to use.
+
+## Ideal minimal answer
+
+`lower(email)` is not the value the index is ordered by, so it cannot be used and the work has
+always been proportional to the table — which is the year-long slope; rebuilding changes
+nothing. Repair it with an index on the expression in PostgreSQL, a functional key part or
+generated column in MySQL 8, or store the address already normalised and compare it as stored.
 
 ## Listen for
 

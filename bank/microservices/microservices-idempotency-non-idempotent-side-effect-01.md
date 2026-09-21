@@ -1,6 +1,6 @@
 ---
 id: microservices-idempotency-non-idempotent-side-effect-01
-schema_version: 1
+schema_version: 2
 title: The write is safe to repeat, the email and the warehouse are not
 category: microservices
 topic: idempotency
@@ -26,6 +26,13 @@ building. The warehouse API has no notion of a repeat. What do you change about 
 Whether the candidate treats safety against repeats as a property of each individual effect rather
 than of the handler, and can design for effects that land in systems they do not control and
 cannot take back.
+
+## Ideal minimal answer
+
+A rerun replays all three effects, so the safe row buys nothing: a second email goes out and a
+second pallet ships. Commit the order, then drive the email and the shipment from a stored
+record of which are already done, including the crash after the warehouse call and before
+recording it, and ask the warehouse for a reference it can match a repeat on.
 
 ## Listen for
 

@@ -41,7 +41,7 @@ Copy `bank/_template.md` into a category directory and edit it. The full field r
 ```markdown
 ---
 id: java-concurrency-visibility-flag-01
-schema_version: 1
+schema_version: 2
 title: A flag one thread writes and another never sees
 category: java              # the directory name, and it must match
 topic: concurrency          # the narrower area
@@ -59,6 +59,10 @@ The only text read aloud.
 ## Tests
 
 One sentence: what this card actually probes.
+
+## Ideal minimal answer
+
+The least a candidate can say and still have answered, at the level this card is pitched at.
 
 ## Listen for
 
@@ -83,7 +87,12 @@ One sentence: what this card actually probes.
 The rules the loader applies:
 
 - `id`, `schema_version`, `title`, `category`, `topic`, `level`, `## Ask`, `## Tests`,
-  `## Listen for` and `## Answer bands` are required. Everything else is optional.
+  `## Ideal minimal answer`, `## Listen for` and `## Answer bands` are required. Everything else
+  is optional.
+- The **ideal minimal answer** is the pass mark: the shortest answer that would earn the band
+  matching the card's own level. It sits at the top of the interviewer panel because it is what
+  you check against while a candidate is still talking, so it is one or two sentences and never
+  a verdict.
 - The `id` is the identity, not the file name. It is never reused and never renumbered, because
   links and finished sessions point at it.
 - `category` must match the directory the file is in.

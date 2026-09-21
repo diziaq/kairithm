@@ -1,6 +1,6 @@
 ---
 id: microservices-service-boundaries-lockstep-deploys-01
-schema_version: 1
+schema_version: 2
 title: Two services that can only be deployed together
 category: microservices
 topic: service-boundaries
@@ -9,6 +9,7 @@ tags: [api-design, failure-modes, performance, ownership]
 time_estimate_min: 8
 order: 190
 links:
+  related: [general-design-reasoning-split-out-notifications-01]
   deeper: [microservices-service-boundaries-shared-orders-table-01]
 ---
 
@@ -22,6 +23,13 @@ tell you about the boundary between those two, and what would you actually chang
 
 Whether the candidate can read coupling from deployment and call patterns, and propose a change
 with its costs, rather than restating that the services are coupled.
+
+## Ideal minimal answer
+
+Two costs, separately: they have to ship together, so they are one unit paying for the split and
+getting no independent release back; and four calls per page add four chances to be slow or
+down. Ask what each call fetches, then offer options — one coarser call, Checkout holding what
+it needs, or merging the two — and say what each makes worse.
 
 ## Listen for
 

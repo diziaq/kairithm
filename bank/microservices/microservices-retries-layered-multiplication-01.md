@@ -1,6 +1,6 @@
 ---
 id: microservices-retries-layered-multiplication-01
-schema_version: 1
+schema_version: 2
 title: Three layers each retry three times
 category: microservices
 topic: retries
@@ -22,6 +22,13 @@ database, and what would you do about it?
 
 Whether the candidate multiplies retries across layers instead of adding them, and can pick one
 place for the behaviour to live.
+
+## Ideal minimal answer
+
+Three times three times three: one tap can reach the database twenty-seven times. One layer
+should own the repeats — the one closest to the failure, which also knows whether the call is
+safe to repeat — and the others pass the failure straight up, and a deadline passes down so a
+hop with no time left does not start work nobody is waiting for.
 
 ## Listen for
 

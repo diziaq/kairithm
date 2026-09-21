@@ -77,6 +77,32 @@ one directory per interview, holding the session file and the scorecard, under `
 Renaming it would cost the session-id pattern and the resolved-path containment check, which are
 two of the four reasons this tool is safe without a password, and buys nothing.
 
+### Every card carries a pass mark, and that needed a schema version
+
+`## Listen for` is a checklist and the bands are relative descriptions; neither answers the
+question an interviewer actually has while somebody is talking, which is *has this been
+answered yet*. So every card now carries an ideal minimal answer.
+
+It is defined against the model already on the card rather than left to taste: **the shortest
+answer that would earn the band matching the card's own level.** On a senior card that is the
+`senior` band, minimally stated. That makes it the floor rather than the ceiling — the ceiling is
+the top band — and it makes "is this right" a question two people can agree on.
+
+It is enforced like a band, because it fails the same way: a verdict is an error, over seventy
+words is a warning (it is read mid-sentence), and the follow-up leak check reads it, since a
+follow-up repeating a term from the pass mark gives the answer away exactly as one repeating a
+band does.
+
+Adding a required field is a format change, and the documented process for that is to raise
+`SCHEMA_VERSION`, teach the loader both shapes, and migrate in one commit. So version 1 cards
+still load without the section, and the validator warns on each one — which turned the migration
+into a number counting down from 201 rather than a thing somebody had to remember to finish.
+
+Writing 201 pass marks also audited the bands, because a floor cannot be written for a band that
+does not describe an answer. Eight cards came back flagged: several `lead` bands are funding and
+conduct with no factual anchor a candidate could utter, and one junior band does not address what
+its own Ask requests. Those are recorded as follow-up work rather than fixed here.
+
 ### The SAP cards were checked against the decompiled library, not the documentation
 
 Ten SAP/JCo cards carried `NEEDS-REVIEW` because the claims could not be settled from public

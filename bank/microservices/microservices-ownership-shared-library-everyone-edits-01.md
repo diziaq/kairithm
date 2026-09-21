@@ -1,6 +1,6 @@
 ---
 id: microservices-ownership-shared-library-everyone-edits-01
-schema_version: 1
+schema_version: 2
 title: A common library fourteen teams depend on and nobody owns
 category: microservices
 topic: ownership
@@ -22,6 +22,13 @@ a version from last year. Who owns that library, and what would you change?
 
 Whether the candidate can reason about coupling introduced at build time, and turn "nobody owns
 it" into a concrete arrangement.
+
+## Ideal minimal answer
+
+Split what is in there: plumbing that never diverges can stay shared, but business logic in a
+build-time dependency means fourteen teams have to redeploy before a change takes effect, which
+is the independence the split was meant to buy. Give it a named maintainer, a release cadence
+and a support window, make who is on which version visible, and attack the cost of upgrading.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: java-memory-model-double-checked-locking-01
-schema_version: 1
+schema_version: 2
 title: A lock removed from the fast path, and a month in production
 category: java
 topic: memory-model
@@ -8,6 +8,8 @@ level: senior
 tags: [correctness, failure-modes, performance]
 time_estimate_min: 8
 order: 210
+links:
+  related: [java-concurrency-visibility-flag-01]
 ---
 
 ## Ask
@@ -20,6 +22,13 @@ test passes and it has been live for a month. What do you do with the change?
 
 Whether the candidate can argue that a construct is broken from what the model permits, while the
 evidence in front of them says it works.
+
+## Ideal minimal answer
+
+Another thread can take the outer branch, find the field not null and read a half-built object,
+because the write that publishes the reference can become visible before the writes that fill it
+in. Marking the field `volatile` orders those against the unlocked read. Says a month live
+describes the hardware and the load, and prefers the simpler construction.
 
 ## Listen for
 

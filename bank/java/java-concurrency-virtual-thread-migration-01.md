@@ -1,6 +1,6 @@
 ---
 id: java-concurrency-virtual-thread-migration-01
-schema_version: 1
+schema_version: 2
 title: The pool that was holding the whole system back
 category: java
 topic: concurrency
@@ -24,6 +24,13 @@ you go and look at?
 
 Whether the candidate sees a bounded thread pool as a de facto limit on everything behind it, and
 can reason about what a concurrency change moves rather than removes.
+
+## Ideal minimal answer
+
+Says the old pool was the admission limit nobody wrote down, so every arriving request now
+reaches the database, the dependency and the heap at once. Decides what should happen when
+demand exceeds capacity before picking a mechanism, and names what must be in place first: a
+load test against a slow dependency, explicit limits per class of work, and a way back.
 
 ## Listen for
 

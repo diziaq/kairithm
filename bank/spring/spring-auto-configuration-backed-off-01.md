@@ -1,6 +1,6 @@
 ---
 id: spring-auto-configuration-backed-off-01
-schema_version: 1
+schema_version: 2
 title: One new bean changes every endpoint
 category: spring
 topic: auto-configuration
@@ -24,6 +24,13 @@ find out what else changed.
 
 Whether the candidate understands that Boot's defaults are conditional beans that step aside
 when the application defines its own, and can name the report that shows what stepped aside.
+
+## Ideal minimal answer
+
+Boot defines its own only when the application has not, so the new bean replaced it and took
+everything Boot had configured on that default with it, not just the one rule. Adjust the
+existing default through the customisation hook instead of replacing it, and read the report of
+what matched and what stepped aside to see what else moved.
 
 ## Listen for
 

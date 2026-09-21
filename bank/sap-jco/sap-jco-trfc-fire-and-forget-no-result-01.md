@@ -1,6 +1,6 @@
 ---
 id: sap-jco-trfc-fire-and-forget-no-result-01
-schema_version: 1
+schema_version: 2
 title: The endpoint got fast and two postings went missing
 category: sap-jco
 topic: trfc-qrfc
@@ -9,6 +9,7 @@ tags: [integration, delivery-semantics, failure-modes]
 time_estimate_min: 6
 order: 25
 links:
+  related: [kafka-delivery-send-returned-01]
   deeper: [sap-jco-trfc-sm58-backlog-01]
 ---
 
@@ -25,6 +26,14 @@ that call, and where would you look for the two that are missing?
 Whether the candidate understands that a transactional call returns when the request has been
 recorded, not when the work has been done, and knows that the outcome is therefore reported
 somewhere other than in their own log.
+
+## Ideal minimal answer
+
+The call now returns as soon as SAP has recorded the unit; the function module runs afterwards,
+so success means accepted, not posted. Nothing comes back — no export parameters, no messages
+and no exception if it fails later — which is why our log is empty, and the two are on the SAP
+side against that destination, in the transactional RFC monitor, failed or waiting to be
+retried.
 
 ## Listen for
 

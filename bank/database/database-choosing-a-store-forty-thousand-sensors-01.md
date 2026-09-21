@@ -1,6 +1,6 @@
 ---
 id: database-choosing-a-store-forty-thousand-sensors-01
-schema_version: 1
+schema_version: 2
 title: Forty thousand sensors, and two very different queries
 category: database
 topic: choosing-a-store
@@ -24,6 +24,13 @@ you considered.
 
 Whether the candidate can turn a stated workload into a concrete choice and reject the
 alternatives by the queries they handle badly, rather than by listing properties of each product.
+
+## Ideal minimal answer
+
+Lay rows out by sensor then by time, in a time-series or column store, so the 24-hour chart is
+one range read and the fleet sweep touches one field per row. Reject each alternative by the
+query it serves badly — a key-value store cannot answer the fleet sweep — and ask how long
+readings are kept.
 
 ## Listen for
 

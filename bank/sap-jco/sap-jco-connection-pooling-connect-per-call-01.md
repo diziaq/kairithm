@@ -1,6 +1,6 @@
 ---
 id: sap-jco-connection-pooling-connect-per-call-01
-schema_version: 1
+schema_version: 2
 title: A fresh logon for every single call
 category: sap-jco
 topic: connection-pooling
@@ -9,6 +9,7 @@ tags: [performance, operations, integration]
 time_estimate_min: 5
 order: 40
 links:
+  related: [general-code-review-hard-to-follow-01]
   deeper: [sap-jco-connection-pooling-logons-despite-pool-01]
 ---
 
@@ -22,6 +23,13 @@ pass. What do you say in the review?
 
 Whether the candidate knows that JCo keeps a pool behind a named destination and that the pattern
 in front of them defeats it, and can say what the waste costs on the SAP side.
+
+## Ideal minimal answer
+
+Building a fresh destination for every request means a full logon to SAP each time, which SAP
+has to authenticate and set up a session for. JCo already pools connections behind a named
+destination, so the fix is to get the destination once by name and reuse it, letting the pool
+hold the connections.
 
 ## Listen for
 

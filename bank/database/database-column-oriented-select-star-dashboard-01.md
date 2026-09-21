@@ -1,6 +1,6 @@
 ---
 id: database-column-oriented-select-star-dashboard-01
-schema_version: 1
+schema_version: 2
 title: The dashboard asks for all three hundred columns
 category: database
 topic: column-oriented
@@ -10,6 +10,7 @@ time_estimate_min: 7
 order: 320
 links:
   deeper: [database-column-oriented-orders-in-bigquery-01]
+  related: [database-indexing-composite-column-order-01]
 ---
 
 ## Ask
@@ -23,6 +24,13 @@ help?
 
 Whether the candidate knows what an analytical store actually pulls off disk for a given query,
 and reaches for the field list before reaching for hardware.
+
+## Ideal minimal answer
+
+Name the six fields the tile uses and do the sum in the query. ClickHouse reads per field, so
+asking for all three hundred lifts the whole width off disk, and returning a day of rows instead
+of one also sends far more over the network; the other two hundred and ninety four cost nothing
+once they are not named.
 
 ## Listen for
 

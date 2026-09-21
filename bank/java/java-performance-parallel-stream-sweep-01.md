@@ -1,6 +1,6 @@
 ---
 id: java-performance-parallel-stream-sweep-01
-schema_version: 1
+schema_version: 2
 title: A sweep that made everything parallel
 category: java
 topic: performance
@@ -23,6 +23,13 @@ and one report occasionally prints a total that is wrong. Unpick that for me.
 
 Whether the candidate can attribute three unlike symptoms to one change, and reason about where the
 work actually runs.
+
+## Ideal minimal answer
+
+All of it runs in one pool shared by the whole process, which is how a change to an endpoint
+delays an unrelated scheduled job, and work that waits on input or output occupies a worker
+without using it. The wrong total points at shared state updated from several workers. Names
+what would have had to be true, and that nobody checked.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: kafka-dead-letter-unread-topic-01
-schema_version: 1
+schema_version: 2
 title: Nobody has opened the dead letter topic in six months
 category: kafka
 topic: dead-letter
@@ -23,6 +23,12 @@ evidence that the pipeline has had no incidents. What is your reaction?
 
 Whether the candidate treats a dead letter destination as an operational commitment with a process
 behind it, rather than a tidy place to drop records.
+
+## Ideal minimal answer
+
+Forty thousand records nobody has looked at is the incident, not evidence against one. Ask what is
+stored beside each record — the failure, where it came from, when, how many attempts it had — then
+who is alerted and on what, and what the route back into the flow is.
 
 ## Listen for
 

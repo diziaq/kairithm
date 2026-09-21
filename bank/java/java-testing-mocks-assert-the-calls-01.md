@@ -1,6 +1,6 @@
 ---
 id: java-testing-mocks-assert-the-calls-01
-schema_version: 1
+schema_version: 2
 title: Nineteen tests broke on a refactor that changed nothing
 category: java
 topic: testing
@@ -25,6 +25,13 @@ team's plan is to update the nineteen. What is your view?
 Whether the candidate sees false failures and false passes as one defect — tests bound to how the
 class is written rather than to what it does — and can say what to assert instead without banning
 test doubles outright.
+
+## Ideal minimal answer
+
+Puts the two events together: tests bound to which calls were made fail when the code moves and
+say nothing when the behaviour changes. Asserts instead on what the class returns or leaves
+behind, keeps only the calls that are themselves the behaviour, says what each of the nineteen
+was buying, and deletes the ones buying nothing.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: spring-transactions-remote-call-inside-01
-schema_version: 1
+schema_version: 2
 title: A payment call inside the database transaction
 category: spring
 topic: transactions
@@ -25,6 +25,13 @@ what do you do, and what do you tell finance about the existing damage?
 Whether the candidate can see a transaction as a resource held for a duration, recognise that
 two independent systems cannot be made atomic by wrapping them in one annotation, and choose a
 design whose failure modes they can name.
+
+## Ideal minimal answer
+
+The connection is taken at the first statement and held until the method returns, so the
+provider's latency is added to every request's hold time and the pool runs out. Shrink the
+boundary to database work, record the intent durably inside it and act after commit, with a
+stable key so a repeat cannot charge twice. Define the reconciliation for the existing charges.
 
 ## Listen for
 

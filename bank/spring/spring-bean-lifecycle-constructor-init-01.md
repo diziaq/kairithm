@@ -1,6 +1,6 @@
 ---
 id: spring-bean-lifecycle-constructor-init-01
-schema_version: 1
+schema_version: 2
 title: A null collaborator inside a constructor
 category: spring
 topic: bean-lifecycle
@@ -22,6 +22,12 @@ startup. They move the same two lines into a method marked `@PostConstruct` and 
 
 Whether the candidate knows the order in which the container builds a bean, and can say why one
 piece of startup work is safe in one place and impossible in another.
+
+## Ideal minimal answer
+
+The object has to exist before anything can be put into its fields, so a field filled from
+outside is still empty while the constructor runs. The container fills the fields next and only
+then calls the `@PostConstruct` method, which is why the same two lines work there.
 
 ## Listen for
 

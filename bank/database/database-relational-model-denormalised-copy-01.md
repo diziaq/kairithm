@@ -1,6 +1,6 @@
 ---
 id: database-relational-model-denormalised-copy-01
-schema_version: 1
+schema_version: 2
 title: One customer, three email addresses, three tables
 category: database
 topic: relational-model
@@ -22,6 +22,13 @@ in all three tables, and nobody can say which one is right. How do you reason ab
 
 Whether the candidate can tell a redundant copy that must agree with its source from a deliberate
 record of what was true at a moment, and say what the store can actually enforce in each case.
+
+## Ideal minimal answer
+
+Ask what each copy is for: the address on a posted invoice is a record of what was true then and
+must not be overwritten, while a copy kept only to avoid a join has to track the customer row.
+Produce the tracking ones from the source — a view, a generated column, a materialised view —
+rather than having the application type them in three times.
 
 ## Listen for
 

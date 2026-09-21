@@ -1,6 +1,6 @@
 ---
 id: java-concurrency-visibility-flag-01
-schema_version: 1
+schema_version: 2
 title: A flag one thread writes and another never sees
 category: java
 topic: concurrency
@@ -22,6 +22,13 @@ immediately. What is going on, and what does marking the field `volatile` change
 
 Whether the candidate reasons about the Java memory model as a set of rules the compiler and the
 hardware are allowed to exploit, rather than as a description of what usually happens.
+
+## Ideal minimal answer
+
+Nothing obliges the reading thread to observe the store, so the loop may hoist the read out and
+spin on a register; that is a guarantee the model withholds, not something the hardware happens
+to do. `volatile` forces the load and orders it against the store, publishing everything written
+before it — but leaves a read-modify-write divisible.
 
 ## Listen for
 

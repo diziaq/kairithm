@@ -1,6 +1,6 @@
 ---
 id: microservices-observability-request-lost-across-hops-01
-schema_version: 1
+schema_version: 2
 title: Find one failed order across four services
 category: microservices
 topic: observability
@@ -23,6 +23,12 @@ that one order?
 
 Whether the candidate knows a request has to carry something that ties its log lines together,
 and can say what to do when it does not.
+
+## Ideal minimal answer
+
+Start from the order number to find the one request, then search all four services for a single
+value minted at the gateway and passed on by every hop, which each service writes into its log
+lines. Matching on 14:32 across four machines is guesswork, because their clocks do not agree.
 
 ## Listen for
 

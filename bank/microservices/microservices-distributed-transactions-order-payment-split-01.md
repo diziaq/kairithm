@@ -1,6 +1,6 @@
 ---
 id: microservices-distributed-transactions-order-payment-split-01
-schema_version: 1
+schema_version: 2
 title: The card is charged and the order row never committed
 category: microservices
 topic: distributed-transactions
@@ -23,6 +23,13 @@ paid and you have no order. How do you make that impossible?
 
 Whether the candidate can walk the individual crash points of a two-system change and design a
 sequence where every one of them is recoverable.
+
+## Ideal minimal answer
+
+Commit a local record of the attempt, with your own reference, before calling the provider, so a
+crash always leaves a trace; send that reference on the call so the provider recognises a
+repeat. A separate sweep then finds attempts with no outcome, asks the provider what happened to
+that reference, and drives each one to paid or refunded without a human reading it.
 
 ## Listen for
 

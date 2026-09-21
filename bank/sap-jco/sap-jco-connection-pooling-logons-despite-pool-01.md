@@ -1,6 +1,6 @@
 ---
 id: sap-jco-connection-pooling-logons-despite-pool-01
-schema_version: 1
+schema_version: 2
 title: Pooling is on and the logons keep coming
 category: sap-jco
 topic: connection-pooling
@@ -9,6 +9,7 @@ tags: [performance, configuration, operations, failure-modes]
 time_estimate_min: 7
 order: 45
 links:
+  related: [microservices-scalability-autoscaled-into-database-01]
   deeper: [sap-jco-connection-pooling-capacity-across-nodes-01]
 ---
 
@@ -25,6 +26,13 @@ numbers are doing to your connections.
 Whether the candidate can read the two pool numbers as a shape — how much work may be in flight,
 and how much survives between calls — and predict from them what a single instance does to the
 SAP side at a given load.
+
+## Ideal minimal answer
+
+`peak_limit` of 50 caps connections in use, so it is not what bites at forty in flight;
+`pool_capacity` of 1 caps the idle ones, so only one of each wave survives being handed back and
+the other thirty-nine are closed and log on again. Size the idle number to the load actually
+sustained, and note a held connection occupies something on the far side.
 
 ## Listen for
 

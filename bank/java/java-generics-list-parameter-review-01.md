@@ -1,6 +1,6 @@
 ---
 id: java-generics-list-parameter-review-01
-schema_version: 1
+schema_version: 2
 title: It compiles once the type argument is removed
 category: java
 topic: generics
@@ -23,6 +23,13 @@ pass, and they have opened the pull request. What do you say?
 
 Whether the candidate can explain why the compiler refused the call, and choose the fix that keeps
 the checking rather than the one that switches it off.
+
+## Ideal minimal answer
+
+Says the call is rejected because, if it were allowed, the method could put anything at all into
+the caller's list; the bare form does not fix the signature, it switches the checking off for
+every use inside the method. Reaches for the parameter form that accepts any element type while
+forbidding additions.
 
 ## Listen for
 

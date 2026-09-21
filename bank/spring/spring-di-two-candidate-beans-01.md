@@ -1,6 +1,6 @@
 ---
 id: spring-di-two-candidate-beans-01
-schema_version: 1
+schema_version: 2
 title: Two beans of the same type and a startup failure
 category: spring
 topic: dependency-injection
@@ -25,6 +25,12 @@ and what your options are.
 Whether the candidate can read a container startup failure as a resolution step that had more
 than one valid answer, and then choose between the ways out on their consequences rather than on
 which annotation they remember first.
+
+## Ideal minimal answer
+
+The container was filling that constructor parameter by type, two definitions matched it, and it
+will not guess, so startup fails. Either mark one as the default so it wins wherever the type is
+asked for, or name the one wanted at that single point.
 
 ## Listen for
 

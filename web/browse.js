@@ -183,6 +183,12 @@ export function renderPreview(panel, card) {
       })
     );
 
+    if (card.ideal_answer) {
+      const block = make("div", { className: "hint-block" });
+      block.appendChild(make("h3", { text: "Ideal minimal answer" }));
+      block.appendChild(make("p", { className: "ideal-answer", text: card.ideal_answer }));
+      guidance.appendChild(block);
+    }
     if (card.tests) {
       const block = make("div", { className: "hint-block" });
       block.appendChild(make("h3", { text: "What this tests" }));

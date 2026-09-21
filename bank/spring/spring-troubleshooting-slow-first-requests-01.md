@@ -1,6 +1,6 @@
 ---
 id: spring-troubleshooting-slow-first-requests-01
-schema_version: 1
+schema_version: 2
 title: Ninety bad seconds after every deploy
 category: spring
 topic: troubleshooting
@@ -25,6 +25,13 @@ change?
 Whether the candidate can reason about the window between a process starting and a process
 being genuinely able to serve, distinguish the two signals the platform consumes, and treat
 "deploy at night" as a symptom rather than a mitigation.
+
+## Ideal minimal answer
+
+The pod reports that it is alive and traffic is routed on the strength of that, while whether it
+can serve — pools not filled, caches empty, code not yet optimised — is a separate signal. Route
+on that second one, warm the hot path before declaring it able to serve, make the rollout and
+application settings agree, refuse the 3 a.m. workaround, and leave a per-deploy measurement.
 
 ## Listen for
 

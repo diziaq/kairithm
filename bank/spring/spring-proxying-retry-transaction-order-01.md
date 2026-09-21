@@ -1,6 +1,6 @@
 ---
 id: spring-proxying-retry-transaction-order-01
-schema_version: 1
+schema_version: 2
 title: Retry and transaction on the same method
 category: spring
 topic: proxying
@@ -26,6 +26,14 @@ reviewing this. What is wrong, and what do you require before it ships?
 Whether the candidate understands that two annotations on one method become two wrappers in an
 order, can reason about what each attempt sees when the order is wrong, and can make the correct
 order structural rather than incidental.
+
+## Ideal minimal answer
+
+Both behaviours are applied by wrappers around the same method and the retry ended up inside, so
+every attempt ran in the unit of work the first failure had already doomed; the recovery returned
+normally and the commit threw. Put the retry outside by splitting across two beans rather than
+trusting an ordering number, ask whether the work is safe to repeat, and say what the caller is
+told.
 
 ## Listen for
 

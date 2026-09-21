@@ -1,6 +1,6 @@
 ---
 id: sap-jco-stateful-sessions-leaked-contexts-01
-schema_version: 1
+schema_version: 2
 title: Hundreds of sessions your service never gave back
 category: sap-jco
 topic: stateful-sessions
@@ -8,6 +8,8 @@ level: lead
 tags: [operations, observability, failure-modes, resource-leaks]
 time_estimate_min: 10
 order: 210
+links:
+  related: [general-incidents-third-time-same-outage-01]
 ---
 
 ## Ask
@@ -20,6 +22,14 @@ while. How do you run this down, and how do you stop it coming back?
 
 Whether the candidate can diagnose a reserved-resource leak on an error path, and then replace
 the restart habit with a control the team can see and enforce.
+
+## Ideal minimal answer
+
+The sequence holds its connection reserved and counted as allocated until it is released, so an
+exception path that skips the release leaks it, and the reclaim only fires when the thread that
+opened it dies, which on a thread pool never happens. Own the bracket in one place, keep
+stateless the default, and replace the nightly restart with a gauge of open sequences, a
+threshold and an owner.
 
 ## Listen for
 

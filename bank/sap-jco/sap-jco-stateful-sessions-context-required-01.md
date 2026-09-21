@@ -1,6 +1,6 @@
 ---
 id: sap-jco-stateful-sessions-context-required-01
-schema_version: 1
+schema_version: 2
 title: The save reports success and the change is gone
 category: sap-jco
 topic: stateful-sessions
@@ -22,6 +22,14 @@ success and the change is not there. What is different in production?
 
 Whether the candidate knows that pooled calls are independent sessions in SAP, and can explain
 why that turns a correctness bug into a concurrency-dependent one.
+
+## Ideal minimal answer
+
+Each call takes whatever connection the pool gives it, so under concurrency the two land on
+different connections and therefore different SAP sessions; the save runs in a session that has
+nothing registered to save, which is why it reports success and changes nothing. Test had one
+connection so they almost always matched; wrap the sequence in `JCoContext.begin` and
+`JCoContext.end`, with the `end` in a `finally`.
 
 ## Listen for
 

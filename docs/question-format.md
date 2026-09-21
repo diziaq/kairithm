@@ -29,7 +29,7 @@ sections are also what the interview screen renders directly.
 | Field | Type | Required | Meaning |
 |---|---|---|---|
 | `id` | slug | yes | Stable unique identity. Lower-case words joined by single hyphens. |
-| `schema_version` | integer | yes | Currently `1`. |
+| `schema_version` | integer | yes | Currently `2`. Version 1 cards still load; they simply have no pass mark. |
 | `title` | string | yes | Short label for lists, navigation and the scorecard. |
 | `category` | enum | yes | `general`, `java`, `spring`, `microservices`, `kafka`, `database`, `sap-jco`. Must match the directory. |
 | `topic` | string | yes | Narrower area inside the category: `concurrency`, `transactions`, `delivery-semantics`. |
@@ -46,6 +46,7 @@ sections are also what the interview screen renders directly.
 |---|---|---|---|
 | `## Ask` | `question` | yes | **yes — the only section that is** |
 | `## Tests` | `tests` | yes | no |
+| `## Ideal minimal answer` | `ideal_answer` | yes, from version 2 | no |
 | `## Listen for` | `listen_for` | yes | no |
 | `## Answer bands` | `answer_bands` | yes | no |
 | `## Expected knowledge` | `expected_knowledge` | no | no |
@@ -114,6 +115,31 @@ old scorecards from the bank. The file name is only a convention — the validat
 disagrees with the id, and nothing breaks if you move the file.
 
 If a card is wrong, edit it or delete it. Do not recycle its id for a different question.
+
+---
+
+## The ideal minimal answer
+
+The pass mark: **the least a candidate can say and still have answered the question.** One or
+two sentences, under seventy words, and it sits at the top of the interviewer panel because it
+is what you check against while somebody is still talking.
+
+It is not the best possible answer — that is the `lead` band. It is not a checklist — that is
+`## Listen for`. It is the floor:
+
+```markdown
+## Ideal minimal answer
+
+`counter++` is a read, an add and a store, so two threads can interleave inside it and one
+overwrites the other. The printed figure comes out under twenty thousand and varies between runs.
+```
+
+Write it so that two interviewers reading the same answer would agree on whether it cleared the
+bar. "Understands concurrency" is rejected by the validator for the same reason a band would be:
+it is a verdict, not something a candidate said.
+
+A follow-up that repeats a distinctive term from the ideal answer leaks just as surely as one
+repeating a term from a band, so the leak check reads this section too.
 
 ---
 
@@ -347,3 +373,7 @@ warning: bank/kafka/kafka-rebalance-01.md [kafka-rebalance-01] (follow_ups): fol
 reported as an error rather than being parsed on a guess. To change the shape of a card, raise
 `SCHEMA_VERSION` in `app/bank.py`, teach the loader both shapes, and migrate the bank in one
 commit.
+
+That has happened once. Version 2 added `## Ideal minimal answer` and made it required; the
+loader still accepts version 1 cards without it, and the validator warns on each one so a
+half-finished migration is visible rather than silent.

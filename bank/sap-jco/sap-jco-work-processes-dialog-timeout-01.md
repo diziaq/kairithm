@@ -1,6 +1,6 @@
 ---
 id: sap-jco-work-processes-dialog-timeout-01
-schema_version: 1
+schema_version: 2
 title: The extract that now dies after ten minutes
 category: sap-jco
 topic: work-processes
@@ -22,6 +22,14 @@ timeout. Talk me through it.
 
 Whether the candidate knows an external RFC call runs inside a dialog work process with a
 runtime limit, and treats that limit as a design constraint rather than a setting to raise.
+
+## Ideal minimal answer
+
+The call runs in a dialog work process, which has a maximum runtime — commonly ten minutes —
+after which the session is terminated and a dump written; that limit is instance-wide, so
+raising it is a Basis decision affecting every dialog user. Chunk the extract on a stable key
+range into calls well inside it, or move the work to background processing, which is not bound
+by it.
 
 ## Listen for
 

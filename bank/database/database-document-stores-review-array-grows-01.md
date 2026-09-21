@@ -1,6 +1,6 @@
 ---
 id: database-document-stores-review-array-grows-01
-schema_version: 1
+schema_version: 2
 title: Forty thousand reviews inside one product document
 category: database
 topic: document-stores
@@ -10,6 +10,7 @@ time_estimate_min: 6
 order: 300
 links:
   deeper: [database-document-stores-surname-in-eleven-thousand-orders-01]
+  related: [database-indexing-too-many-indexes-01]
 ---
 
 ## Ask
@@ -22,6 +23,12 @@ document and the product page has become slow. What is happening, and what would
 
 Whether the candidate can say what embedding costs once the embedded list has no natural bound,
 and choose between keeping it and moving it out for a stated reason.
+
+## Ideal minimal answer
+
+MongoDB reads and writes the document as a whole, so rendering a page that shows ten reviews
+fetches all forty thousand, and the array only ever grows. Store reviews as their own documents
+carrying the product id, and fetch them separately.
 
 ## Listen for
 

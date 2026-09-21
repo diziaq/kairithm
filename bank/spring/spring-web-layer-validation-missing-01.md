@@ -1,6 +1,6 @@
 ---
 id: spring-web-layer-validation-missing-01
-schema_version: 1
+schema_version: 2
 title: The annotated field that lets nulls through
 category: spring
 topic: web-layer
@@ -24,6 +24,12 @@ nothing check it, and what would the client have seen if it had?
 
 Whether the candidate knows that constraint annotations are inert until something is asked to
 apply them, and can say what the framework does with a failed check at the web boundary.
+
+## Ideal minimal answer
+
+The annotation on the field is only data; nothing runs it unless the body parameter is marked so
+the check is applied at that boundary. Once it is, the handler is never entered and the client
+gets a client error instead of a `201`.
 
 ## Listen for
 

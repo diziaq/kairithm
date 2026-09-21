@@ -1,6 +1,6 @@
 ---
 id: database-choosing-a-store-second-cluster-for-six-people-01
-schema_version: 1
+schema_version: 2
 title: A second cluster for a team of six
 category: database
 topic: choosing-a-store
@@ -21,6 +21,13 @@ what do you need to know before you decide it?
 
 Whether the candidate prices a new store in team capacity, on-call surface and long-term
 ownership, and can state what evidence would settle the question either way.
+
+## Ideal minimal answer
+
+Decide either way, but price the self-hosted option as recurring work — upgrades, capacity,
+being woken by it — against the fee called too expensive, ask what the reporting queries do on
+the existing PostgreSQL instance today, and give the decision an owner and a measured condition
+that reopens it.
 
 ## Listen for
 

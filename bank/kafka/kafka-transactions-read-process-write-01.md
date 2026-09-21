@@ -1,6 +1,6 @@
 ---
 id: kafka-transactions-read-process-write-01
-schema_version: 1
+schema_version: 2
 title: A reader still sees records that were rolled back
 category: kafka
 topic: transactions
@@ -23,6 +23,13 @@ still reports acting on records from transactions that were rolled back. What is
 
 Whether the candidate knows that the effect of a transaction on a reader depends on the reader,
 and can say what the broker actually stores for a transaction that was rolled back.
+
+## Ideal minimal answer
+
+Records from a rolled-back transaction are appended to the partition and filtered out at read
+time, and the default on the reading side returns them, so the missing piece is that consumer
+being set to `read_committed`. Such a reader cannot go past the last stable point and takes on a
+delay for it, and the boundary still stops at the edge of the cluster.
 
 ## Listen for
 

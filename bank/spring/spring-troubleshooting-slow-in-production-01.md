@@ -1,6 +1,6 @@
 ---
 id: spring-troubleshooting-slow-in-production-01
-schema_version: 1
+schema_version: 2
 title: Forty milliseconds in staging, four seconds in production
 category: spring
 topic: troubleshooting
@@ -23,6 +23,14 @@ a debugger and you cannot deploy a change today. Talk me through the first thirt
 
 Whether the candidate narrows a problem by listing what differs between two environments and
 then collecting evidence for each, rather than by guessing at causes and trying fixes.
+
+## Ideal minimal answer
+
+Start from what differs when the artefact is identical — data volume, settings, neighbours,
+traffic — and take the cheapest checks first: the settings the running process resolved, then
+split the four seconds into time in the database, time waiting for a connection and time
+downstream. Pending connection acquisitions separate a starved pool from a slow query. Say what
+would falsify each guess.
 
 ## Listen for
 

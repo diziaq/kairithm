@@ -1,6 +1,6 @@
 ---
 id: database-cloud-databases-aurora-failover-four-hour-outage-01
-schema_version: 1
+schema_version: 2
 title: Failover took 32 seconds; the outage took four hours
 category: database
 topic: cloud-databases
@@ -8,6 +8,8 @@ level: senior
 tags: [failure-modes, operations, ownership]
 time_estimate_min: 9
 order: 350
+links:
+  related: [microservices-failure-handling-cascade-slow-dependency-01]
 ---
 
 ## Ask
@@ -21,6 +23,13 @@ seconds?
 
 Whether the candidate can explain the gap between a provider's recovery and an application's, and
 name the client-side state that keeps a process talking to a machine that has changed role.
+
+## Ideal minimal answer
+
+The pool kept handing out connections opened before the switch, and the JVM was still resolving
+the endpoint to the old address, so every write went to what is now a reader and was refused
+while a trivial liveness query still passed; the restart cured both. Something should have
+discarded the pool at the first refusal, and four hours with no alert is a second defect.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: database-orm-platform-commitment-01
-schema_version: 1
+schema_version: 2
 title: The engineer who wrote the mapping layer leaves in five weeks
 category: database
 topic: orm
@@ -8,6 +8,8 @@ level: lead
 tags: [maintainability, operations, ownership, api-design]
 time_estimate_min: 12
 order: 405
+links:
+  related: [database-choosing-a-store-second-cluster-for-six-people-01, spring-auto-configuration-shared-starter-01]
 ---
 
 ## Ask
@@ -22,6 +24,13 @@ sign up for either way?
 Whether the candidate treats a data access choice as a long-lived commitment owned by an
 organisation rather than by a project, and can price a second one honestly instead of ruling on
 taste.
+
+## Ideal minimal answer
+
+Say up front what would make it a no, and plan the five weeks: what comes out of the leaver's
+head, to whom, and how we know it worked. A second approach is paid for by the platform in
+review, shared libraries, upgrades and on-call, so name what today's layer already costs, who
+owns the four services afterwards, and the date and evidence that settle the trial.
 
 ## Listen for
 

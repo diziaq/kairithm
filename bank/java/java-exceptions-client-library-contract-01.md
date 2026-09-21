@@ -1,6 +1,6 @@
 ---
 id: java-exceptions-client-library-contract-01
-schema_version: 1
+schema_version: 2
 title: Thirty services grepping an exception message
 category: java
 topic: exceptions
@@ -23,6 +23,13 @@ thirty teams from having to decide for themselves?
 
 Whether the candidate derives a failure taxonomy from what a caller can actually do about each
 case, and decides what the library absorbs itself rather than passing every failure outward.
+
+## Ideal minimal answer
+
+Reads what the thirty callers match on today, then derives the types from what a caller can act
+on — send again now, send again later, give up, or fix the request. Draws the line between what
+the library absorbs itself and what it surfaces, keeps the default safe for a caller that
+ignores the distinction, and ships both shapes during a stated window.
 
 ## Listen for
 

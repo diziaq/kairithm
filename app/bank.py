@@ -21,7 +21,12 @@ import yaml
 from .config import BANK_ROOT
 from .levels import BANDS, INVERSE_LINK, LEVEL_ORDINAL, LEVELS, LINK_KINDS
 
-SCHEMA_VERSION = 1
+# Version 2 added `## Ideal minimal answer`. Version 1 cards still load — they simply have no
+# pass mark — so a card written before the change is not broken by it, which is the whole point
+# of carrying a version on every card.
+SCHEMA_VERSION = 2
+SUPPORTED_SCHEMA_VERSIONS = (1, 2)
+IDEAL_ANSWER_SINCE = 2
 
 FRONTMATTER = re.compile(r"\A---\s*\n(.*?)\n---\s*\n?(.*)\Z", re.DOTALL)
 SECTION = re.compile(r"^(#{2,3})[ \t]+(.+?)[ \t]*$", re.MULTILINE)
@@ -34,6 +39,7 @@ ID_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 KNOWN_SECTIONS = {
     "ask": "question",
     "tests": "tests",
+    "ideal minimal answer": "ideal_answer",
     "listen for": "listen_for",
     "expected knowledge": "expected_knowledge",
     "strong signals": "strong_signals",
@@ -46,7 +52,7 @@ KNOWN_SECTIONS = {
 }
 
 LIST_SECTIONS = ("listen_for", "expected_knowledge", "strong_signals", "weak_signals", "sources")
-TEXT_SECTIONS = ("question", "tests", "notes")
+TEXT_SECTIONS = ("question", "tests", "ideal_answer", "notes")
 
 
 @dataclass(frozen=True)
@@ -72,6 +78,7 @@ class Question:
     tests: str
     listen_for: tuple[str, ...]
     answer_bands: dict[str, tuple[str, ...]]
+    ideal_answer: str = ""
     tags: tuple[str, ...] = ()
     expected_knowledge: tuple[str, ...] = ()
     strong_signals: tuple[str, ...] = ()
@@ -115,6 +122,7 @@ class Question:
         if include_hints:
             data |= {
                 "tests": self.tests,
+                "ideal_answer": self.ideal_answer,
                 "listen_for": list(self.listen_for),
                 "expected_knowledge": list(self.expected_knowledge),
                 "strong_signals": list(self.strong_signals),
@@ -381,9 +389,13 @@ def load_question(
     version = _parse_optional_int(meta.get("schema_version"))
     if version is None:
         found.append(("schema_version", "schema_version is missing or not a whole number"))
-    elif version != SCHEMA_VERSION:
+    elif version not in SUPPORTED_SCHEMA_VERSIONS:
         found.append(
-            ("schema_version", f"schema_version {version} is not supported; this tool reads {SCHEMA_VERSION}")
+            (
+                "schema_version",
+                f"schema_version {version} is not supported; this tool reads "
+                f"{', '.join(str(v) for v in SUPPORTED_SCHEMA_VERSIONS)}",
+            )
         )
 
     title = _text_field(meta, "title")
@@ -424,6 +436,16 @@ def load_question(
     if not listen_for:
         found.append(("listen_for", "the `## Listen for` section is missing or empty"))
 
+    ideal_answer = " ".join(text.get("ideal_answer", "").split()).strip()
+    if not ideal_answer and version is not None and version >= IDEAL_ANSWER_SINCE:
+        found.append(
+            (
+                "ideal_answer",
+                "the `## Ideal minimal answer` section is missing or empty; it is required from "
+                f"schema_version {IDEAL_ANSWER_SINCE}",
+            )
+        )
+
     if not bands:
         found.append(("answer_bands", "the `## Answer bands` section has no `###` band headings"))
 
@@ -446,6 +468,7 @@ def load_question(
             level=level,
             tests=tests,
             listen_for=listen_for,
+            ideal_answer=ideal_answer,
             answer_bands={band: bands[band] for band in BANDS if band in bands},
             tags=_parse_str_list(meta.get("tags")),
             expected_knowledge=_items(text.get("expected_knowledge", "")),

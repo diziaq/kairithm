@@ -1,6 +1,6 @@
 ---
 id: sap-jco-performance-nightly-bulk-extract-01
-schema_version: 1
+schema_version: 2
 title: Two million rows a night through an RFC
 category: sap-jco
 topic: performance
@@ -22,6 +22,14 @@ tool?
 Whether the candidate can design a bulk movement with a resumption story and a capacity budget,
 and whether they will recommend leaving the tool they are being interviewed on when it does not
 fit.
+
+## Ideal minimal answer
+
+Challenge the two million first — a delta with a periodic reconciliation is usually the right
+shape — then chunk on a stable key so no call hits the dialog runtime limit and an interrupted
+run resumes, with parallelism bounded by an agreed share of SAP capacity. Name the conditions
+that make this the wrong tool, and say that replacing it is a commercial decision, not mine
+alone.
 
 ## Listen for
 

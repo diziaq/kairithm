@@ -1,6 +1,6 @@
 ---
 id: spring-testing-rollback-never-commits-01
-schema_version: 1
+schema_version: 2
 title: Green because it never committed
 category: spring
 topic: testing
@@ -10,6 +10,7 @@ time_estimate_min: 8
 order: 91
 links:
   deeper: [spring-testing-context-cache-01]
+  related: [spring-transactions-self-invocation-01]
 ---
 
 ## Ask
@@ -24,6 +25,13 @@ to run once the order is stored has never fired in a test. Why does the test see
 Whether the candidate knows that a test which rolls back never reaches the moment the database
 and the framework do their end-of-transaction work, can name which defects that hides, and can
 decide which tests should keep rolling back anyway.
+
+## Ideal minimal answer
+
+The test never commits, and the writes are held until something pushes them out, so the
+constraint is never judged and the read is answered from what the test already holds. Push the
+pending writes out and clear them before asserting. The listener is attached to the successful
+end of a unit of work, which this test is built never to reach.
 
 ## Listen for
 

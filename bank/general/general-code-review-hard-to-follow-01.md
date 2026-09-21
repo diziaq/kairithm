@@ -1,6 +1,6 @@
 ---
 id: general-code-review-hard-to-follow-01
-schema_version: 1
+schema_version: 2
 title: It works, it passes, and you cannot follow it
 category: general
 topic: code-review
@@ -21,6 +21,12 @@ you find it genuinely hard to follow. What do you write in the review?
 
 Whether the candidate can turn a vague discomfort into specific, actionable comments, and
 whether they can tell a defect from a preference.
+
+## Ideal minimal answer
+
+Names the specific lines or function they could not follow and asks the author what that part
+does, rather than asking for a general tidy-up. Suggests something concrete — a clearer name, a
+smaller function — and says why it would help.
 
 ## Listen for
 

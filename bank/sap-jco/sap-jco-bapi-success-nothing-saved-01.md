@@ -1,6 +1,6 @@
 ---
 id: sap-jco-bapi-success-nothing-saved-01
-schema_version: 1
+schema_version: 2
 title: The BAPI returned a document number and nothing was saved
 category: sap-jco
 topic: bapi
@@ -9,6 +9,7 @@ tags: [transactions, correctness, consistency]
 time_estimate_min: 6
 order: 50
 links:
+  related: [spring-transactions-partial-save-01]
   deeper: [sap-jco-bapi-two-bapis-one-commit-01]
 ---
 
@@ -21,6 +22,12 @@ the result. The order is nowhere in SAP. What happened?
 
 Whether the candidate knows that a BAPI leaves the decision to save to its caller, and that the
 absence of a Java exception says nothing about what SAP did.
+
+## Ideal minimal answer
+
+The BAPI does not save on its own: nothing called `BAPI_TRANSACTION_COMMIT`, so the work was
+discarded when the session ended. The document number is allocated during the call and proves
+nothing about whether the order exists.
 
 ## Listen for
 

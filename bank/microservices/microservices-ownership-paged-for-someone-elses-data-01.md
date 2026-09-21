@@ -1,6 +1,6 @@
 ---
 id: microservices-ownership-paged-for-someone-elses-data-01
-schema_version: 1
+schema_version: 2
 title: Paged at three in the morning for another team's bad data
 category: microservices
 topic: ownership
@@ -21,6 +21,13 @@ change?
 
 Whether the candidate can turn a cross-team failure into concrete changes in where data is
 validated, who is alerted, and how a fault is attributed.
+
+## Ideal minimal answer
+
+The engineer who was woken could not fix the cause and the team who could was not told, so route
+this class of alert to the writer and make the failure name the bad record and its source.
+Validate the import against what its consumers require, in the import team's own pipeline, and
+alert on the data so a bad row is found the day it lands.
 
 ## Listen for
 

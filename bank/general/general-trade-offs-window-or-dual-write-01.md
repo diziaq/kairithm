@@ -1,6 +1,6 @@
 ---
 id: general-trade-offs-window-or-dual-write-01
-schema_version: 1
+schema_version: 2
 title: Two hours down on Sunday, or three weeks of writing both
 category: general
 topic: trade-offs
@@ -26,6 +26,13 @@ change your mind?
 Whether the candidate compares two ways of changing live data on how each one fails part-way
 through and what it leaves behind, rather than choosing the one that sounds safer or more
 modern.
+
+## Ideal minimal answer
+
+Sizes the window from a timed run against a full-size copy and says what the team does when the
+script is a third through at midnight. Breaks the longer plan into steps and marks which can be
+undone, keeps the two copies compared with an alert on a mismatch, and settles first what the
+rows that do not divide cleanly should produce.
 
 ## Listen for
 

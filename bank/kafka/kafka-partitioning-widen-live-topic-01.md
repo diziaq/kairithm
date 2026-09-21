@@ -1,6 +1,6 @@
 ---
 id: kafka-partitioning-widen-live-topic-01
-schema_version: 1
+schema_version: 2
 title: Doubling the partition count on a live topic
 category: kafka
 topic: partitioning
@@ -22,6 +22,13 @@ weigh, and how would you actually carry it out?
 
 Whether the candidate treats the partition count as a published contract with every reader of the
 topic rather than a capacity dial that can be turned at will.
+
+## Ideal minimal answer
+
+A key is mapped over the live count, so from Tuesday a key lands somewhere new while its older
+records stay where they are, and any reader keeping state per key sees that key from two places.
+Choose between widening this topic and standing up a replacement at the new width, name who has
+to be told and what they change, and say how it is backed out.
 
 ## Listen for
 

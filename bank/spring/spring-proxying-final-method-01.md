@@ -1,6 +1,6 @@
 ---
 id: spring-proxying-final-method-01
-schema_version: 1
+schema_version: 2
 title: A final keyword that switches off an annotation
 category: spring
 topic: proxying
@@ -24,6 +24,13 @@ would have happened if they had marked the whole class `final` instead?
 Whether the candidate knows how the annotation is physically applied to a class with no
 interface, and can therefore derive which language constructs it cannot reach — rather than
 having memorised a list of rules.
+
+## Ideal minimal answer
+
+With no interface the container builds a subclass at runtime that overrides each method and puts
+the behaviour around the call. A method that cannot be overridden cannot have anything wrapped
+around it, so the call goes straight to the original code, with nothing to report. Marking the
+whole class that way makes the subclass impossible, so that one fails loudly at startup.
 
 ## Listen for
 

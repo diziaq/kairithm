@@ -1,6 +1,6 @@
 ---
 id: microservices-failure-handling-cascade-slow-dependency-01
-schema_version: 1
+schema_version: 2
 title: A slow dependency takes down services that cannot reach it
 category: microservices
 topic: failure-handling
@@ -26,6 +26,14 @@ travelling further?
 Whether the candidate can follow the saturation of a bounded resource outward from one dependency
 to services several hops away, and can say where the boundary that halts it belongs and who has
 to build it.
+
+## Ideal minimal answer
+
+Each in-flight call holds a worker or connection from one shared allocation, so a hundredfold
+longer call means a hundredfold more held at once and the allocation empties, and then endpoints
+that never touch the dependency queue behind ones that do. The same argument repeats one hop
+out, so cap per dependency at every hop and reject quickly instead of queueing work nobody is
+still waiting for.
 
 ## Listen for
 

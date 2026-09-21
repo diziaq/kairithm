@@ -1,6 +1,6 @@
 ---
 id: database-sql-null-three-valued-logic-01
-schema_version: 1
+schema_version: 2
 title: The same query returns 4000 rows in staging and none in production
 category: database
 topic: sql
@@ -8,6 +8,8 @@ level: senior
 tags: [correctness, failure-modes, data-modelling]
 time_estimate_min: 8
 order: 102
+links:
+  related: [java-api-design-absent-value-01]
 ---
 
 ## Ask
@@ -26,6 +28,13 @@ done for a month. The team says nothing is broken. Where do you look first?
 
 Whether the candidate can reason about a predicate that is neither true nor false, and trace an
 empty result back to one row of data rather than to a configuration difference.
+
+## Ideal minimal answer
+
+Production has at least one `orders.customer_id` that is empty, and `NOT IN` over a list
+containing it compares every id with an unknown value, which is neither true nor false, so no
+row is kept — the positive `IN` form only fails to match on it. Rewrite with `NOT EXISTS`, and
+constrain the column so the value cannot come back.
 
 ## Listen for
 

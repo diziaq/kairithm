@@ -1,6 +1,6 @@
 ---
 id: sap-jco-repository-metadata-locked-down-prod-01
-schema_version: 1
+schema_version: 2
 title: Production refuses a function module nobody called
 category: sap-jco
 topic: repository-metadata
@@ -20,6 +20,13 @@ team has ever heard of. What is going on, and what do you ask for?
 
 Whether the candidate knows JCo makes its own remote calls to read interface descriptions, and
 can turn that into a precise authorisation request instead of a demand for a wider role.
+
+## Ideal minimal answer
+
+JCo reads the interface from SAP with its own RFC calls to metadata function modules before it
+can build the call; that is the unfamiliar name, and those calls need `S_RFC` of their own,
+which production's trimmed role does not grant. The description is cached per system for the
+life of the process, so it failed on the first call; ask for that one entry, not a wider role.
 
 ## Listen for
 

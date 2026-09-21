@@ -1,6 +1,6 @@
 ---
 id: sap-jco-rfc-fundamentals-blocking-call-01
-schema_version: 1
+schema_version: 2
 title: A ninety-second RFC call behind a REST endpoint
 category: sap-jco
 topic: rfc-fundamentals
@@ -9,6 +9,7 @@ tags: [integration, performance, failure-modes]
 time_estimate_min: 5
 order: 10
 links:
+  related: [microservices-failure-handling-timeout-unknown-outcome-01]
   deeper: [sap-jco-rfc-fundamentals-timeout-unknown-outcome-01]
 ---
 
@@ -22,6 +23,13 @@ the SAP system doing?
 
 Whether the candidate sees a synchronous RFC as one request that ties up a finite resource on
 both sides at the same time, rather than as a method call that is simply slow.
+
+## Ideal minimal answer
+
+The calling thread is blocked for the whole ninety seconds and cannot serve another request;
+nothing in JCo makes the call asynchronous. On the SAP side a dialog work process is executing
+the function module for those ninety seconds and hands back everything at the end — there is no
+partial result.
 
 ## Listen for
 

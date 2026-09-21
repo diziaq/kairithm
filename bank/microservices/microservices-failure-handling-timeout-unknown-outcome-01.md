@@ -1,6 +1,6 @@
 ---
 id: microservices-failure-handling-timeout-unknown-outcome-01
-schema_version: 1
+schema_version: 2
 title: The payment call timed out and nobody knows if it landed
 category: microservices
 topic: failure-handling
@@ -23,6 +23,12 @@ code do next, and what do you show the user?
 
 Whether the candidate treats a timeout as an unknown outcome that has to be resolved, rather than
 as a failure they can assume did nothing.
+
+## Ideal minimal answer
+
+I do not know whether the card was charged — the payment side may have done the work and only
+the reply was lost. So I would not fire the charge again as things stand, and I would tell the
+customer their payment is being confirmed rather than claim it failed.
 
 ## Listen for
 

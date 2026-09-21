@@ -1,6 +1,6 @@
 ---
 id: sap-jco-troubleshooting-oncall-without-sap-access-01
-schema_version: 1
+schema_version: 2
 title: On call at two in the morning for a system you cannot log into
 category: sap-jco
 topic: troubleshooting
@@ -23,6 +23,14 @@ cost the people who have to live with it?
 Whether the candidate can choose between access, pushing the other system's state out, and making
 their own side self-sufficient, under a real constraint — and can price each one in work that
 somebody keeps doing after the project ends.
+
+## Ideal minimal answer
+
+Start from the decision at two in the morning (wait, re-run, or wake somebody) and buy only the
+evidence it needs. Price each route in standing effort: a display-only role is a quarterly
+access review; having SAP publish error and backlog counts outward lives on another team's
+transport schedule; recording outcomes on our own side covers all six but cannot see a dump;
+then fund the six differently.
 
 ## Listen for
 

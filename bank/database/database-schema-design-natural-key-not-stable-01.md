@@ -1,6 +1,6 @@
 ---
 id: database-schema-design-natural-key-not-stable-01
-schema_version: 1
+schema_version: 2
 title: The email address is the primary key, and it just changed
 category: database
 topic: schema-design
@@ -24,6 +24,14 @@ What do you say?
 Whether the candidate can separate a stable identity from an attribute that merely happens to be
 unique today, and reason about what changing a key costs once it has spread through a schema and
 out of the database.
+
+## Ideal minimal answer
+
+The cascade does rewrite all eleven tables in one transaction, but it cannot reach the copies
+outside the database — logs, exports, caches, another team's store, a bookmarked URL. Add an
+internal identifier that never changes, backfill, move the references one at a time and keep
+both live for a while; the shared mailbox ticket says the address was never a valid identity in
+the first place.
 
 ## Listen for
 

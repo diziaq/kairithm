@@ -1,6 +1,6 @@
 ---
 id: sap-jco-connection-pooling-capacity-across-nodes-01
-schema_version: 1
+schema_version: 2
 title: The pool will protect SAP, says a colleague
 category: sap-jco
 topic: connection-pooling
@@ -8,6 +8,8 @@ level: lead
 tags: [capacity, backpressure, operations, failure-modes]
 time_estimate_min: 10
 order: 200
+links:
+  related: [microservices-scalability-one-tenant-dominates-01]
 ---
 
 ## Ask
@@ -22,6 +24,14 @@ pool is full, and where does the limit on concurrent calls into SAP really live?
 Whether the candidate knows what a JCo pool actually bounds and what a caller experiences when it
 is exhausted, and can choose deliberately between the places a system-wide limit could be
 enforced instead — each with an operational cost.
+
+## Ideal minimal answer
+
+`peak_limit` caps connections in use inside one JVM, `pool_capacity` only the idle ones, so
+twelve instances of twenty is two hundred and forty concurrent calls, and an unset `peak_limit`
+is unbounded. A full pool makes the caller wait, bounded by `max_get_client_time`, then throws
+instead of connecting, so the real limit has to live somewhere else: a shared limiter or a
+bounded queue, each buying accuracy with a new dependency.
 
 ## Listen for
 

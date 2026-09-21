@@ -1,6 +1,6 @@
 ---
 id: kafka-retries-delay-topic-ordering-01
-schema_version: 1
+schema_version: 2
 title: A delay topic that reorders the account
 category: kafka
 topic: retries
@@ -22,6 +22,13 @@ updates, keyed by account. What did they just give up?
 
 Whether the candidate sees that taking a record off its partition takes it out of sequence, and
 can say for which kinds of update that is survivable.
+
+## Ideal minimal answer
+
+They gave up sequence for the account: the delayed record is applied five minutes late, after
+updates for the same account that were written after it. That is tolerable when an update carries
+the whole value and wrong when it is a change relative to the current one. Ask what happens when
+the second attempt fails as well.
 
 ## Listen for
 

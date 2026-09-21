@@ -1,6 +1,6 @@
 ---
 id: spring-transactions-self-invocation-01
-schema_version: 1
+schema_version: 2
 title: An audit row that disappears with the rest
 category: spring
 topic: transactions
@@ -25,6 +25,13 @@ Why does it not take effect, and what would you do about it?
 
 Whether the candidate knows that the annotation is implemented by something wrapped around the
 bean, and can therefore predict exactly which calls it applies to and which it silently does not.
+
+## Ideal minimal answer
+
+The behaviour is applied by a wrapper the container puts in front of the bean, and a call through
+`this` never leaves the object, so nothing intercepts it. The inner method did run, but inside
+the caller's unit of work, and rolled back with it. Move it onto another bean, or drive the
+second unit of work explicitly in code.
 
 ## Listen for
 

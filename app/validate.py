@@ -17,7 +17,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from .bank import Bank, Problem, Question, load_bank
+from .bank import IDEAL_ANSWER_SINCE, SCHEMA_VERSION, Bank, Problem, Question, load_bank
 from .levels import BANDS, LINK_KINDS
 
 ERROR = "error"
@@ -26,6 +26,7 @@ WARNING = "warning"
 MIN_FOLLOW_UPS = 2
 MAX_FOLLOW_UPS = 4
 MIN_BAND_WORDS = 3
+MAX_IDEAL_ANSWER_WORDS = 70
 
 WORD = re.compile(r"[a-z0-9]+")
 BACKTICKED = re.compile(r"`([^`]+)`")
@@ -176,6 +177,49 @@ def _check_bands(question: Question) -> list[Problem]:
     return found
 
 
+def _check_ideal_answer(question: Question) -> list[Problem]:
+    """The pass mark: the least a candidate can say and still have answered.
+
+    It is read mid-interview while somebody is talking, so length is part of being correct.
+    """
+    if question.schema_version < IDEAL_ANSWER_SINCE:
+        return [
+            Problem(
+                question.path,
+                f"still on schema_version {question.schema_version}; add an "
+                f"`## Ideal minimal answer` section and set schema_version to {SCHEMA_VERSION}",
+                card_id=question.id,
+                field="schema_version",
+                severity=WARNING,
+            )
+        ]
+
+    found: list[Problem] = []
+    if _is_verdict_only(question.ideal_answer):
+        found.append(
+            Problem(
+                question.path,
+                f"the ideal minimal answer {question.ideal_answer!r} is a verdict, not an "
+                f"answer; write what the candidate has to actually say",
+                card_id=question.id,
+                field="ideal_answer",
+            )
+        )
+    words = len(question.ideal_answer.split())
+    if words > MAX_IDEAL_ANSWER_WORDS:
+        found.append(
+            Problem(
+                question.path,
+                f"the ideal minimal answer is {words} words; it is read while a candidate is "
+                f"talking, so keep it under {MAX_IDEAL_ANSWER_WORDS}",
+                card_id=question.id,
+                field="ideal_answer",
+                severity=WARNING,
+            )
+        )
+    return found
+
+
 def _check_links(bank: Bank, question: Question) -> list[Problem]:
     found: list[Problem] = []
     for kind in LINK_KINDS:
@@ -255,6 +299,7 @@ def _check_follow_ups(question: Question) -> list[Problem]:
 
     guidance = " ".join(
         [
+            question.ideal_answer,
             *question.listen_for,
             *(bullet for bullets in question.answer_bands.values() for bullet in bullets),
         ]
@@ -338,6 +383,7 @@ def validate_bank(bank: Bank) -> list[Problem]:
     found: list[Problem] = list(bank.warnings)
     for question in bank.questions.values():
         found += _check_bands(question)
+        found += _check_ideal_answer(question)
         found += _check_links(bank, question)
         found += _check_follow_ups(question)
         found += _check_filename(question)

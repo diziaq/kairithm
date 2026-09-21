@@ -1,6 +1,6 @@
 ---
 id: kafka-performance-mixed-workloads-01
-schema_version: 1
+schema_version: 2
 title: Trade alerts and the nightly load on one cluster
 category: kafka
 topic: performance
@@ -8,6 +8,8 @@ level: lead
 tags: [performance, operations, api-design]
 time_estimate_min: 12
 order: 90
+links:
+  related: [microservices-scalability-one-tenant-dominates-01]
 ---
 
 ## Ask
@@ -21,6 +23,13 @@ eleven. What do you do about it?
 
 Whether the candidate can recognise two workloads with opposing goals on shared infrastructure,
 and choose what to separate, what to cap and what to measure first.
+
+## Ideal minimal answer
+
+The two loads want opposite things: one wants records held back until a batch fills, the other
+wants them on the wire at once. Give each its own topics and producer settings, cap the nightly
+load, and state the condition under which it gets its own resources. Put the alert budget in
+writing with an owner, and measure where the fifty milliseconds goes before changing anything.
 
 ## Listen for
 

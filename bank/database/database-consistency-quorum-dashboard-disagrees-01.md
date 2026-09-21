@@ -1,6 +1,6 @@
 ---
 id: database-consistency-quorum-dashboard-disagrees-01
-schema_version: 1
+schema_version: 2
 title: Two panels on one dashboard disagree
 category: database
 topic: consistency
@@ -24,6 +24,13 @@ you change, and what do you tell finance?
 Whether the candidate can reason about how many copies must take part before an answer is
 guaranteed current, and still see that two separate reads are not one view of the data whatever
 that setting is.
+
+## Ideal minimal answer
+
+With three copies, require two on the write and two on the read so the sets overlap, at the cost
+of latency and of tolerating a machine being down. The two panels are still two reads taken
+moments apart, so no setting fixes that — one request or one point in time does — and finance is
+told which figure carries a guarantee and as of when.
 
 ## Listen for
 

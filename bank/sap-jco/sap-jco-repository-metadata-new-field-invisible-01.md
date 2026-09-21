@@ -1,6 +1,6 @@
 ---
 id: sap-jco-repository-metadata-new-field-invisible-01
-schema_version: 1
+schema_version: 2
 title: A new field that only a restart makes visible
 category: sap-jco
 topic: repository-metadata
@@ -9,6 +9,7 @@ tags: [caching, operations, failure-modes]
 time_estimate_min: 6
 order: 80
 links:
+  related: [kafka-schema-evolution-required-field-01]
   deeper: [sap-jco-repository-metadata-locked-down-prod-01]
 ---
 
@@ -21,6 +22,14 @@ Java service, up for a week, insists the field does not exist — and a restart 
 
 Whether the candidate knows JCo builds calls from interface metadata it fetched remotely and
 cached, and can act on that without reaching for a redeploy.
+
+## Ideal minimal answer
+
+JCo read that function's interface from SAP once and cached it for the life of the process, so a
+week-old process still builds the call from a week-old description and the restart rebuilt the
+cache. It can be refreshed in place instead — clear the repository, or drop just that function's
+template — and the interface change also needed agreeing with us rather than transporting
+quietly.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: microservices-scalability-autoscaled-into-database-01
-schema_version: 1
+schema_version: 2
 title: The autoscaler is allowed to multiply a number nobody checked
 category: microservices
 topic: scalability
@@ -24,6 +24,14 @@ every few minutes. What happened, what is the flapping, and what do you change?
 
 Whether the candidate sees an autoscaler as a control loop that multiplies a per-instance number
 against a fixed ceiling downstream, and can bound the product rather than tune one end of it.
+
+## Ideal minimal answer
+
+Forty instances times twenty connections is eight hundred against a ceiling of a few hundred; at
+four it was eighty. Bound the product, not one instance — a shared pool in front of the
+database, or a per-instance size derived from the scaler's permitted maximum — and note that
+raising the database limit costs memory and contention inside it, and ask what the scaler is
+keyed on.
 
 ## Listen for
 

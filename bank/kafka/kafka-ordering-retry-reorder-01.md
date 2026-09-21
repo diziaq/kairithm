@@ -1,6 +1,6 @@
 ---
 id: kafka-ordering-retry-reorder-01
-schema_version: 1
+schema_version: 2
 title: A device is stuck offline after a burst of timeouts
 category: kafka
 topic: ordering
@@ -8,6 +8,8 @@ level: senior
 tags: [ordering, idempotency, retries, correctness]
 time_estimate_min: 9
 order: 60
+links:
+  related: [kafka-partitioning-second-writer-other-client-01]
 ---
 
 ## Ask
@@ -21,6 +23,14 @@ writes that device. What happened?
 
 Whether the candidate knows that per-partition sequence can still be broken by the producer's own
 retries, and can say precisely what prevents it.
+
+## Ideal minimal answer
+
+With `max.in.flight.requests.per.connection` above one and `retries` set, the failed "online"
+request was retried after "offline" had already been written, so the records really are stored in
+that order and a sort in the reader is not an honest fix. An idempotent producer keeps the
+per-partition sequence with up to five requests outstanding, because the broker rejects a batch
+that arrives out of sequence.
 
 ## Listen for
 

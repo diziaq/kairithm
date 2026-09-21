@@ -1,6 +1,6 @@
 ---
 id: database-column-oriented-orders-in-bigquery-01
-schema_version: 1
+schema_version: 2
 title: Orders as they happen, in BigQuery
 category: database
 topic: column-oriented
@@ -21,6 +21,13 @@ Where does this go wrong?
 
 Whether the candidate can take a transactional workload, lay it against an analytical store's
 physical design, and name exactly which operations become expensive and why.
+
+## Ideal minimal answer
+
+BigQuery holds data in large blocks that are rewritten rather than edited in place, so four or
+five edits per order put the expensive operation on the normal path, and mutations are metered
+differently from appends. Fetching one order by id is a seek on an engine built to sweep, so ask
+what the order screen must answer in and keep the editable copy where it is.
 
 ## Listen for
 

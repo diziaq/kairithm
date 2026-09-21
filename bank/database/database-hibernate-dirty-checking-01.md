@@ -1,6 +1,6 @@
 ---
 id: database-hibernate-dirty-checking-01
-schema_version: 1
+schema_version: 2
 title: The save call nobody needed, until they did
 category: database
 topic: hibernate
@@ -24,6 +24,12 @@ What is different about the two?
 
 Whether the candidate knows that a loaded row is watched for the length of the unit of work and
 written back without being asked, and can say what puts an object outside that watching.
+
+## Ideal minimal answer
+
+In the first method the customer is still held by an open unit of work, so the change is
+compared against the loaded values and written; in the second the object is outside any open
+unit of work, so nobody compares it and the change is lost.
 
 ## Listen for
 

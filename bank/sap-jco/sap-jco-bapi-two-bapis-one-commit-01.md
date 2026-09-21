@@ -1,6 +1,6 @@
 ---
 id: sap-jco-bapi-two-bapis-one-commit-01
-schema_version: 1
+schema_version: 2
 title: Both or neither, across two BAPIs
 category: sap-jco
 topic: bapi
@@ -22,6 +22,14 @@ if the second one turns out to live in a different system?
 
 Whether the candidate can build a single unit of work out of two BAPI calls, and whether they
 will refuse to promise atomicity across systems instead of inventing it.
+
+## Ideal minimal answer
+
+In one system: both calls on one session, each call's `RETURN` table checked for `E` or `A`,
+then one `BAPI_TRANSACTION_COMMIT` — or `BAPI_TRANSACTION_ROLLBACK` if either refuses; with
+`WAIT` set the commit returns after the change is applied, without it an immediate read can
+legitimately show nothing. Across two systems there is no shared commit, so I would say that
+plainly and design compensation instead.
 
 ## Listen for
 

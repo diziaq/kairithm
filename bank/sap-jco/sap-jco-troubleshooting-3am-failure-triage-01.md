@@ -1,6 +1,6 @@
 ---
 id: sap-jco-troubleshooting-3am-failure-triage-01
-schema_version: 1
+schema_version: 2
 title: One line in the log and an SAP team waiting
 category: sap-jco
 topic: troubleshooting
@@ -22,6 +22,13 @@ do you do first, and what do you send them?
 
 Whether the candidate can turn a single failure line into a routed, evidenced request instead of
 "SAP was down", and whether they think about re-running before they do it.
+
+## Ideal minimal answer
+
+Read the whole exception, not the first line: its group and key say whether the logon was
+refused, the connection failed, or the function module raised something — and those point at
+different teams. Then send them the timestamp with timezone, the system and client, the user the
+job logs on as, and the function module, and check whether it still fails now.
 
 ## Listen for
 

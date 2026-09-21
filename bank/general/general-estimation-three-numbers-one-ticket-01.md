@@ -1,6 +1,6 @@
 ---
 id: general-estimation-three-numbers-one-ticket-01
-schema_version: 1
+schema_version: 2
 title: Half a day, three days, two weeks — same ticket
 category: general
 topic: estimation
@@ -23,6 +23,13 @@ number. What do you do with that?
 
 Whether the candidate reads a spread of estimates as a disagreement about what the work is, and
 resolves the disagreement instead of doing arithmetic on the numbers.
+
+## Ideal minimal answer
+
+Refuses to average. Asks each of the three what they pictured doing and chases the item one of
+them saw and another did not, checks they mean the same thing by finished here, splits the
+ticket so the agreed part is separate from the contested part, and writes the disagreement onto
+the ticket.
 
 ## Listen for
 

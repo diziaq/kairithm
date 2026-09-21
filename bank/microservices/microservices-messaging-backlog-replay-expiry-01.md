@@ -1,6 +1,6 @@
 ---
 id: microservices-messaging-backlog-replay-expiry-01
-schema_version: 1
+schema_version: 2
 title: Nine hours behind, and the queue only keeps a day
 category: microservices
 topic: messaging
@@ -25,6 +25,13 @@ actually happening, and what you do today.
 Whether the candidate reasons about a queue as a buffer with a finite lifetime — arrival rate
 against drain rate, what is lost the moment it overflows, and where the pressure ends up — rather
 than making the buffer bigger.
+
+## Ideal minimal answer
+
+Arrivals exceed the drain rate, so depth grows and a longer limit only moves the deadline: at
+twenty-four hours each unprocessed message is dropped, its change is never applied, the record
+keeps its old value and nothing records that it existed. Today, work backwards from when the
+oldest expires, move the replay off the live path, and ask the upstream team to stop.
 
 ## Listen for
 

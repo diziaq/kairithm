@@ -1,6 +1,6 @@
 ---
 id: database-mybatis-placeholder-injection-01
-schema_version: 1
+schema_version: 2
 title: Ninety lines of XML and a sort column from the URL
 category: database
 topic: mybatis
@@ -22,6 +22,13 @@ what do you do about the ninety lines?
 Whether the candidate knows the difference between a value the driver binds and text pasted into
 the statement before it is sent, and has a position on hand-written SQL that has outgrown its
 file.
+
+## Ideal minimal answer
+
+`#{}` binds a value beside the statement, `${}` pastes text into it before it is sent, so the
+sort column off the query string lands straight in the statement — the bound filters do not. Do
+not scrub the input: map the request value to a fixed set of column names the application owns,
+and split the ninety lines into shared pieces or one statement per screen.
 
 ## Listen for
 

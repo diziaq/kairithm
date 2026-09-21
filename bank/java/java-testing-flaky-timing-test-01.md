@@ -1,6 +1,6 @@
 ---
 id: java-testing-flaky-timing-test-01
-schema_version: 1
+schema_version: 2
 title: One CI run in twenty, and an annotation that reruns it
 category: java
 topic: testing
@@ -23,6 +23,13 @@ reruns a failing test three times before giving up. What is your view?
 
 Whether the candidate can separate a badly written test from broken code, and see what a rerun does
 to the signal the suite is there to give.
+
+## Ideal minimal answer
+
+Says the fixed sleep encodes a guess about how fast the machine is, and the shared build machine
+is slower, which is why it fails there and never on a laptop. Would wait for the task to finish,
+with a generous ceiling, instead of waiting a set period, and says the rerun hides the failure
+rather than fixing it.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: general-estimation-two-days-now-day-nine-01
-schema_version: 1
+schema_version: 2
 title: You said two days; it is day nine
 category: general
 topic: estimation
@@ -10,6 +10,7 @@ time_estimate_min: 6
 order: 50
 links:
   deeper: [general-estimation-three-numbers-one-ticket-01]
+  related: [general-requirements-one-line-ticket-01]
 ---
 
 ## Ask
@@ -21,6 +22,12 @@ do on day three, and what do you do today?
 
 Whether the candidate notices a slipping estimate early and raises it, instead of absorbing the
 overrun in silence and hoping to catch up.
+
+## Ideal minimal answer
+
+Says day three was the moment to speak, names the specific part that turned out bigger rather
+than saying it was harder, and today gives a revised estimate — asking for help if it is still
+uncertain — instead of promising tomorrow again.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: sap-jco-function-calls-leading-zeros-01
-schema_version: 1
+schema_version: 2
 title: The material exists but the call finds nothing
 category: sap-jco
 topic: function-calls
@@ -8,6 +8,8 @@ level: mid
 tags: [correctness, data-formats, integration]
 time_estimate_min: 6
 order: 90
+links:
+  related: [database-schema-design-money-float-01]
 ---
 
 ## Ask
@@ -20,6 +22,13 @@ you check?
 
 Whether the candidate knows that an RFC interface takes values in SAP's internal format, and can
 recognise a silent empty result as a key-format problem rather than a missing record.
+
+## Ideal minimal answer
+
+The interface takes the internal form of the key, which for a material number is usually left-
+padded with zeros, so 4711 and 000000004711 are different keys and an unknown key legitimately
+returns no rows instead of raising. The same gap bites dates, amounts with currency decimals,
+and unit and language keys, so the conversion belongs in one place on the boundary.
 
 ## Listen for
 

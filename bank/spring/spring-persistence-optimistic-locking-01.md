@@ -1,6 +1,6 @@
 ---
 id: spring-persistence-optimistic-locking-01
-schema_version: 1
+schema_version: 2
 title: Two edits, one survivor
 category: spring
 topic: persistence
@@ -24,6 +24,13 @@ options?
 Whether the candidate can choose a concurrency strategy from the access pattern rather than by
 habit, knows where a conflict is detected and where it must be handled, and can say what the
 human on the other end sees.
+
+## Ideal minimal answer
+
+The second save carried fields read before the first one, so a counter on the row turns the
+silent overwrite into a write that is rejected. Split the paths by access pattern: a bounded
+retry around a fresh read for the job, an explicit conflict for the agent with their typing kept.
+No lock across a person's thinking time, and watch the conflict rate.
 
 ## Listen for
 

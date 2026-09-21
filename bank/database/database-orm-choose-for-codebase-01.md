@@ -1,6 +1,6 @@
 ---
 id: database-orm-choose-for-codebase-01
-schema_version: 1
+schema_version: 2
 title: Forty tables, a dozen reports, two people who write SQL
 category: database
 topic: orm
@@ -23,6 +23,13 @@ one approach over the others, and tell me what you expect to regret in a year.
 
 Whether the candidate chooses a data access approach from the shape of the query surface and
 from who will maintain it, rather than by habit, and can name the cost of their own choice.
+
+## Ideal minimal answer
+
+Pick one for this codebase and defend it against the runner-up: with only two of six comfortable
+in SQL, say who writes and reviews the dozen reports, how someone gets from a slow page back to
+the text the database actually ran, when a renamed column is caught — build, startup or 3am —
+and which option needs a database running to test.
 
 ## Listen for
 

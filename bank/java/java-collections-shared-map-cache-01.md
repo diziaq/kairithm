@@ -1,6 +1,6 @@
 ---
 id: java-collections-shared-map-cache-01
-schema_version: 1
+schema_version: 2
 title: The lookup table that worked for a year
 category: java
 topic: collections
@@ -24,6 +24,13 @@ inside the map. What do you change, and what do you tell the team about the year
 
 Whether the candidate treats an unsynchronised shared structure as undefined behaviour rather than
 as a risk that the absence of incidents has already measured for them.
+
+## Ideal minimal answer
+
+Says a reader can walk internal state that is halfway through being rewritten, not merely see a
+stale value, so the year of quiet running is not evidence. Picks between a map built for
+concurrent use and rebuilding a read-only copy each minute and swapping the reference, on the
+ratio of reads to writes.
 
 ## Listen for
 

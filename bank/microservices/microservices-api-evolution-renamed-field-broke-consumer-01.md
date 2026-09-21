@@ -1,6 +1,6 @@
 ---
 id: microservices-api-evolution-renamed-field-broke-consumer-01
-schema_version: 1
+schema_version: 2
 title: A renamed field and a sev-2 from a team you have never met
 category: microservices
 topic: api-evolution
@@ -22,6 +22,12 @@ nulls into their reports for two days. What should have happened instead?
 
 Whether the candidate recognises a change that is invisible to their own tests as a breaking
 change to somebody else, and can describe a safe way to make it.
+
+## Ideal minimal answer
+
+Renaming the field is a breaking change even though my build stayed green: the consumer looked
+for `customerId`, got nothing, and wrote null. I should have added `customer_id` alongside it,
+told the consuming teams, and removed the old name later.
 
 ## Listen for
 

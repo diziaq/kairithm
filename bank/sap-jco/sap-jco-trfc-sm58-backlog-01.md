@@ -1,6 +1,6 @@
 ---
 id: sap-jco-trfc-sm58-backlog-01
-schema_version: 1
+schema_version: 2
 title: Four thousand entries waiting in SM58
 category: sap-jco
 topic: trfc-qrfc
@@ -22,6 +22,13 @@ them, and what do you expect to see on your side when the listener comes back?
 
 Whether the candidate understands tRFC as a store-and-forward mechanism with at-least-once
 delivery, and can predict both the recovery and its effect on their own service.
+
+## Ideal minimal answer
+
+Nothing is lost: the four thousand units are recorded in the sending SAP system and something on
+the SAP side retries them once the program is registered again, and an entry only clears when
+the unit is confirmed. Delivery is at-least-once, so a unit can arrive twice and my listener has
+to recognise its transaction id, and the backlog drains as a burst rather than a trickle.
 
 ## Listen for
 

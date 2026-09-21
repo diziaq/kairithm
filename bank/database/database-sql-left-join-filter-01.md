@@ -1,6 +1,6 @@
 ---
 id: database-sql-left-join-filter-01
-schema_version: 1
+schema_version: 2
 title: The customers with no orders vanished from the report
 category: database
 topic: sql
@@ -32,6 +32,13 @@ Customers with no orders are not in the output. Why?
 
 Whether the candidate reads a query as rows surviving one clause at a time, rather than reading
 the join keyword and assuming the result matches the intent.
+
+## Ideal minimal answer
+
+The join does produce a row for a customer with no orders, with the order columns empty, and
+then `WHERE o.status = 'paid'` is applied to those joined rows — an empty value is not equal to
+'paid', so they are thrown away again. Move that test into the `ON` condition, or allow the
+empty case in the filter.
 
 ## Listen for
 

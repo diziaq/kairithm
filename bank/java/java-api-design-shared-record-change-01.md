@@ -1,6 +1,6 @@
 ---
 id: java-api-design-shared-record-change-01
-schema_version: 1
+schema_version: 2
 title: Adding a field to a record forty services compile against
 category: java
 topic: api-design
@@ -22,6 +22,13 @@ Someone has opened a pull request adding a third component. Walk me through what
 
 Whether the candidate can reason about compatibility for consumers they do not control, and choose a
 change that can actually be rolled out.
+
+## Ideal minimal answer
+
+Asks first whether the rounding rule belongs on this type at all, and is willing to reject the
+change on those grounds. If it goes ahead, says the generated constructor, accessors and
+equality all change, so anything compiled earlier breaks against the new jar, and plans a window
+where both shapes exist, with owners across the forty.
 
 ## Listen for
 

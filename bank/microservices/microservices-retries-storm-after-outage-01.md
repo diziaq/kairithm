@@ -1,6 +1,6 @@
 ---
 id: microservices-retries-storm-after-outage-01
-schema_version: 1
+schema_version: 2
 title: The dependency comes back and is knocked over again
 category: microservices
 topic: retries
@@ -22,6 +22,13 @@ happened?
 
 Whether the candidate can see that the callers' own recovery behaviour is the thing that finishes
 off the dependency.
+
+## Ideal minimal answer
+
+Every caller was failing at once, so they all arrived in the same instant when it came back, and
+three attempts each made that spike several times the normal rate — against a process that has
+just restarted cold. They should wait between attempts instead of hammering it the moment it
+answers.
 
 ## Listen for
 

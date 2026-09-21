@@ -1,6 +1,6 @@
 ---
 id: java-concurrency-shared-counter-01
-schema_version: 1
+schema_version: 2
 title: Two threads increment the same counter
 category: java
 topic: concurrency
@@ -22,6 +22,12 @@ says the code is fine. What is actually going on?
 
 Whether the candidate can take apart a single line of code into the machine steps it becomes, and
 tell a result that came out right from code that is right.
+
+## Ideal minimal answer
+
+`counter++` is a fetch, an add and a store, so the two threads can interleave inside it and one
+overwrites the other. The figure can come out under twenty thousand and vary between runs, so
+twenty clean runs prove nothing. Names `synchronized` or an atomic type as the fix.
 
 ## Listen for
 

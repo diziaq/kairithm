@@ -1,6 +1,6 @@
 ---
 id: java-collections-comparator-contract-01
-schema_version: 1
+schema_version: 2
 title: A comparator that only breaks on large inputs
 category: java
 topic: collections
@@ -22,6 +22,13 @@ the twenty-row sample the developer works with. Where do you look, and why does 
 
 Whether the candidate can read a runtime exception as a statement about a rule their own code broke,
 and explain why a defect stays hidden below a certain scale.
+
+## Ideal minimal answer
+
+Says the ordering the code supplies is not self-consistent and the sort is complaining about
+that, then names a concrete way it happens — a subtraction that overflows, a rule that is not
+transitive. Adds that small inputs take a different path inside the sort, which never performs
+the check, so a few dozen rows hide it.
 
 ## Listen for
 

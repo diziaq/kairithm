@@ -1,6 +1,6 @@
 ---
 id: general-trade-offs-ship-the-shortcut-01
-schema_version: 1
+schema_version: 2
 title: Hit the date with a shortcut, or miss it by three weeks
 category: general
 topic: trade-offs
@@ -8,6 +8,8 @@ level: lead
 tags: [technical-debt, operations, collaboration]
 time_estimate_min: 8
 order: 210
+links:
+  related: [database-schema-design-soft-delete-policy-01]
 ---
 
 ## Ask
@@ -20,6 +22,13 @@ been announced to customers. What do you do, and what do you say to whom?
 
 Whether the candidate can make a shortcut a deliberate, priced and visible decision instead of
 either refusing on principle or agreeing in silence.
+
+## Ideal minimal answer
+
+Puts the choice to whoever owns the date as a trade between hitting it and a named future cost,
+rather than deciding alone. Says what would make them refuse outright — money, or data written
+in a shape that cannot be taken back — keeps the shortcut behind one boundary, and gives the
+repayment an owner and a slot.
 
 ## Listen for
 

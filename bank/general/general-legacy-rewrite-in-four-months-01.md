@@ -1,6 +1,6 @@
 ---
 id: general-legacy-rewrite-in-four-months-01
-schema_version: 1
+schema_version: 2
 title: The team wants to rewrite it, and says four months
 category: general
 topic: legacy
@@ -19,6 +19,13 @@ four months. What do you ask them, and under what conditions would you say yes?
 
 Whether the candidate can evaluate a rewrite against incremental alternatives, and knows what a
 rewrite costs beyond writing the code.
+
+## Ideal minimal answer
+
+Makes replacing it a piece at a time behind the existing interface the default, and asks the
+team to argue the rewrite past that. Names the conditions for yes: the interface holds still, a
+working slice in weeks, output compared against the old system, and an agreed stop rule. Prices
+the pause in feature work for whoever owns the roadmap.
 
 ## Listen for
 

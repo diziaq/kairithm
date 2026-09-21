@@ -4,7 +4,7 @@
 # Check your work:      .venv/bin/python -m app.validate
 
 id: category-topic-short-slug-01
-schema_version: 1
+schema_version: 2
 title: A short label for lists and navigation
 category: java              # the directory this file lives in, e.g. java, database, kafka
 topic: concurrency          # the narrower area inside the category
@@ -26,6 +26,12 @@ The only text read aloud. Everything below this section is for the interviewer.
 ## Tests
 
 One sentence: what capability this card actually probes.
+
+## Ideal minimal answer
+
+The least a candidate can say and still have answered. One or two sentences, under seventy
+words. Not the best answer — the floor. Write it so two interviewers would agree whether an
+answer cleared it.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: database-sql-distinct-hides-fanout-01
-schema_version: 1
+schema_version: 2
 title: Revenue tripled after a join, and DISTINCT did not fix it
 category: database
 topic: sql
@@ -24,6 +24,14 @@ me through it.
 
 Whether the candidate reasons about how many rows a join produces before any aggregate sees them,
 and recognises a deduplication bolted on afterwards as suppressing the symptom.
+
+## Ideal minimal answer
+
+Joining the items multiplies each order row by its number of items, so a three-item order's
+total is summed three times. `SUM(DISTINCT o.total)` then folds two unrelated orders that both
+came to 49.90 into one, which is why the figure moved but is still wrong; filter with a
+semi-join, or collapse the items to one row per order, so the join does not change the row
+count.
 
 ## Listen for
 

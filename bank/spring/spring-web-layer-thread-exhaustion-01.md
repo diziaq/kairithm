@@ -1,6 +1,6 @@
 ---
 id: spring-web-layer-thread-exhaustion-01
-schema_version: 1
+schema_version: 2
 title: Two hundred threads, eight percent CPU
 category: spring
 topic: web-layer
@@ -27,6 +27,14 @@ Whether the candidate can reason about this one application's thread-per-request
 finite resource shared by every endpoint it serves, sees that a slow dependency converts directly
 into occupied threads, and fixes it with bounds it can set in its own configuration rather than
 with capacity.
+
+## Ideal minimal answer
+
+Each request in flight owns a thread for its whole duration, so the arrival rate times the
+downstream latency has passed the two hundred threads; doubling the pool only doubles the time
+to exhaustion. Every endpoint shares that pool, which is why a health check that calls nothing
+queues behind. Set a read timeout, cap concurrent calls to that dependency, and fail fast past
+the cap.
 
 ## Listen for
 

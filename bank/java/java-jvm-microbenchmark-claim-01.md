@@ -1,6 +1,6 @@
 ---
 id: java-jvm-microbenchmark-claim-01
-schema_version: 1
+schema_version: 2
 title: Forty times faster, measured in a main method
 category: java
 topic: jvm-internals
@@ -23,6 +23,13 @@ is forty times faster". How much of that number do you believe, and what would y
 
 Whether the candidate knows that a number produced by a running JVM describes that particular run,
 and can name what sits between the source and the measurement.
+
+## Ideal minimal answer
+
+Names at least two ways the figure can be wrong: the two halves were in different compilation
+states, and a result nobody consumes can be removed altogether, so forty times may be the cost
+of doing nothing. Asks for repeats and a spread rather than one figure, on input shaped like the
+real call site.
 
 ## Listen for
 

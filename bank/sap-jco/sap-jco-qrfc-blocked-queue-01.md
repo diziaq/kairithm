@@ -1,6 +1,6 @@
 ---
 id: sap-jco-qrfc-blocked-queue-01
-schema_version: 1
+schema_version: 2
 title: One bad delivery blocks seven hours of postings
 category: sap-jco
 topic: trfc-qrfc
@@ -8,6 +8,8 @@ level: lead
 tags: [ordering, failure-modes, operations, delivery-semantics]
 time_estimate_min: 10
 order: 190
+links:
+  related: [microservices-messaging-ordering-out-of-order-address-01]
 ---
 
 ## Ask
@@ -21,6 +23,13 @@ is stuck. The business wants this never to happen again. What do you propose?
 Whether the candidate understands ordered delivery as a deliberate trade with a known failure
 mode, and can redesign around the real ordering requirement instead of removing ordering or
 adding people.
+
+## Ideal minimal answer
+
+The queue is a single file, so the failed entry at the head blocks everything behind it by
+design. Ask the business what ordering actually has to hold, almost always per document or per
+customer rather than across the whole flow, then encode that key in the queue name, say which
+documents may now cross, alert on error and age, and name who may skip an entry.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: java-gc-retained-map-oom-01
-schema_version: 1
+schema_version: 2
 title: Out of memory every four days, eight with twice the heap
 category: java
 topic: garbage-collection
@@ -10,6 +10,7 @@ time_estimate_min: 7
 order: 400
 links:
   deeper: [java-gc-pause-budget-01]
+  related: [java-collections-shared-map-cache-01]
 ---
 
 ## Ask
@@ -22,6 +23,13 @@ keyed by session id. Someone proposes switching it to a `WeakHashMap`. Talk me t
 
 Whether the candidate reasons about what keeps an object alive, and can say whether a weakly
 referencing structure actually breaks the chain in this particular case.
+
+## Ideal minimal answer
+
+Reads four days becoming eight as unbounded growth rather than an undersized heap, and says a
+static field is a root, so nothing in that map can be taken away. The weak variant only helps
+while nothing else holds the key, so asks what the values point at; the real fix is a bound and
+a removal rule with an owner.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: microservices-distributed-transactions-compensation-cannot-undo-01
-schema_version: 1
+schema_version: 2
 title: The ticket email has gone out and the booking must be unwound
 category: microservices
 topic: distributed-transactions
@@ -20,6 +20,13 @@ unwound. You cannot unsend the email. How do you design the flow given that?
 
 Whether the candidate designs around steps that cannot be taken back, and can tell reversal apart
 from making amends.
+
+## Ideal minimal answer
+
+Put the email last, after the seat and the card have both succeeded, and treat it as impossible
+to take back: the remedy is a correction and a refund, not a reversal. Then agree with the
+product owner how many unwound bookings a week is acceptable, what holding a seat longer costs
+on a Friday night, and who works the queue when the refund fails.
 
 ## Listen for
 

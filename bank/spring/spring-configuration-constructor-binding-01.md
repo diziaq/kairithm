@@ -1,6 +1,6 @@
 ---
 id: spring-configuration-constructor-binding-01
-schema_version: 1
+schema_version: 2
 title: Settings that silently stay at their defaults
 category: spring
 topic: configuration
@@ -25,6 +25,13 @@ you have caught this in a test?
 
 Whether the candidate understands that binding settings onto an object is a separate step from
 creating that object, and whether they know the failure mode is silence rather than an error.
+
+## Ideal minimal answer
+
+Filling the object is a separate step from creating it: the `@Bean` method built the record
+itself, so the framework can only set values on an instance that already exists, and a record has
+nothing to set, which is why it is silent. Take that declaration back out and register the type
+by a route where the framework creates it, then assert the bound values in a test.
 
 ## Listen for
 

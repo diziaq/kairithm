@@ -1,6 +1,6 @@
 ---
 id: sap-jco-function-calls-first-row-only-01
-schema_version: 1
+schema_version: 2
 title: Five hundred rows, all of them the same row
 category: sap-jco
 topic: function-calls
@@ -9,6 +9,7 @@ tags: [correctness, integration]
 time_estimate_min: 4
 order: 30
 links:
+  related: [java-collections-mutable-key-lookup-01]
   deeper: [sap-jco-function-calls-leading-zeros-01]
 ---
 
@@ -22,6 +23,12 @@ What did they write?
 
 Whether the candidate knows how a returned table is read in JCo, and can debug from a symptom to
 the line that causes it rather than blaming the far side.
+
+## Ideal minimal answer
+
+They looped `getNumRows()` times but never moved the cursor, so every read came from whichever
+row the table was parked on. A `JCoTable` is a cursor, not a list — the loop needs `firstRow()`
+then `nextRow()`, or `setRow()` with the index on each pass.
 
 ## Listen for
 

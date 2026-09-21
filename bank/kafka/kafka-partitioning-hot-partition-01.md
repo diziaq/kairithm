@@ -1,6 +1,6 @@
 ---
 id: kafka-partitioning-hot-partition-01
-schema_version: 1
+schema_version: 2
 title: One partition takes eighty per cent of the traffic
 category: kafka
 topic: partitioning
@@ -23,6 +23,13 @@ and the other eleven pods nearly idle. What is going on, and what do you look at
 
 Whether the candidate can connect the record key to the partition a record lands in, and sees
 why adding more pods cannot move this particular graph.
+
+## Ideal minimal answer
+
+The record key decides where a record is stored, so one dominant key value puts eighty per cent
+of the traffic in one place. That partition is read by exactly one member of the group, so no
+extra pod can be pointed at it. Ask what the key is and how the values are spread before
+changing anything.
 
 ## Listen for
 

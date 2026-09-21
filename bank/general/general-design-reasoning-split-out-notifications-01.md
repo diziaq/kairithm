@@ -1,6 +1,6 @@
 ---
 id: general-design-reasoning-split-out-notifications-01
-schema_version: 1
+schema_version: 2
 title: A teammate wants to split out notifications
 category: general
 topic: design-reasoning
@@ -22,6 +22,13 @@ make you say no?
 
 Whether the candidate judges a boundary by what it decouples and what it costs to run, instead
 of by whether splitting things up is the accepted style.
+
+## Ideal minimal answer
+
+Asks what problem the split is meant to solve and whether it is the cheapest fix for that, names
+what crosses the interface and where the data lives afterwards, says what a user sees when the
+far side is unavailable, and offers a module with a narrow interface inside the current codebase
+as the intermediate step.
 
 ## Listen for
 

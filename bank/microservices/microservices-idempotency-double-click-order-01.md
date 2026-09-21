@@ -1,6 +1,6 @@
 ---
 id: microservices-idempotency-double-click-order-01
-schema_version: 1
+schema_version: 2
 title: Double-click on Place Order creates two orders
 category: microservices
 topic: idempotency
@@ -22,6 +22,13 @@ the fix? What would you do?
 
 Whether the candidate sees that a guard in the browser cannot protect a state change on the
 server, and can say what would.
+
+## Ideal minimal answer
+
+Disabling the button helps, but the server still accepts two creates, and a refresh, a retried
+mobile request or a second tab produces the same two. The server needs something that recognises
+the second request as the same intent — a reference sent by the client, or the cart being
+checked out — and returns the first order rather than making another.
 
 ## Listen for
 

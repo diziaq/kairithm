@@ -1,6 +1,6 @@
 ---
 id: database-cloud-databases-profile-saves-then-reverts-01
-schema_version: 1
+schema_version: 2
 title: Rows deleted yesterday at 14:00, and nobody has ever run a restore
 category: database
 topic: cloud-databases
@@ -10,6 +10,7 @@ time_estimate_min: 8
 order: 340
 links:
   deeper: [database-cloud-databases-aurora-failover-four-hour-outage-01]
+  related: [general-incidents-first-fifteen-minutes-01]
 ---
 
 ## Ask
@@ -24,6 +25,13 @@ me what you want to know before you start.
 Whether the candidate can turn a switched-on managed feature into a plan somebody could actually
 execute: what the restore produces, how much of the database it covers, how long it runs, and who
 has agreed what may be lost.
+
+## Ideal minimal answer
+
+Point-in-time recovery brings up a new RDS instance with the whole database as it was just
+before 14:00, so the rows must be copied from it into the live one; cutting production over
+would lose a day of every other table. The wait is set by the size of the whole database, and
+nobody has run a restore, so we time one to find out.
 
 ## Listen for
 

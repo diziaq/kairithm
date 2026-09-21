@@ -1,6 +1,6 @@
 ---
 id: general-requirements-one-line-ticket-01
-schema_version: 1
+schema_version: 2
 title: The ticket says "add CSV export" and nothing else
 category: general
 topic: requirements
@@ -21,6 +21,12 @@ away for a week. What do you do?
 
 Whether the candidate can surface the unknowns that would change the implementation, and still
 make progress rather than stalling or guessing silently.
+
+## Ideal minimal answer
+
+Lists the decisions the ticket leaves open — which rows, which columns, who opens the file —
+finds somebody else who can answer some of them, and writes the assumptions into the ticket
+before starting, rather than guessing quietly or waiting a week.
 
 ## Listen for
 

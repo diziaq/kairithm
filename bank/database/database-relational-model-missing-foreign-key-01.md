@@ -1,6 +1,6 @@
 ---
 id: database-relational-model-missing-foreign-key-01
-schema_version: 1
+schema_version: 2
 title: Orders that point at a customer who is not there
 category: database
 topic: relational-model
@@ -10,6 +10,7 @@ time_estimate_min: 6
 order: 110
 links:
   deeper: [database-relational-model-denormalised-copy-01]
+  related: [spring-web-layer-validation-missing-01]
 ---
 
 ## Ask
@@ -23,6 +24,13 @@ what would you change?
 
 Whether the candidate treats referential integrity as a rule the store enforces against every
 writer, rather than a convention the current version of the application happens to follow.
+
+## Ideal minimal answer
+
+Nothing in the database was told that `customer_id` refers to `customers`, so no writer was ever
+stopped — and the application is not the only writer: a migration, a bulk import or a console
+session can all put an order there. Declare the foreign key, but the broken rows already exist,
+so they have to be dealt with before it will go on.
 
 ## Listen for
 

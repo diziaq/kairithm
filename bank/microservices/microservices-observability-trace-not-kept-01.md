@@ -1,6 +1,6 @@
 ---
 id: microservices-observability-trace-not-kept-01
-schema_version: 1
+schema_version: 2
 title: The one request you need is the one that was thrown away
 category: microservices
 topic: observability
@@ -25,6 +25,13 @@ what do you change?
 Whether the candidate sees that the choice to keep a request's data is normally made before
 anybody knows how that request ended, and can buy back the ones that went wrong without paying to
 keep everything.
+
+## Ideal minimal answer
+
+One in a hundred was chosen at the gateway before anything was known about how the request
+ended, and a fair sample was never going to contain one named order. Decide after the outcome is
+known instead, keeping the errors and the slow ones, apply the same decision at every hop, and
+for this customer fall back to what each service logged against that reference.
 
 ## Listen for
 

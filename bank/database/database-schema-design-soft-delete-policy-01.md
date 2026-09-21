@@ -1,6 +1,6 @@
 ---
 id: database-schema-design-soft-delete-policy-01
-schema_version: 1
+schema_version: 2
 title: Every table has deleted_at, and every query has to remember
 category: database
 topic: schema-design
@@ -8,6 +8,8 @@ level: lead
 tags: [data-modelling, correctness, operations, maintainability]
 time_estimate_min: 10
 order: 122
+links:
+  related: [microservices-service-boundaries-shared-orders-table-01]
 ---
 
 ## Ask
@@ -21,6 +23,14 @@ you do?
 
 Whether the candidate can turn a blanket schema convention into a decision per table, driven by
 what each table's data is for, what the store can enforce, and what the business is obliged to do.
+
+## Ideal minimal answer
+
+Set a default the filter cannot be forgotten from — live rows behind a view or row-level
+security — with a named exception route and someone who approves it. Uniqueness has to count
+live rows only: a partial unique index in PostgreSQL, a generated column in MySQL. Hiding a row
+is not erasure, so legal needs the personal columns destroyed, under a retention period with an
+owner.
 
 ## Listen for
 

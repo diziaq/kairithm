@@ -31,11 +31,13 @@ def card(
     topic: str = "concurrency",
     level: str = "mid",
     title: str = "An example card",
-    schema_version: int = 1,
+    schema_version: int = 2,
     tags: str = "[one, two]",
     links: str = "",
     question: str = "Say this part out loud.",
     tests: str = "Whether the candidate can take the line apart into machine steps.",
+    # None means "whatever this schema version requires"; pass "" to leave the section out.
+    ideal_answer: str | None = None,
     listen_for: str = "- The step where the other thread lands",
     bands: str = BANDS_BLOCK,
     follow_ups: str = (
@@ -61,7 +63,16 @@ def card(
     if extra_frontmatter:
         front.append(extra_frontmatter)
 
+    if ideal_answer is None:
+        ideal_answer = (
+            "The two threads interleave inside the increment and one overwrites the other."
+            if schema_version >= 2
+            else ""
+        )
+
     body = ["## Ask", "", question, "", "## Tests", "", tests, ""]
+    if ideal_answer:
+        body += ["## Ideal minimal answer", "", ideal_answer, ""]
     if listen_for:
         body += ["## Listen for", "", listen_for, ""]
     if bands:

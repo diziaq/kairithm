@@ -1,6 +1,6 @@
 ---
 id: kafka-partitioning-second-writer-other-client-01
-schema_version: 1
+schema_version: 2
 title: The same key, two writers, two partitions
 category: kafka
 topic: partitioning
@@ -24,6 +24,13 @@ and only ever for orders that came through the new writer. What is your first hy
 Whether the candidate knows that where a record lands is worked out by the producing client
 before the record is ever sent, so "same key, same place" is something every writer has to agree
 to rather than something the topic provides.
+
+## Ideal minimal answer
+
+Where a record lands is worked out inside the producing process, so the two writers put one order
+id in two places: either the key becomes different bytes, or the same bytes go through a
+different rule. The new writer has to place records the way the old one does, and what is already
+written stays put and is repaired as data.
 
 ## Listen for
 

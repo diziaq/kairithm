@@ -1,6 +1,6 @@
 ---
 id: java-api-design-absent-value-01
-schema_version: 1
+schema_version: 2
 title: Three callers, three null pointer exceptions
 category: java
 topic: api-design
@@ -23,6 +23,13 @@ the last month. The team wants to change the return type to `Optional`. Is that 
 
 Whether the candidate treats the shape of a return value as a contract decision with a cost to
 consumers, rather than as a matter of style.
+
+## Ideal minimal answer
+
+Says the signature is what hides the missing case, so wrapping it forces every caller to face
+absence — but it does not decide what any of them should do. Asks whether no such customer is an
+ordinary outcome here or a broken precondition, reads the three call sites before changing
+anything, and sequences the break for consumers.
 
 ## Listen for
 

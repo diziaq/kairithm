@@ -1,6 +1,6 @@
 ---
 id: general-incidents-roll-back-or-forward-01
-schema_version: 1
+schema_version: 2
 title: Three in the morning, a one-line fix or a rollback
 category: general
 topic: incidents
@@ -10,6 +10,7 @@ time_estimate_min: 8
 order: 150
 links:
   deeper: [general-incidents-third-time-same-outage-01]
+  related: [database-cloud-databases-aurora-failover-four-hour-outage-01]
 ---
 
 ## Ask
@@ -23,6 +24,13 @@ do you decide?
 
 Whether the candidate decides under time pressure from reversibility and blast radius rather
 than from which option feels more like real engineering.
+
+## Ideal minimal answer
+
+Asks what the migration did and whether the old code can still run against the changed data,
+then decides from the cost of being wrong on each path rather than which is more likely right.
+Looks for a third option that stops the bleeding without either deploy, and fixes a time limit
+and the next move before starting.
 
 ## Listen for
 

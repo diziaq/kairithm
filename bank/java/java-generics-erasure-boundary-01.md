@@ -1,6 +1,6 @@
 ---
 id: java-generics-erasure-boundary-01
-schema_version: 1
+schema_version: 2
 title: Where the compiler stops promising
 category: java
 topic: generics
@@ -22,6 +22,13 @@ and add `@SuppressWarnings`. How do you answer?
 
 Whether the candidate knows what survives compilation, and can say where the compiler's guarantee
 stops and a runtime failure starts.
+
+## Ideal minimal answer
+
+The type argument is gone after compilation, so there is nothing to test against and nothing to
+build the array from; taking the class object in the constructor restores the check, because the
+caller does know the type. The suppressed cast does not fail where it is written but later, at a
+cast the compiler inserted at the call site.
 
 ## Listen for
 

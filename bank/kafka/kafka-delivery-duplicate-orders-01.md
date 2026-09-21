@@ -1,6 +1,6 @@
 ---
 id: kafka-delivery-duplicate-orders-01
-schema_version: 1
+schema_version: 2
 title: The duplicates halved and then stopped falling
 category: kafka
 topic: delivery-semantics
@@ -10,6 +10,7 @@ time_estimate_min: 8
 order: 24
 links:
   deeper: [kafka-delivery-exactly-once-claim-01]
+  related: [microservices-idempotency-key-scope-and-lifetime-01]
 ---
 
 ## Ask
@@ -23,6 +24,13 @@ record twice. The rate halved, then stuck. Where are the ones that are left comi
 
 Whether the candidate can tell a record written to the log twice apart from one record handed to
 the application twice, and say which of the two that producer setting touches at all.
+
+## Ideal minimal answer
+
+That setting only drops a resend of a batch the same producer already sent, per partition, inside
+one process; a recycled pod is a new sender, and the service catching a timeout and sending again
+makes a real second record. Decide first whether the partition holds two records or one was read
+twice, then key the effect so a repeat lands on the same row.
 
 ## Listen for
 

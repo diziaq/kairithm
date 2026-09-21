@@ -1,6 +1,6 @@
 ---
 id: kafka-schema-evolution-field-split-01
-schema_version: 1
+schema_version: 2
 title: Splitting one field into two on a live topic
 category: kafka
 topic: schema-evolution
@@ -22,6 +22,13 @@ control, and the topic keeps ninety days of records. How do you do it?
 
 Whether the candidate can sequence a change that no single compatibility rule permits, across
 teams they cannot instruct.
+
+## Ideal minimal answer
+
+Stage it: write `name` and the two new fields together, move the nine readers, then drop the old
+one. The old shape has to survive at least the ninety days the topic keeps plus however far
+behind the slowest reader runs, and the last step waits until they can see that nothing reads
+`name` any more. A parallel topic with a cutover is the alternative.
 
 ## Listen for
 

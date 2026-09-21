@@ -1,6 +1,6 @@
 ---
 id: database-hibernate-batch-insert-01
-schema_version: 1
+schema_version: 2
 title: Forty thousand rows, forty thousand inserts
 category: database
 topic: hibernate
@@ -8,6 +8,8 @@ level: senior
 tags: [performance, operations, transactions, failure-modes]
 time_estimate_min: 10
 order: 420
+links:
+  related: [spring-persistence-n-plus-one-01]
 ---
 
 ## Ask
@@ -21,6 +23,13 @@ what else is wrong with that loop?
 
 Whether the candidate can explain why a configured batch size does not produce batches, and sees
 that a long-running write loop has a second problem that has nothing to do with statements.
+
+## Ideal minimal answer
+
+If each insert must come straight back with the key the database assigned, the rows cannot be
+grouped — the key generator is the lever, not the batch size — so take ids from a sequence in
+blocks and accept gaps. Nothing releases the written objects either, so flush and clear in
+chunks matching the batch size, and prove it by counting statements.
 
 ## Listen for
 

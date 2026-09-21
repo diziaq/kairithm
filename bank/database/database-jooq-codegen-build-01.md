@@ -1,6 +1,6 @@
 ---
 id: database-jooq-codegen-build-01
-schema_version: 1
+schema_version: 2
 title: The new hire cannot build the repo
 category: database
 topic: jooq
@@ -23,6 +23,13 @@ that proposal.
 
 Whether the candidate understands where the schema comes from in a generated data access layer,
 and can weigh a committed copy of generated output against a build that stands on its own.
+
+## Ideal minimal answer
+
+The generator needs a schema, so build one inside the build — a throwaway database with the
+repo's own migration scripts applied — and generate from that, with no shared server involved.
+Committing the classes is fine only if every build checks a fresh run still matches; say what
+either route adds to build time, and offer caching or a module of its own.
 
 ## Listen for
 

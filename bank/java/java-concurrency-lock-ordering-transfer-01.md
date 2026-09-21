@@ -1,6 +1,6 @@
 ---
 id: java-concurrency-lock-ordering-transfer-01
-schema_version: 1
+schema_version: 2
 title: Threads that stop without failing
 category: java
 topic: concurrency
@@ -24,6 +24,13 @@ answered nothing at all. What happened, and what would you change?
 Whether the candidate can construct the interleaving that leaves two threads waiting on each other
 for good, and weigh the available fixes against each other rather than reaching for the coarsest
 one.
+
+## Ideal minimal answer
+
+Builds the pair of opposite transfers between the same two accounts, each holding one lock and
+waiting for the one the other holds, and says the wait never expires, so nothing failed and
+nothing was logged. Asks for a dump while it is stuck, and weighs a fixed order against one
+coarse lock and a bounded attempt, naming what each costs.
 
 ## Listen for
 

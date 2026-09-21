@@ -1,6 +1,6 @@
 ---
 id: database-document-stores-surname-in-eleven-thousand-orders-01
-schema_version: 1
+schema_version: 2
 title: A surname copied into eleven thousand orders
 category: database
 topic: document-stores
@@ -8,6 +8,8 @@ level: mid
 tags: [data-modelling, correctness, consistency]
 time_estimate_min: 8
 order: 310
+links:
+  related: [database-relational-model-denormalised-copy-01]
 ---
 
 ## Ask
@@ -21,6 +23,13 @@ do you tell Support?
 
 Whether the candidate treats a copied field as a deliberate choice that owes an update path, and
 can tell a stale duplicate apart from a deliberate record of what was true at the time.
+
+## Ideal minimal answer
+
+Ask Support whether an invoice shows her name as it is now or as it was on the day; that decides
+everything else. There is no single place to edit: updating eleven thousand orders is eleven
+thousand independent writes, with readers seeing a mixture while it runs, and fields that must
+follow the customer should be a reference instead.
 
 ## Listen for
 

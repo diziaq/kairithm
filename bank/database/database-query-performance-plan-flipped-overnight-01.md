@@ -1,6 +1,6 @@
 ---
 id: database-query-performance-plan-flipped-overnight-01
-schema_version: 1
+schema_version: 2
 title: Fast for a year, 90 seconds on Tuesday, fine on Wednesday
 category: database
 topic: query-performance
@@ -24,6 +24,14 @@ happens. What do you do instead?
 
 Whether the candidate can explain how one unchanged statement gets served two different ways on
 two days, and turn a recurring mystery into something that arrives with evidence attached.
+
+## Ideal minimal answer
+
+Either the sample the optimiser relies on went stale after a bulk change, or one cached plan
+built for one customer's values is being reused for wildly different ones — that story is SQL
+Server's by default, while PostgreSQL only reaches a generic plan for a prepared statement after
+five executions. The restart only proved state was held, so capture the plan when the statement
+crosses a threshold.
 
 ## Listen for
 

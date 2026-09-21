@@ -1,6 +1,6 @@
 ---
 id: microservices-messaging-poison-message-blocks-01
-schema_version: 1
+schema_version: 2
 title: One bad message stops the queue for an hour
 category: microservices
 topic: messaging
@@ -9,6 +9,7 @@ tags: [messaging, failure-modes, operations, correctness]
 time_estimate_min: 6
 order: 100
 links:
+  related: [kafka-retries-blocking-loop-01]
   deeper: [microservices-messaging-outbox-dual-write-01]
 ---
 
@@ -22,6 +23,13 @@ processed for an hour. What do you do in the next ten minutes, and what do you c
 
 Whether the candidate separates unblocking the flow from discarding data, and knows that a
 failing handler must have a bounded number of attempts.
+
+## Ideal minimal answer
+
+Get that one message out of the path so the rest flow again, and keep it somewhere it can be
+inspected rather than deleting it. Then cap how many times any message is tried, so one that can
+never succeed stops holding up the queue, and make sure somebody is told the set-aside pile is
+not empty.
 
 ## Listen for
 

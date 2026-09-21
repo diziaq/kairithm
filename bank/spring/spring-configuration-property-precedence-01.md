@@ -1,6 +1,6 @@
 ---
 id: spring-configuration-property-precedence-01
-schema_version: 1
+schema_version: 2
 title: The value in the file is not the value in the pod
 category: spring
 topic: configuration
@@ -24,6 +24,13 @@ why would a file in the jar lose?
 Whether the candidate knows that settings come from an ordered stack of sources rather than from
 one file, and whether they go and read what the running process actually resolved instead of
 reasoning from the repository.
+
+## Ideal minimal answer
+
+Values come from an ordered stack of sources and a later one wins; the file packaged in the jar
+sits near the bottom, so the process environment or a command line argument where it is deployed
+is beating it. Log the resolved value at startup, or ask the running application which source
+supplied it.
 
 ## Listen for
 

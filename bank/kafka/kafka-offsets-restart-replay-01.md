@@ -1,6 +1,6 @@
 ---
 id: kafka-offsets-restart-replay-01
-schema_version: 1
+schema_version: 2
 title: A restarted consumer replays a week of records
 category: kafka
 topic: offsets
@@ -10,6 +10,7 @@ time_estimate_min: 6
 order: 16
 links:
   deeper: [kafka-offsets-commit-window-01]
+  related: [microservices-retries-storm-after-outage-01]
 ---
 
 ## Ask
@@ -22,6 +23,13 @@ code diff was one log line. What could cause that?
 
 Whether the candidate knows where a group's reading position lives, and what happens when there
 is no position for it to resume from.
+
+## Ideal minimal answer
+
+The group's position is stored in the cluster, one per partition, and the consumer carries on
+from it, so a week of replay means there was no usable position for it: most likely a new or
+changed group id, with `auto.offset.reset` set to `earliest`. Records stay in the topic whether
+or not anyone has read them.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: microservices-messaging-ordering-out-of-order-address-01
-schema_version: 1
+schema_version: 2
 title: Two events arrive the wrong way round and a parcel goes astray
 category: microservices
 topic: messaging
@@ -24,6 +24,13 @@ instead.
 Whether the candidate can scope an ordering requirement to where it actually exists and make
 handlers tolerate arriving out of sequence, rather than buying a global guarantee at the cost of
 throughput.
+
+## Ideal minimal answer
+
+First ask what actually has to be true — the parcel needs the address as at the moment of the
+order, and that is a question for the business, not a queue setting. Then route by customer and
+version the record so a stale update is discarded rather than applied; say which pairs may still
+cross, and put a count of discarded updates somewhere visible.
 
 ## Listen for
 

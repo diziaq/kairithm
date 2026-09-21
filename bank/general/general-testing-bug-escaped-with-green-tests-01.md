@@ -1,6 +1,6 @@
 ---
 id: general-testing-bug-escaped-with-green-tests-01
-schema_version: 1
+schema_version: 2
 title: A bug reached a customer and every test passed
 category: general
 topic: testing
@@ -22,6 +22,12 @@ after the bug shipped. Before you fix anything, what do you do about the tests?
 
 Whether the candidate's instinct is to reproduce a defect as a failing test and to ask what the
 existing tests were really asserting.
+
+## Ideal minimal answer
+
+Writes a test that reproduces the bug and watches it fail before touching the fix, reads the
+existing tests to see what they were actually checking rather than assuming they were worthless,
+and keeps the new test in the suite afterwards.
 
 ## Listen for
 

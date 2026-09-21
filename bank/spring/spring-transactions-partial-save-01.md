@@ -1,6 +1,6 @@
 ---
 id: spring-transactions-partial-save-01
-schema_version: 1
+schema_version: 2
 title: The second save failed and the first one stayed
 category: spring
 topic: transactions
@@ -25,6 +25,12 @@ there, and what do you change?
 Whether the candidate treats a transaction boundary as something somebody has to draw around a
 unit of business work, rather than assuming consecutive writes are already grouped — and whether
 they can say where that boundary belongs and how they would prove it holds.
+
+## Ideal minimal answer
+
+Nothing was holding the two writes together, so the first one was already committed by the time
+the second ran. Declare one boundary on the service method so both writes are covered by it and
+the failure undoes both; after that a failing second save leaves both tables empty.
 
 ## Listen for
 

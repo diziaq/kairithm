@@ -1,6 +1,6 @@
 ---
 id: kafka-rebalancing-stateful-restore-01
-schema_version: 1
+schema_version: 2
 title: Every rebalance costs twenty minutes of rebuild
 category: kafka
 topic: rebalancing
@@ -24,6 +24,13 @@ this. What do you change?
 Whether the candidate can separate the cost of work moving from the cost of making moved work
 useful again, and choose between reducing movement, speeding recovery and changing what is
 promised during recovery.
+
+## Ideal minimal answer
+
+Separate stopping the movement from making a move cheap: an identity that outlives the process so
+a brief absence is tolerated, against a warm copy on another instance or a compacted record of
+the state to replay. Choose between them from how often this really happens and what the hole is
+worth, and decide what the dashboard shows while a rebuild runs.
 
 ## Listen for
 

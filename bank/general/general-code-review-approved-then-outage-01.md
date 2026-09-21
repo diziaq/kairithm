@@ -1,6 +1,6 @@
 ---
 id: general-code-review-approved-then-outage-01
-schema_version: 1
+schema_version: 2
 title: You approved it, and two weeks later it took the site down
 category: general
 topic: code-review
@@ -22,6 +22,13 @@ team reviews?
 
 Whether the candidate reasons about what review can and cannot reliably catch, and moves the
 defence to where it belongs instead of asking everyone to look harder.
+
+## Ideal minimal answer
+
+Says this class of defect — timing, load, data at scale — is not something review reliably
+catches, so the remedy is a mechanism rather than more attention: a test, a check at the
+boundary, or a staged rollout that would have shown it early. Looks at the size of the change
+and the context the reviewer had, not at the reviewer.
 
 ## Listen for
 

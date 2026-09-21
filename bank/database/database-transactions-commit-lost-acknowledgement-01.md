@@ -1,6 +1,6 @@
 ---
 id: database-transactions-commit-lost-acknowledgement-01
-schema_version: 1
+schema_version: 2
 title: The commit went through, the caller never heard
 category: database
 topic: transactions
@@ -22,6 +22,13 @@ transaction so it covers more of the handler. Where is the gap really, and what 
 
 Whether the candidate separates a durable commit from a delivered answer, and builds a way for
 the caller to discover the outcome instead of guessing it.
+
+## Ideal minimal answer
+
+A commit is durable; the answer is a separate delivery that was lost, so the caller cannot tell
+'nothing happened' from 'I was not told', and widening the transaction leaves the same gap after
+it. Write a row keyed by a reference the caller creates before its first attempt, in the same
+transaction as the payout, and have the second call return that outcome instead of paying again.
 
 ## Listen for
 

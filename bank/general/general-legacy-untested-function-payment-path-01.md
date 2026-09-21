@@ -1,6 +1,6 @@
 ---
 id: general-legacy-untested-function-payment-path-01
-schema_version: 1
+schema_version: 2
 title: Six hundred lines, no tests, in the payment path
 category: general
 topic: legacy
@@ -10,6 +10,7 @@ time_estimate_min: 8
 order: 120
 links:
   deeper: [general-legacy-rewrite-in-four-months-01]
+  related: [spring-testing-rollback-never-commits-01]
 ---
 
 ## Ask
@@ -22,6 +23,12 @@ from where you are to a change you would be willing to release on a Friday after
 
 Whether the candidate builds a safety net before changing behaviour, and can sequence the work
 so that at no point are they changing two things at once.
+
+## Ideal minimal answer
+
+Pins the current behaviour down in tests first, including the parts that look wrong, built from
+real inputs rather than invented ones. Then keeps the restructuring and the change of behaviour
+as two separate releases, and says what will be watched after release and for how long.
 
 ## Listen for
 

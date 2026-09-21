@@ -1,6 +1,6 @@
 ---
 id: general-trade-offs-retry-the-payment-01
-schema_version: 1
+schema_version: 2
 title: Retry the payment call, or let the user press again
 category: general
 topic: trade-offs
@@ -24,6 +24,13 @@ mind?
 
 Whether the candidate reasons about what a repeat does on the other side of a timeout, rather
 than choosing between two policies on general principle.
+
+## Ideal minimal answer
+
+Says a timeout leaves the outcome unknown, so the money may already have moved, and that the
+customer pressing again is the same repeat. Asks whether the provider will accept a reference
+that makes a second attempt harmless, weighs a double charge against a lost sale, and puts
+spacing and a cap on the attempts.
 
 ## Listen for
 

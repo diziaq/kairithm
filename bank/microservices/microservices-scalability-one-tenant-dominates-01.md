@@ -1,6 +1,6 @@
 ---
 id: microservices-scalability-one-tenant-dominates-01
-schema_version: 1
+schema_version: 2
 title: One customer's monthly job starves nine hundred others
 category: microservices
 topic: scalability
@@ -20,6 +20,13 @@ What do you do?
 
 Whether the candidate treats fairness between tenants as a design property to be enforced, and
 can weigh isolation against the cost of running it.
+
+## Ideal minimal answer
+
+One tenant's bulk job lands in the same capacity as everyone else's, so per-tenant limits and a
+separate lane for bulk work are the mechanism; what each class of customer is entitled to is a
+commercial decision made with whoever owns the account. Price a dedicated stack in on-call terms
+before offering it, and answer the case where nine hundred small tenants all do this at once.
 
 ## Listen for
 

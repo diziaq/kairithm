@@ -1,6 +1,6 @@
 ---
 id: database-hibernate-entity-identity-01
-schema_version: 1
+schema_version: 2
 title: Two new lines go into the set and one comes out
 category: database
 topic: hibernate
@@ -10,6 +10,7 @@ time_estimate_min: 8
 order: 415
 links:
   deeper: [database-hibernate-batch-insert-01]
+  related: [spring-testing-rollback-never-commits-01]
 ---
 
 ## Ask
@@ -24,6 +25,13 @@ comes back false. Explain both.
 Whether the candidate can reason about an object's identity across its whole lifecycle — before
 the row exists, while it is being watched, and after — instead of treating `equals` as a
 formality the IDE fills in.
+
+## Ideal minimal answer
+
+Both objects are new, so their ids are null and equals sees one object; after the insert the id
+changes, the hash changes with it, and the set looks in the wrong bucket. A hash must not change
+while the object is in the collection, so give the entity an identity assigned before the row
+exists, or a constant hashCode with equals still comparing the id.
 
 ## Listen for
 

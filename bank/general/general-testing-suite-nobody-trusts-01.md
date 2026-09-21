@@ -1,6 +1,6 @@
 ---
 id: general-testing-suite-nobody-trusts-01
-schema_version: 1
+schema_version: 2
 title: A quarter of the runs fail, and everybody just presses it again
 category: general
 topic: testing
@@ -8,6 +8,8 @@ level: senior
 tags: [testing, correctness, operations, failure-modes]
 time_estimate_min: 8
 order: 170
+links:
+  related: [java-testing-mocks-assert-the-calls-01]
 ---
 
 ## Ask
@@ -22,6 +24,13 @@ afternoon, and what do you do about the habit?
 Whether the candidate can act when the team's main evidence of correctness has stopped being
 believed: making a defensible shipping decision today without that evidence, and restoring the
 signal as work with an order, an owner and a way to tell it came back.
+
+## Ideal minimal answer
+
+Says today's red run proves nothing in either direction, because a suite people re-run on
+failure no longer separates a defect from noise, and names what they would establish before
+shipping this afternoon instead. Sets the worst offenders aside to restore the signal, each with
+an owner and a deadline, and goes looking for the defect that already escaped.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: general-design-reasoning-choice-you-cannot-undo-01
-schema_version: 1
+schema_version: 2
 title: Picking a store next week, with a third of the requirements
 category: general
 topic: design-reasoning
@@ -8,6 +8,8 @@ level: lead
 tags: [data-modelling, operations, api-design]
 time_estimate_min: 9
 order: 220
+links:
+  related: [database-choosing-a-store-second-cluster-for-six-people-01]
 ---
 
 ## Ask
@@ -22,6 +24,13 @@ to revisit in two years?
 Whether the candidate can decide under acknowledged ignorance — separating what is cheap to
 change later from what is not — rather than either stalling for certainty or picking by
 familiarity.
+
+## Ideal minimal answer
+
+Decides from the access patterns and the shape of the data, separating the parts that are cheap
+to change from the data written in the first year, which is the real commitment. Writes the
+decision down with its reasons and the conditions that expire it, and sets a review point with a
+trigger and a named owner.
 
 ## Listen for
 

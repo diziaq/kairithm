@@ -1,6 +1,6 @@
 ---
 id: kafka-offsets-external-store-01
-schema_version: 1
+schema_version: 2
 title: Keeping the read position next to the data
 category: kafka
 topic: offsets
@@ -22,6 +22,13 @@ aggregate, instead of sending it back to Kafka. Would you let them, and what bre
 
 Whether the candidate can move the commit boundary into the sink deliberately, and name what
 stops working once the position no longer lives in the cluster.
+
+## Ideal minimal answer
+
+Yes, with conditions: the aggregate and the position commit together, so a repeat is harmless for
+this one table. Every time partitions are handed over, the consumer has to seek each one to the
+position stored in Postgres, and tidy up the work in flight when they are taken away. Lag and
+anything reading the group's recorded position go blind, so say what replaces them.
 
 ## Listen for
 

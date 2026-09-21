@@ -1,6 +1,6 @@
 ---
 id: database-indexing-too-many-indexes-01
-schema_version: 1
+schema_version: 2
 title: An index on every column, and the nightly import tripled
 category: database
 topic: indexing
@@ -22,6 +22,13 @@ takes over an hour. Tell me what they bought and what they paid.
 
 Whether the candidate can state both sides of an index — the reads it can serve and the write work
 it adds to every row — instead of treating one as a general-purpose speedup switch.
+
+## Ideal minimal answer
+
+Every insert and update has to maintain all fourteen indexes, which is why the import tripled,
+and an index only helps a query that filters, joins or sorts on that column — none of the
+fourteen was chosen from what the page runs. Drop the ones nothing queries, and start from the
+page's actual query.
 
 ## Listen for
 

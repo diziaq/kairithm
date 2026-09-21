@@ -1,6 +1,6 @@
 ---
 id: microservices-api-evolution-deleting-a-field-nobody-uses-01
-schema_version: 1
+schema_version: 2
 title: Deleting a field you are fairly sure nobody uses
 category: microservices
 topic: api-evolution
@@ -22,6 +22,13 @@ does this take?
 
 Whether the candidate can run a deprecation as a process with evidence, a deadline and a decision
 rule, rather than as an announcement.
+
+## Ideal minimal answer
+
+Add instrumentation that records reads of that specific field, because traffic volume alone
+cannot show it; publish a removal date months out, long enough to cover jobs that run monthly;
+and say now what happens on the day if somebody is still reading it — hold, or break them by
+agreement.
 
 ## Listen for
 

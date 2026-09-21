@@ -1,6 +1,6 @@
 ---
 id: java-testing-slow-suite-strategy-01
-schema_version: 1
+schema_version: 2
 title: Twenty-eight minutes, and nobody runs it before pushing
 category: java
 topic: testing
@@ -22,6 +22,13 @@ container for an in-memory database. What do you do instead, and in what order?
 
 Whether the candidate can find the time inside a JVM build rather than inside the tests it runs,
 and say where a substitute for the real database stops telling the truth about this code.
+
+## Ideal minimal answer
+
+Measures where the twenty-two minutes goes before moving anything, then sequences the work: one
+container for the whole run with isolation per test, and later moving logic out of the
+persistence layer so fewer tests need a database. Rejects the in-memory swap and says what it
+stops exercising. Leaves an owner and a failing check behind.
 
 ## Listen for
 

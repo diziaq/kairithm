@@ -1,6 +1,6 @@
 ---
 id: microservices-consistency-two-services-disagree-01
-schema_version: 1
+schema_version: 2
 title: Billing says active, access control says cancelled
 category: microservices
 topic: consistency
@@ -22,6 +22,13 @@ now. How do you work out which one is wrong, and how do you stop it happening ag
 
 Whether the candidate insists on a single owner for a fact, and designs for the copy drifting
 rather than assuming updates always arrive.
+
+## Ideal minimal answer
+
+Name one owner for "is this subscription active" and make access control's copy explicitly a
+copy with a stated freshness. Because a lost update produces silence and nothing revisits it,
+add a scheduled comparison that reports how many rows disagree — then unblock this customer and
+go count how many others are in the same state.
 
 ## Listen for
 

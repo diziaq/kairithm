@@ -1,6 +1,6 @@
 ---
 id: general-incidents-first-fifteen-minutes-01
-schema_version: 1
+schema_version: 2
 title: You are paged, checkout is failing for one user in five
 category: general
 topic: incidents
@@ -23,6 +23,13 @@ moment your phone goes off.
 
 Whether the candidate can run a live incident — restoring service, gathering facts and keeping
 people informed — and whether they have an order for those things rather than a list.
+
+## Ideal minimal answer
+
+Gives an order: confirm the scale, restore service, tell people, then find the cause. Uses the
+one-in-five figure to hunt for what separates the failing fifth — one machine, one region, one
+partner — does not read no deploy as nothing changed, and keeps a timeline while it is
+happening.
 
 ## Listen for
 

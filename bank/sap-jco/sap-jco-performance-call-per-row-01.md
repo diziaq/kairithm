@@ -1,6 +1,6 @@
 ---
 id: sap-jco-performance-call-per-row-01
-schema_version: 1
+schema_version: 2
 title: Fifty thousand rows, fifty thousand calls, six hours
 category: sap-jco
 topic: performance
@@ -9,6 +9,7 @@ tags: [performance, throughput, integration]
 time_estimate_min: 7
 order: 120
 links:
+  related: [java-performance-parallel-stream-sweep-01]
   deeper: [sap-jco-performance-nightly-bulk-extract-01]
 ---
 
@@ -21,6 +22,14 @@ once per row. It takes six hours. Where is the time going, and what do you chang
 
 Whether the candidate reasons about per-call cost and roundtrips before reaching for threads, and
 knows the limits on both of the obvious fixes.
+
+## Ideal minimal answer
+
+Fifty thousand sequential roundtrips: the time is per-call overhead and latency, not payload, so
+measure one call first and split it into network versus work inside SAP. Then send many rows per
+call through a table parameter, choosing a batch size that trades roundtrips against memory, the
+runtime limit and one bad row spoiling a batch; parallelism helps only up to a ceiling the SAP
+side owns.
 
 ## Listen for
 

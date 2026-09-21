@@ -1,6 +1,6 @@
 ---
 id: microservices-messaging-outbox-dual-write-01
-schema_version: 1
+schema_version: 2
 title: An event without an order, and an order without an event
 category: microservices
 topic: messaging
@@ -24,6 +24,13 @@ then fix it.
 
 Whether the candidate recognises two writes to two systems with no common commit, and can produce
 a fix whose failure modes they can state.
+
+## Ideal minimal answer
+
+There are two writes to two systems with no common commit, so a crash in the gap gives you one
+report or the other. Write the event into the same transaction as the order and have a separate
+step ship it afterwards; that step can run twice, so consumers must tolerate seeing an event
+again, and they now see it later than before.
 
 ## Listen for
 

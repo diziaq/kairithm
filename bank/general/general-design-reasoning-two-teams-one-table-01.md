@@ -1,6 +1,6 @@
 ---
 id: general-design-reasoning-two-teams-one-table-01
-schema_version: 1
+schema_version: 2
 title: Another team wants to write to your table directly
 category: general
 topic: design-reasoning
@@ -10,6 +10,7 @@ time_estimate_min: 8
 order: 160
 links:
   deeper: [general-design-reasoning-choice-you-cannot-undo-01]
+  related: [microservices-consistency-two-services-disagree-01]
 ---
 
 ## Ask
@@ -23,6 +24,13 @@ you give up either way?
 
 Whether the candidate reasons about who is responsible for keeping the data valid, rather than
 about the mechanics of getting access to it.
+
+## Ideal minimal answer
+
+Asks what rules keep the data valid and who enforces them once there are two writers, since
+anything the database does not enforce itself is then enforced nowhere. Says the table shape
+becomes an interface the moment it is shared, prices that at the next change of column, and asks
+for a number behind the performance argument.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: database-query-performance-what-the-team-maintains-01
-schema_version: 1
+schema_version: 2
 title: Eleven rescues in a year, and you own the next one
 category: database
 topic: query-performance
@@ -22,6 +22,13 @@ team owns this for the next year. What do you put in place, and what do you deli
 
 Whether the candidate treats speed as a capability with a signal, a budget and an owner, rather
 than a series of rescues — and can name what they will refuse to take on.
+
+## Ideal minimal answer
+
+Rank the work by total time — calls multiplied by time per call — and by which page a user is
+waiting on, not by the worst single run. Turn on per-statement figures so the signal arrives
+before the support ticket, give every mechanism an owner and a stated running cost, say out loud
+what the team will stop doing, and give each override a review date.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: general-collaboration-blocked-by-another-team-01
-schema_version: 1
+schema_version: 2
 title: Another team agreed three weeks ago, and nothing has happened
 category: general
 topic: collaboration
@@ -10,6 +10,7 @@ time_estimate_min: 7
 order: 130
 links:
   deeper: [general-collaboration-two-engineers-stuck-01]
+  related: [microservices-service-boundaries-lockstep-deploys-01]
 ---
 
 ## Ask
@@ -22,6 +23,13 @@ weeks ago and nothing has appeared. Your own deadline is in two weeks. What do y
 Whether the candidate can unblock themselves — through direct contact, alternatives and
 escalation in that order — instead of waiting, or going around the other team and creating a
 worse problem.
+
+## Ideal minimal answer
+
+Goes back to the other team to find out what the change is competing with rather than only
+asking for a date, offers a cheaper route such as writing the patch themselves, and keeps
+working against the agreed shape meanwhile. Warns whoever owns the deadline while there is still
+time to act.
 
 ## Listen for
 

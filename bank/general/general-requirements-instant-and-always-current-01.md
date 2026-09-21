@@ -1,6 +1,6 @@
 ---
 id: general-requirements-instant-and-always-current-01
-schema_version: 1
+schema_version: 2
 title: A report that is instant, and never out of date
 category: general
 topic: requirements
@@ -8,6 +8,8 @@ level: senior
 tags: [consistency, performance, api-design, collaboration]
 time_estimate_min: 8
 order: 190
+links:
+  related: [database-column-oriented-orders-in-bigquery-01]
 ---
 
 ## Ask
@@ -20,6 +22,13 @@ essential. What do you say back to them?
 
 Whether the candidate can turn a wish into constraints, find the decision the request is really
 serving, and negotiate — rather than refusing outright or silently promising it.
+
+## Ideal minimal answer
+
+Traces the request back to the decision the viewer makes with the figures and sizes the
+freshness from that. Prices the three demands separately and shows which one carries the cost,
+offers a design where different figures have different ages with the age shown on screen, and
+asks what appears when the three sources disagree or one is down.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: sap-jco-troubleshooting-works-for-abap-dev-01
-schema_version: 1
+schema_version: 2
 title: It works when the ABAP developer runs it
 category: sap-jco
 topic: troubleshooting
@@ -9,6 +9,7 @@ tags: [security, observability, failure-modes]
 time_estimate_min: 8
 order: 180
 links:
+  related: [database-sql-null-three-valued-logic-01]
   deeper: [sap-jco-troubleshooting-oncall-without-sap-access-01]
 ---
 
@@ -21,6 +22,14 @@ answer. Your call, same system, same minute, comes back empty. Where do you look
 
 Whether the candidate treats "works for me" as a difference in execution context to be found,
 and knows which differences produce a silent empty result rather than an error.
+
+## Ideal minimal answer
+
+It is not the same execution: a different user with different authorisations, possibly a
+different client and language. The interface user needs RFC access to the function group and the
+business authorisations the code checks inside, and those inner checks usually return no data
+rather than raising, which is the empty result; settle it with an authorisation trace under the
+interface user and ask for only the failed check.
 
 ## Listen for
 

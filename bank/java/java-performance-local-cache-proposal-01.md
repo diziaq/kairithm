@@ -1,6 +1,6 @@
 ---
 id: java-performance-local-cache-proposal-01
-schema_version: 1
+schema_version: 2
 title: An in-process cache in front of an 80ms lookup
 category: java
 topic: performance
@@ -22,6 +22,13 @@ before you say yes, and what do you make them build alongside it?
 
 Whether the candidate treats a cache as production machinery with its own failure modes, and can
 say what evidence would justify adding one.
+
+## Ideal minimal answer
+
+Makes how out-of-date an answer may be a decision taken with the people who own the data and
+written down, not a tuning knob, and lets the cost of a wrong answer set how much machinery is
+justified. Requires the hit rate and eviction figures visible, and a way to turn it off without
+a release, before approving.
 
 ## Listen for
 

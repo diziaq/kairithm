@@ -1,6 +1,6 @@
 ---
 id: general-debugging-slow-save-one-report-01
-schema_version: 1
+schema_version: 2
 title: One customer says a save took thirty seconds
 category: general
 topic: debugging
@@ -10,6 +10,7 @@ time_estimate_min: 6
 order: 10
 links:
   deeper: [general-debugging-partial-fix-01]
+  related: [microservices-observability-request-lost-across-hops-01]
 ---
 
 ## Ask
@@ -22,6 +23,12 @@ dashboards and the code in front of you. What do you do?
 
 Whether the candidate narrows a vague report down to one specific request and looks at evidence
 before forming a theory about the cause.
+
+## Ideal minimal answer
+
+Asks for the time and the account so that one request can be found in the logs, looks at a
+response-time graph for that window as well as the log line, and checks whether anybody else was
+affected in the same period — before naming a cause.
 
 ## Listen for
 

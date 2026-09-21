@@ -1,6 +1,6 @@
 ---
 id: spring-di-circular-dependency-01
-schema_version: 1
+schema_version: 2
 title: A refactor introduces a cycle between two services
 category: spring
 topic: dependency-injection
@@ -23,6 +23,13 @@ brings that behaviour back. What do you tell them, and what would you actually d
 
 Whether the candidate can explain why one wiring style can survive a cycle and another cannot,
 and whether they treat the cycle as a design signal rather than a setting to be silenced.
+
+## Ideal minimal answer
+
+With both collaborators required at construction, neither object can be finished first, so no
+order works. The property they want goes back to handing out a half-built object, which is
+observably incomplete during startup and bites in a startup callback; a lazily resolved stand-in
+only moves the failure to the first call. The real fix is a third collaborator or an event.
 
 ## Listen for
 

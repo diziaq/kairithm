@@ -1,6 +1,6 @@
 ---
 id: sap-jco-troubleshooting-first-call-after-idle-01
-schema_version: 1
+schema_version: 2
 title: The first call of the morning always fails
 category: sap-jco
 topic: troubleshooting
@@ -23,6 +23,13 @@ their side at that time. What is happening, and what do you change?
 
 Whether the candidate can get from a time-of-day pattern to a connection that died while nobody
 was using it, and can say which calls they would let a machine repeat.
+
+## Ideal minimal answer
+
+The pool handed out a connection opened yesterday whose socket something on the path — a
+firewall or NAT device — dropped while it was idle, so the Java side only finds out when it
+tries to use it and the retry succeeds. Get the real idle timeout from whoever owns that device
+and expire pooled connections well before it; only repeat calls that are harmless to run twice.
 
 ## Listen for
 

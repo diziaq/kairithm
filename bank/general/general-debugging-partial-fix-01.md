@@ -1,6 +1,6 @@
 ---
 id: general-debugging-partial-fix-01
-schema_version: 1
+schema_version: 2
 title: The fix cut the errors but did not end them
 category: general
 topic: debugging
@@ -23,6 +23,13 @@ that went away. What do you do next?
 
 Whether the candidate can tell a partially effective fix from a second cause with the same
 symptom, and reasons from evidence instead of applying the same fix harder.
+
+## Ideal minimal answer
+
+Treats the surviving eighty as a separate question, says an identical log line can be produced
+by more than one path, and compares those failures against the ones that stopped on concrete
+dimensions — account, region, client version — with a stated hypothesis and the evidence that
+would confirm it.
 
 ## Listen for
 

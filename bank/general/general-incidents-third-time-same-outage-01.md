@@ -1,6 +1,6 @@
 ---
 id: general-incidents-third-time-same-outage-01
-schema_version: 1
+schema_version: 2
 title: The same outage, three times in six months
 category: general
 topic: incidents
@@ -22,6 +22,13 @@ team wrote up what happened, agreed on actions, and closed them. What do you cha
 Whether the candidate treats a repeating outage as evidence about the system and the way the
 team works, rather than as three unlucky events, and whether they can name a change that would
 actually bind.
+
+## Ideal minimal answer
+
+Says the closed actions were the wrong kind — they added care rather than removing the
+possibility — and takes the repeat to whoever sets priorities as evidence about ownership, not
+luck. Gives the work an owner, a date and a visible measure reported against, and names what the
+team stops doing to make room.
 
 ## Listen for
 

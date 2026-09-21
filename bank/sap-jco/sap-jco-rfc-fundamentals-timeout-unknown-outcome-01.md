@@ -1,6 +1,6 @@
 ---
 id: sap-jco-rfc-fundamentals-timeout-unknown-outcome-01
-schema_version: 1
+schema_version: 2
 title: The call died and nobody knows whether it posted
 category: sap-jco
 topic: rfc-fundamentals
@@ -22,6 +22,13 @@ that today, and how do you make sure the question is answerable next time?
 
 Whether the candidate treats a broken call as an unknown outcome to be resolved against the far
 side, rather than as a failure they can assume away or retry blindly.
+
+## Ideal minimal answer
+
+I cannot answer it from the error: the posting may have completed and been saved, completed and
+never been saved, or never run. Today I query SAP for the document rather than guessing, and
+next time I carry our own reference into a field SAP stores so the query is exact — a retry is
+only safe if the ABAP side refuses a second use of that reference.
 
 ## Listen for
 

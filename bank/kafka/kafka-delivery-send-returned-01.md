@@ -1,6 +1,6 @@
 ---
 id: kafka-delivery-send-returned-01
-schema_version: 1
+schema_version: 2
 title: The send call returned, so the data is safe
 category: kafka
 topic: delivery-semantics
@@ -23,6 +23,12 @@ before agreeing with them?
 
 Whether the candidate knows that handing a record to the producer is not the same as the record
 being stored, and can say what the gap between the two contains.
+
+## Ideal minimal answer
+
+The call puts the record in a buffer in memory and returns before any broker has seen it, so
+nothing is safe yet. Ask whether the returned result is ever waited on or the callback ever
+looked at, and what `acks` is set to, before the local copy is deleted.
 
 ## Listen for
 

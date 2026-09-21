@@ -1,6 +1,6 @@
 ---
 id: general-debugging-nobody-can-see-production-01
-schema_version: 1
+schema_version: 2
 title: A week per bug, and most of it spent working out what production did
 category: general
 topic: debugging
@@ -25,6 +25,13 @@ else up for?
 Whether the candidate can choose one investment in how the system is investigated, from a fixed
 budget and constraints they cannot remove, and can say what it commits other teams to keeping
 alive afterwards.
+
+## Ideal minimal answer
+
+Picks one investment — for example something a request carries so four sets of records can be
+lined up — because the recent investigations show that is where the week went, and says what the
+quarter is not buying. Names what the other three teams have to keep working as their code
+changes, and who owns it afterwards.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: kafka-retries-blocking-loop-01
-schema_version: 1
+schema_version: 2
 title: The consumer sleeps and tries again, forever
 category: kafka
 topic: retries
@@ -10,6 +10,7 @@ time_estimate_min: 7
 order: 20
 links:
   deeper: [kafka-retries-delay-topic-ordering-01]
+  related: [microservices-messaging-poison-message-blocks-01]
 ---
 
 ## Ask
@@ -22,6 +23,13 @@ works. What does that do to the topic and to the group while the service is down
 
 Whether the candidate can follow a blocked handler outward to the partition behind it, the group
 it belongs to, and the records that were never going to fail.
+
+## Ideal minimal answer
+
+Everything behind that record on the same partition waits the whole hour, including records that
+would have gone through fine, so lag grows. The consumer never comes back for more records, so
+the group treats it as gone and hands its work to somebody else. Bound the attempts instead of
+looping forever.
 
 ## Listen for
 

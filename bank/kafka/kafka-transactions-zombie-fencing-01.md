@@ -1,6 +1,6 @@
 ---
 id: kafka-transactions-zombie-fencing-01
-schema_version: 1
+schema_version: 2
 title: Two instances think they own the same input partitions
 category: kafka
 topic: transactions
@@ -24,6 +24,13 @@ which way of naming a producer would you standardise on across all of them?
 Whether the candidate can explain what displaces an older producer, then choose an identity
 scheme against how the instances are actually scheduled, and say what each candidate scheme costs
 the people who run and rescale the pipelines.
+
+## Ideal minimal answer
+
+The transactional id makes the two processes one logical producer: the newer one raises the epoch
+and the older one's writes are rejected, so it dies rather than corrupting the output, and the id
+has to be derived from the work rather than the process. Put two naming schemes side by side,
+pick one for the estate, and say what each costs when a topic is widened.
 
 ## Listen for
 

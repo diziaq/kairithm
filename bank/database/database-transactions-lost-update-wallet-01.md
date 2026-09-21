@@ -1,6 +1,6 @@
 ---
 id: database-transactions-lost-update-wallet-01
-schema_version: 1
+schema_version: 2
 title: Two top-ups, fifty euros missing
 category: database
 topic: transactions
@@ -10,6 +10,7 @@ time_estimate_min: 10
 order: 211
 links:
   deeper: [database-transactions-commit-lost-acknowledgement-01]
+  related: [java-concurrency-lock-ordering-transfer-01]
 ---
 
 ## Ask
@@ -22,6 +23,14 @@ customer is 50 euros short. Why did the database allow that, and how do you fix 
 
 Whether the candidate can describe why two committed transactions may silently overwrite each
 other, and then choose a fix the store enforces rather than one the application hopes for.
+
+## Ideal minimal answer
+
+Both reads landed before either write, so the second write was computed from a value already out
+of date; on PostgreSQL's default level nothing was violated — each statement sees the latest
+committed data, and these are two transactions. Add it in the database with one
+`UPDATE ... SET balance = balance + 50`, or lock the row at read time and say what the loser is
+told.
 
 ## Listen for
 

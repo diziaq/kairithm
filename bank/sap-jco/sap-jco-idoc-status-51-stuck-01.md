@@ -1,6 +1,6 @@
 ---
 id: sap-jco-idoc-status-51-stuck-01
-schema_version: 1
+schema_version: 2
 title: Three hundred IDocs in status 51 and a business asking to re-send
 category: sap-jco
 topic: idoc
@@ -9,6 +9,7 @@ tags: [operations, failure-modes, idempotency]
 time_estimate_min: 7
 order: 100
 links:
+  related: [kafka-offsets-commit-window-01]
   deeper: [sap-jco-idoc-error-ownership-01]
 ---
 
@@ -21,6 +22,13 @@ the business wants to know whether to re-send the files. What do you tell them?
 
 Whether the candidate knows what status 51 means about where the data already is, and therefore
 why re-sending is the wrong recovery.
+
+## Ideal minimal answer
+
+Do not re-send: status 51 means the IDocs arrived and were stored in SAP and only the posting
+failed, so a re-send creates a second IDoc for the same business document and, once the cause is
+fixed, a second posting. Fix the cause and reprocess the stored ones, and read the status text
+first to group the three hundred, separating data causes from setup causes.
 
 ## Listen for
 

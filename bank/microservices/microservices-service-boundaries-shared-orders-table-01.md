@@ -1,6 +1,6 @@
 ---
 id: microservices-service-boundaries-shared-orders-table-01
-schema_version: 1
+schema_version: 2
 title: Two services, one orders table, and a split marked done
 category: microservices
 topic: service-boundaries
@@ -8,6 +8,8 @@ level: lead
 tags: [ownership, consistency, operations, correctness]
 time_estimate_min: 11
 order: 200
+links:
+  related: [general-legacy-rewrite-in-four-months-01]
 ---
 
 ## Ask
@@ -20,6 +22,14 @@ on fire. Walk me through how you finish it — or make the case for leaving it a
 
 Whether the candidate can price an existing architectural compromise, choose deliberately between
 finishing and stopping, and describe a live migration in steps.
+
+## Ideal minimal answer
+
+Before spending anything, count what the shared table has actually cost: how often a schema
+change was blocked and how many cross-service bugs came from it. If that is small, say so and
+write down the conditions that would flip the decision; if not, give one service the table, move
+reads first and writes second with both sides comparable at each step, and plan for being
+interrupted.
 
 ## Listen for
 

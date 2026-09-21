@@ -1,6 +1,6 @@
 ---
 id: microservices-observability-dashboards-green-users-angry-01
-schema_version: 1
+schema_version: 2
 title: Every dashboard is green and checkout is broken
 category: microservices
 topic: observability
@@ -25,6 +25,13 @@ you take away to pay for it?
 Whether the candidate can distinguish measuring the machinery from measuring what the user is
 trying to do, and then buy the second inside a fixed budget rather than asking for more of
 everything.
+
+## Ideal minimal answer
+
+The average hides a slow tail and 0.2% is not spread evenly, so nothing here measures whether
+checkout completed. I would add completed orders against what this hour normally looks like, and
+one slice by tenant, paid for by switching off dashboards nobody has opened in a year; each
+signal gets an owner, a rule for who is woken, and a date to check it still fires.
 
 ## Listen for
 

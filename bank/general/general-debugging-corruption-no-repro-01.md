@@ -1,6 +1,6 @@
 ---
 id: general-debugging-corruption-no-repro-01
-schema_version: 1
+schema_version: 2
 title: Twice a week, in production only
 category: general
 topic: debugging
@@ -24,6 +24,12 @@ has spent a month adding log lines without catching it. How do you get to the bo
 Whether the candidate can design an investigation — a hypothesis, the evidence that would
 distinguish it from the alternatives, and a way to capture that evidence — rather than
 scattering more logging and waiting.
+
+## Ideal minimal answer
+
+Works backwards from the damaged records to the code paths that can write that combination at
+all, names two or three competing mechanisms and the evidence that would separate them, and puts
+a continuous check over the data first so the next one is found in minutes instead of a month.
 
 ## Listen for
 

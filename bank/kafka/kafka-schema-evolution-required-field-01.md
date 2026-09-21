@@ -1,6 +1,6 @@
 ---
 id: kafka-schema-evolution-required-field-01
-schema_version: 1
+schema_version: 2
 title: One new field stops a consumer over the weekend
 category: kafka
 topic: schema-evolution
@@ -23,6 +23,13 @@ the change was additive and therefore safe. Who is right, and what should the ru
 
 Whether the candidate can reason about two independently deployed sides of one topic, tell the
 two directions of compatibility apart, and say what has to hold for either side to ship alone.
+
+## Ideal minimal answer
+
+An addition is only safe in one direction, and it failed here because this consumer's decoding
+step refuses a field it was not told about instead of dropping it quietly. That is a property of
+how the reader is set up, not of the topic, and the months of records already on the topic keep
+the shape they were written in.
 
 ## Listen for
 

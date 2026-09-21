@@ -1,6 +1,6 @@
 ---
 id: spring-web-layer-long-running-request-01
-schema_version: 1
+schema_version: 2
 title: An export that outlives its own request
 category: spring
 topic: web-layer
@@ -25,6 +25,13 @@ do you give this endpoint, and what does your choice cost the team that carries 
 Whether the candidate can choose a request shape for work that outlives a single request from
 the stated constraints rather than from habit, and can say what each candidate shape costs in
 stored state, in operational work and at deploy time.
+
+## Ideal minimal answer
+
+Separate accepting the work from delivering it: record the job durably, answer at once with
+somewhere to come back to, build outside the request, and make a repeated submit attach to the
+run already going. Pick that shape against the sixty-second cut-off, and name its standing cost:
+a store holding job state, a worker to watch, and cleanup that can itself fall behind.
 
 ## Listen for
 

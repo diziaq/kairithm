@@ -1,6 +1,6 @@
 ---
 id: spring-testing-leaky-state-01
-schema_version: 1
+schema_version: 2
 title: Passes alone, fails in the suite
 category: spring
 topic: testing
@@ -23,6 +23,12 @@ request adding `@DirtiesContext` to it, which makes the suite green. What do you
 
 Whether the candidate can distinguish a test that is isolated from a test that happens to run
 first, and whether they diagnose the shared state rather than accepting a fix that works.
+
+## Ideal minimal answer
+
+The tests are sharing something, most likely rows an earlier test left in the database, so this
+one only passes in the order it happened to run in. Have the test roll back what it wrote, which
+addresses the cause; the change in the pull request does not.
 
 ## Listen for
 

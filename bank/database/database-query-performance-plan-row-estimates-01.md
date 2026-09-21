@@ -1,6 +1,6 @@
 ---
 id: database-query-performance-plan-row-estimates-01
-schema_version: 1
+schema_version: 2
 title: The plan ignores the index and scans the table
 category: database
 topic: query-performance
@@ -23,6 +23,13 @@ your mind?
 
 Whether the candidate reads a plan for evidence — what was expected against what actually
 happened — instead of treating a full scan as a defect to be overridden.
+
+## Ideal minimal answer
+
+In PostgreSQL ask for `EXPLAIN ANALYZE` and compare each node's expected row count with the rows
+it actually produced; a large gap is the thing to explain first. Ask what share of the table the
+filter keeps, since a full read beats chasing rows one by one — and read the filter text,
+because a function around the column cannot match a plain index on it.
 
 ## Listen for
 

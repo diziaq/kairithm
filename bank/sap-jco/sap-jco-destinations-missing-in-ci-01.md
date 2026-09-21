@@ -1,6 +1,6 @@
 ---
 id: sap-jco-destinations-missing-in-ci-01
-schema_version: 1
+schema_version: 2
 title: The destination is found on a laptop and not in CI
 category: sap-jco
 topic: destinations
@@ -9,6 +9,7 @@ tags: [configuration, operations, integration]
 time_estimate_min: 5
 order: 20
 links:
+  related: [spring-configuration-property-precedence-01]
   deeper: [sap-jco-destinations-credential-rotation-01]
 ---
 
@@ -23,6 +24,13 @@ you set this up so that second part cannot happen again?
 
 Whether the candidate knows that a destination name is only a lookup key resolved from
 environment-specific configuration, and treats pointing at the wrong system as a real risk.
+
+## Ideal minimal answer
+
+The destination name is only a lookup key: the host, system number, client, user and password
+come from configuration on the machine that runs the code, and the pipeline has none. Deliver
+that configuration per environment with the secret from outside the repository, and give each
+environment its own destination name so a test run cannot point at production.
 
 ## Listen for
 

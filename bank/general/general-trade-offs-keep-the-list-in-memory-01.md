@@ -1,6 +1,6 @@
 ---
 id: general-trade-offs-keep-the-list-in-memory-01
-schema_version: 1
+schema_version: 2
 title: Someone suggests keeping the list in memory
 category: general
 topic: trade-offs
@@ -10,6 +10,7 @@ time_estimate_min: 6
 order: 20
 links:
   deeper: [general-trade-offs-retry-the-payment-01]
+  related: [database-indexing-too-many-indexes-01]
 ---
 
 ## Ask
@@ -22,6 +23,12 @@ What do you want to know before you agree, and what could that change break?
 
 Whether the candidate can name the cost of a change they have just been handed the benefit of,
 instead of accepting it because it is obviously faster.
+
+## Ideal minimal answer
+
+Asks how often the list changes and how quickly an edit has to be visible, says the copy held in
+the process keeps serving the old one until something refreshes it, and proposes a refresh — on
+a timer, or at restart — rather than agreeing because memory is faster.
 
 ## Listen for
 

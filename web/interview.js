@@ -211,6 +211,14 @@ function renderHints(question) {
 
   const blocks = [];
 
+  if (question.ideal_answer) {
+    blocks.push(
+      block("Ideal minimal answer", (body) => {
+        body.appendChild(make("p", { className: "ideal-answer", text: question.ideal_answer }));
+        return true;
+      })
+    );
+  }
   if (question.tests) {
     blocks.push(
       block("What this tests", (body) => {

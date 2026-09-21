@@ -1,6 +1,6 @@
 ---
 id: spring-proxying-interface-vs-class-01
-schema_version: 1
+schema_version: 2
 title: The injected object is not the class you wrote
 category: spring
 topic: proxying
@@ -24,6 +24,13 @@ read a field straight off that bean now reads null. Explain both halves.
 
 Whether the candidate can reason about what object is actually in the container after advice is
 applied, and predict which ordinary Java assumptions stop holding for it.
+
+## Ideal minimal answer
+
+What is registered is a stand-in satisfying `Pricing`, not an object of the concrete type, which
+is why startup failed. The property switches to a generated subclass that does satisfy it, but
+the state still lives on the real object and only method calls are forwarded, so the field read
+finds nothing; the fix is an accessor, and the flip is global.
 
 ## Listen for
 

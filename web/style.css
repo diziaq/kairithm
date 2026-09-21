@@ -197,6 +197,17 @@ fieldset label.check input { width: auto; }
 }
 .hint-block li { margin: .15rem 0; }
 
+/* The pass mark. Read while a candidate is still talking, so it gets its own weight. */
+.ideal-answer {
+  margin: 0;
+  padding: .4rem .6rem;
+  border-left: 3px solid var(--good);
+  background: var(--surface);
+  border-radius: 0 4px 4px 0;
+  color: var(--ink);
+  font-size: .88rem;
+}
+
 .problem-error { color: var(--bad); font-weight: 600; }
 
 .range { font-size: 1.1rem; margin: .2rem 0; }

@@ -1,6 +1,6 @@
 ---
 id: kafka-performance-lag-not-falling-01
-schema_version: 1
+schema_version: 2
 title: Lag climbs all day and clears itself at midnight
 category: kafka
 topic: performance
@@ -23,6 +23,13 @@ quiet, and the topic has twelve partitions. Where do you take this?
 
 Whether the candidate can localise a shortfall across the arrival rate, the number of partitions,
 the fetch and the handler, using evidence rather than a list of settings.
+
+## Ideal minimal answer
+
+Compare how fast records arrive with how fast the group gets through them, and check whether the
+lag sits on all twelve partitions or on two, which tells skew from a shortfall. Thirty per cent
+processor use with a growing backlog means the pods are waiting on something, so measure where
+that time goes. The midnight clearing is arrivals falling away, not the group speeding up.
 
 ## Listen for
 

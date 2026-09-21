@@ -1,6 +1,6 @@
 ---
 id: spring-transactions-checked-exception-01
-schema_version: 1
+schema_version: 2
 title: The write survived the failure
 category: spring
 topic: transactions
@@ -24,6 +24,13 @@ never happened. Explain what the framework did, and what you change.
 Whether the candidate knows the default rule for when a failure ends the unit of work, can
 predict the state left behind, and treats the rule as something to be made explicit rather than
 memorised per method.
+
+## Ideal minimal answer
+
+By default only an unchecked failure ends the unit of work, so the checked `IOException` was
+treated as a normal exit and the reservation row was committed while the caller saw a failure.
+That is a framework convention, not a database rule. Make it uniform across the codebase, and
+write a test that throws it deliberately and asserts the table is empty.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: java-exceptions-swallowed-in-loop-01
-schema_version: 1
+schema_version: 2
 title: Ten thousand invoices, and a log line that says nothing
 category: java
 topic: exceptions
@@ -10,6 +10,7 @@ time_estimate_min: 5
 order: 500
 links:
   deeper: [java-exceptions-lost-in-cleanup-01]
+  related: [microservices-messaging-poison-message-blocks-01]
 ---
 
 ## Ask
@@ -22,6 +23,13 @@ You are reviewing a nightly job. It loops over ten thousand invoices, and inside
 
 Whether the candidate can see what a caught failure hides — from the operator, from tomorrow's run
 and from the customer waiting for the invoice.
+
+## Ideal minimal answer
+
+Says the caught object is never handed to the logger, so there is no cause and no stack trace,
+and the line does not say which invoice. Points out that the closing count of ten thousand is
+not true and the job still exits successfully, and wants the failed invoices recorded somewhere
+rather than only logged.
 
 ## Listen for
 

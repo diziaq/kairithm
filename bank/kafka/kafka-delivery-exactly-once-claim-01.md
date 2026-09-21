@@ -1,6 +1,6 @@
 ---
 id: kafka-delivery-exactly-once-claim-01
-schema_version: 1
+schema_version: 2
 title: A team claims their pipeline is exactly once
 category: kafka
 topic: delivery-semantics
@@ -21,6 +21,13 @@ Postgres table. What do you ask them before you believe it?
 
 Whether the candidate treats a delivery guarantee as a property of a specific boundary that
 somebody has to implement, rather than a setting that can be switched on for a whole system.
+
+## Ideal minimal answer
+
+Ask where the consumer records its position relative to the Postgres write. A Kafka transaction
+spans the records produced and the offsets committed inside the cluster and stops at its edge, so
+it promises nothing about the table; either one commit covers both stores, or the write is keyed
+on something the producer already had. Then ask what a repeat would actually cost.
 
 ## Listen for
 

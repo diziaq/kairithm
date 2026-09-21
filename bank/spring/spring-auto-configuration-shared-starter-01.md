@@ -1,6 +1,6 @@
 ---
 id: spring-auto-configuration-shared-starter-01
-schema_version: 1
+schema_version: 2
 title: The internal starter that broke forty services
 category: spring
 topic: auto-configuration
@@ -25,6 +25,13 @@ ships?
 Whether the candidate can design a library that participates in someone else's application
 without owning it: conditional registration, overridability, ordering, and a release process
 that makes breakage visible before it is deployed.
+
+## Ideal minimal answer
+
+Every bean the starter contributes is registered only when the consumer has not supplied its own,
+through the declared entry point rather than by scanning their packages. Draw the line between
+what a consumer may override and what the platform guarantees, put a canary and a staged rollout
+in front of forty services, and replace breaking changes in a patch with a deprecation window.
 
 ## Listen for
 

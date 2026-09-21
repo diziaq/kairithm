@@ -1,6 +1,6 @@
 ---
 id: kafka-offsets-rewind-choice-01
-schema_version: 1
+schema_version: 2
 title: Choosing how to put six bad hours through again
 category: kafka
 topic: offsets
@@ -25,6 +25,13 @@ afterwards?
 Whether the candidate can put two or three ways back side by side, choose one against the
 constraints they were given, and name what each one costs while it runs and every time somebody
 has to do it again.
+
+## Ideal minimal answer
+
+Two routes: stop the four pods and move the group's stored position, which nothing outside the
+group can do while they hold the partitions, or start a second deployment under a name the
+cluster has never seen, with no downtime but every record handed over again. Pick one against
+what finance can tolerate, and say who watches the second pass and how it is signed off.
 
 ## Listen for
 

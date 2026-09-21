@@ -1,6 +1,6 @@
 ---
 id: kafka-dead-letter-policy-01
-schema_version: 1
+schema_version: 2
 title: Deciding what twenty teams are allowed to set aside
 category: kafka
 topic: dead-letter
@@ -22,6 +22,13 @@ teams will follow whatever you write. How do you draw the line?
 
 Whether the candidate can turn error handling into a rule other teams can apply unsupervised, and
 defend where the line sits.
+
+## Ideal minimal answer
+
+Draw the line by cause: a record that can never succeed may be set aside, while a dependency that
+is down or a defect in the consumer must stop the flow instead. Write that as a rule a team can
+apply without a meeting, tie how strict it is to what the records are worth, and require an owner,
+an alert on the rate, and a route back.
 
 ## Listen for
 

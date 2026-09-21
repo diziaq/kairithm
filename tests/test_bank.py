@@ -10,7 +10,7 @@ def test_reads_every_field_of_a_valid_card(tmp_path):
 
     assert bank.warnings == []
     question = bank.get("java-concurrency-example-01")
-    assert question.schema_version == 1
+    assert question.schema_version == 2
     assert question.title == "An example card"
     assert question.category == "java"
     assert question.topic == "concurrency"
@@ -181,3 +181,48 @@ def test_the_shipped_bank_loads_without_problems():
     bank = load_bank()
     assert bank.warnings == [], [w.line() for w in bank.warnings]
     assert len(bank.questions) >= 3
+
+
+# --- schema version 2: the ideal minimal answer ------------------------------------------------
+
+
+def test_a_version_two_card_carries_an_ideal_minimal_answer(tmp_path):
+    write(
+        tmp_path,
+        "java/a.md",
+        card(card_id="java-a-01", ideal_answer="The interleaving loses updates."),
+    )
+    question = load_bank(tmp_path).get("java-a-01")
+    assert question.schema_version == 2
+    assert question.ideal_answer == "The interleaving loses updates."
+
+
+def test_a_version_two_card_without_one_is_an_error(tmp_path):
+    write(tmp_path, "java/a.md", card(card_id="java-a-01", ideal_answer=""))
+    bank = load_bank(tmp_path)
+
+    assert bank.questions == {}
+    problem = next(w for w in bank.warnings if w.field == "ideal_answer")
+    assert "Ideal minimal answer" in problem.problem
+    assert "required from schema_version 2" in problem.problem
+
+
+def test_a_version_one_card_still_loads_without_one(tmp_path):
+    """A card written before the field existed is not broken by it."""
+    write(tmp_path, "java/a.md", card(card_id="java-a-01", schema_version=1))
+    question = load_bank(tmp_path).get("java-a-01")
+    assert question is not None
+    assert question.ideal_answer == ""
+
+
+def test_an_unsupported_schema_version_is_still_refused(tmp_path):
+    write(tmp_path, "java/a.md", card(card_id="java-a-01", schema_version=99))
+    bank = load_bank(tmp_path)
+    assert any("not supported" in w.problem for w in bank.warnings)
+
+
+def test_the_ideal_answer_is_interviewer_only(tmp_path):
+    write(tmp_path, "java/a.md", card(card_id="java-a-01"))
+    question = load_bank(tmp_path).get("java-a-01")
+    assert "ideal_answer" not in question.public(include_hints=False)
+    assert question.public(include_hints=True)["ideal_answer"]

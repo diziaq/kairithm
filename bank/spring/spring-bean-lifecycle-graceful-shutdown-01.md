@@ -1,6 +1,6 @@
 ---
 id: spring-bean-lifecycle-graceful-shutdown-01
-schema_version: 1
+schema_version: 2
 title: A deploy that drops in-flight work
 category: spring
 topic: bean-lifecycle
@@ -22,6 +22,13 @@ happens between the signal arriving and the process exiting, and how you would m
 Whether the candidate can reason about an ordered teardown of a running system rather than
 "add a shutdown hook", and whether they notice that a thread the container did not start is not
 part of that order at all.
+
+## Ideal minimal answer
+
+The container tears beans down in the reverse of the order it built them, so the pool is closed
+while the hand-started thread is still pulling jobs. That thread sits outside the ordering
+entirely: nothing tells it to stop and nothing waits for it. Put the worker under the container
+so it is stopped before the pool, and turn on graceful shutdown, which is bounded by a timeout.
 
 ## Listen for
 

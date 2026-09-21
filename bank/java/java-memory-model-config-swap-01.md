@@ -1,6 +1,6 @@
 ---
 id: java-memory-model-config-swap-01
-schema_version: 1
+schema_version: 2
 title: Two reviewers disagree about an immutable settings object
 category: java
 topic: memory-model
@@ -23,6 +23,13 @@ right, and what exactly could a request thread end up seeing?
 
 Whether the candidate separates the visibility of a reference from the state of the object it points
 at, and can say which of the two immutability actually buys.
+
+## Ideal minimal answer
+
+Splits it in two: whether a reader ever picks up the new reference, and whether the object it
+points at is fully built. The second reviewer has answered only the second question — with a
+plain field, nothing bounds how long a reader keeps the old one. Marks it `volatile`, and says
+that costs essentially nothing at one write every few minutes.
 
 ## Listen for
 

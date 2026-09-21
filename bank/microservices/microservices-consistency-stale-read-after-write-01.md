@@ -1,6 +1,6 @@
 ---
 id: microservices-consistency-stale-read-after-write-01
-schema_version: 1
+schema_version: 2
 title: Save succeeds, reload shows the old address
 category: microservices
 topic: consistency
@@ -23,6 +23,13 @@ do?
 
 Whether the candidate can name the gap between a write and the copy that is read, and fix the
 user's experience without making the whole system wait.
+
+## Ideal minimal answer
+
+Nothing is broken: the write landed and the page is reading a copy that has not caught up, so
+the user cannot yet see their own change. Fix it just for them — render what they submitted, or
+read that one case from the owning service — rather than making every read wait, and ask how far
+behind the copy runs at its worst.
 
 ## Listen for
 

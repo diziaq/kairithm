@@ -1,6 +1,6 @@
 ---
 id: java-collections-mutable-key-lookup-01
-schema_version: 1
+schema_version: 2
 title: An object in a set that the set cannot find
 category: java
 topic: collections
@@ -23,6 +23,13 @@ puts an order into a `HashSet`, then sets `customerId` on that same object. Afte
 
 Whether the candidate can connect a hash-based lookup to the promise the stored object has to keep
 for the lookup to work at all.
+
+## Ideal minimal answer
+
+The set filed the order by a value derived from its fields, and changing one after it went in
+means the lookup now goes somewhere that no longer matches, while walking the set derives
+nothing and still finds it. Says a stored key must not change, or must take its identity from
+fields that do not.
 
 ## Listen for
 

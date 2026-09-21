@@ -1,6 +1,6 @@
 ---
 id: database-transactions-rollback-does-not-undo-01
-schema_version: 1
+schema_version: 2
 title: The rollback did not undo the charge
 category: database
 topic: transactions
@@ -10,6 +10,7 @@ time_estimate_min: 6
 order: 210
 links:
   deeper: [database-transactions-lost-update-wallet-01]
+  related: [microservices-failure-handling-timeout-unknown-outcome-01]
 ---
 
 ## Ask
@@ -23,6 +24,13 @@ what would you change?
 
 Whether the candidate knows where a rollback stops — it restores rows and nothing else — and can
 reorder the work so that the failure left behind is one somebody can repair.
+
+## Ideal minimal answer
+
+The rollback removed the order row and the payment row and nothing else — the money the provider
+took is still gone, and the same is true of a mail already sent or a message already published.
+Take the provider call out of the transaction, or write down that the charge happened before
+making it, so there is a trace of the money.
 
 ## Listen for
 

@@ -1,6 +1,6 @@
 ---
 id: sap-jco-trfc-duplicate-and-lost-units-01
-schema_version: 1
+schema_version: 2
 title: Two movements booked twice and three that never arrived
 category: sap-jco
 topic: trfc-qrfc
@@ -9,6 +9,7 @@ tags: [idempotency, consistency, delivery-semantics, failure-modes]
 time_estimate_min: 9
 order: 175
 links:
+  related: [kafka-offsets-external-store-01]
   deeper: [sap-jco-qrfc-blocked-queue-01]
 ---
 
@@ -24,6 +25,14 @@ sent and has nothing outstanding for that destination. Both of those in one inci
 Whether the candidate can treat receiver-side duplicate protection as a small state machine that
 has to commit together with the business data, and can reason about what each wrong ordering
 produces.
+
+## Ideal minimal answer
+
+The duplicates are business rows that committed while the id record did not, so the repeat
+looked new; the losses are worse, because the id was written before the work committed, so the
+repeat was answered as done and the sender discarded it. The check must say run it for a unit
+that failed, the id and rows must commit together, and the record kept until the sender
+confirms.
 
 ## Listen for
 

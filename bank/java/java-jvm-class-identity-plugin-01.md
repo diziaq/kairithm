@@ -1,6 +1,6 @@
 ---
 id: java-jvm-class-identity-plugin-01
-schema_version: 1
+schema_version: 2
 title: Cannot cast OrderDto to OrderDto
 category: java
 topic: jvm-internals
@@ -8,6 +8,8 @@ level: senior
 tags: [failure-modes, operations, packaging]
 time_estimate_min: 8
 order: 310
+links:
+  related: [spring-proxying-interface-vs-class-01]
 ---
 
 ## Ask
@@ -20,6 +22,13 @@ with the code. What is happening, and what do you change?
 
 Whether the candidate knows what makes two classes the same class at runtime, and can turn that into
 a rule about how things are built and shipped.
+
+## Ideal minimal answer
+
+A class is identified by its name and the loader that defined it, so the same bytes loaded twice
+give two unrelated types: the shared type sits in the plugin jar as well as on the host's path,
+and the plugin's loader took its own copy. Diagnoses by printing the loader behind each object,
+and fixes it in the build so the contract ships once.
 
 ## Listen for
 
