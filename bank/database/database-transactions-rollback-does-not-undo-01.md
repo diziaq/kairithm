@@ -65,6 +65,8 @@ making it, so there is a trace of the money.
 - Moves the commit earlier without saying what happens if the provider then fails
 - Proposes catching the error and carrying on in the same transaction
 - Talks only about the constraint, and never about the money
+- Recounts a double charge at a previous job and never says what this handler should do
+  differently
 
 ## Answer bands
 
@@ -82,8 +84,8 @@ making it, so there is a trace of the money.
 ### mid
 
 - Orders the steps so the failure that survives is one somebody can clean up, and says which.
-- Says what the service does when the provider succeeded and the write did not, including what
-  the customer is shown.
+- Volunteers what the service does when the provider succeeded and the write did not, including
+  what the customer is shown.
 - Notices the lock held while the handler waits on a third party, and what it costs under load.
 - Says a repeat of the whole handler must not charge twice.
 

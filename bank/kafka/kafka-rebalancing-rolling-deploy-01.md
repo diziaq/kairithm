@@ -73,14 +73,16 @@ the four minutes goes.
 
 - Says the whole group stops while ownership is worked out, not only the restarting pod.
 - Multiplies the pause by the number of pods and shows where four minutes comes from.
-- Knows a pod that is killed outright is not missed straight away.
+- Knows, once asked what a kill with no grace period does, that such a pod is not missed straight
+  away.
 
 ### senior
 
 - Counts two pauses per pod and says what triggers each one.
 - Contrasts taking everything away with taking away only what moves, and says what the second
   buys here.
-- Asks about shutdown grace, and whether the departure is announced rather than timed out.
+- Asks about shutdown grace unprompted, and whether the departure is announced rather than timed
+  out.
 
 ## Follow-ups
 

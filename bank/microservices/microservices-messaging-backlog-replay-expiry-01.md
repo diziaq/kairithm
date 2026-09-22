@@ -74,20 +74,22 @@ oldest expires, move the replay off the live path, and ask the upstream team to 
 - Says it will catch up eventually, with no comparison of the two rates
 - Purges the queue to get back to live traffic and cannot say what was in it
 - Answers entirely in one broker's configuration settings
+- Sets out more consumers, a longer limit and stopping the upstream team with fair trade-offs,
+  and will not say which of them happens today
 
 ## Answer bands
 
 ### mid
 
-- Compares how fast messages arrive with how fast they are cleared, and sees that only the second
-  being larger makes the depth fall.
+- Compares how fast messages arrive with how fast they are cleared, once given the two numbers,
+  and sees that only the second being larger makes the depth fall.
 - Adds consumers, and names the thing they all contend for.
 - Notices that live events are sitting behind the replayed ones.
 
 ### senior
 
-- Says what happens to one specific message at the moment it passes the limit, and what the record
-  it was going to update holds afterwards.
+- Says, without being handed an example, what happens to one message at the moment it passes the
+  limit, and what the record it was going to update holds afterwards.
 - Turns the depth and the drain rate into a deadline and plans against it.
 - Names where the load lands once the consumer goes faster, and bounds it there.
 - Separates the replayed traffic from the live traffic so one no longer delays the other.

@@ -84,8 +84,8 @@ second unit of work explicitly in code.
 
 ### senior
 
-- Reasons about the cost of the fix: a second connection held while the first is open, and what
-  that does to the pool under load.
+- Raises the cost of the fix before it is put to them: a second connection held while the first
+  is open, and what that does to the pool under load.
 - Questions whether a durable audit record belongs inside the same store at all.
 - Says how the team would notice the next occurrence: a test that fails the outer work and
   asserts the row survived.

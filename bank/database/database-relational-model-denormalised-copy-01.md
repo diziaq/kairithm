@@ -79,8 +79,8 @@ rather than having the application type them in three times.
 ### mid
 
 - Asks which copy the business treats as true, and what each is read for.
-- Distinguishes the copy that must track the source from the copy that is supposed to record what
-  it was at the time.
+- Distinguishes, once the paid invoice is put to them, the copy that must track the source from
+  the copy that is supposed to record what it was at the time.
 - Says the tracking copies should be derived from the source rather than written twice, and names
   a mechanism.
 
@@ -88,7 +88,8 @@ rather than having the application type them in three times.
 
 - Puts the rule where a writer cannot skip it, and is explicit about what the store can and cannot
   check across tables.
-- Prices the join that was removed against the reconciliation work now permanently owned.
+- Prices the join that was removed against the reconciliation work now permanently owned, without
+  waiting to be told what the join was for.
 - Says what happens to the rows already written during the change, and who signs off which value
   is correct.
 

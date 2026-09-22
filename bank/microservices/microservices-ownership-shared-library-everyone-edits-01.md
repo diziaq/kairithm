@@ -61,6 +61,8 @@ and a support window, make who is on which version visible, and attack the cost 
 - "Every team should just keep up to date"
 - Proposes deleting the library and duplicating everything with no discussion
 - Assigns ownership to a platform team with no capacity or mandate mentioned
+- Weighs a shared library against the same logic behind a service and never says which one this
+  estate should have
 
 ## Answer bands
 
@@ -72,7 +74,8 @@ and a support window, make who is on which version visible, and attack the cost 
 
 ### senior
 
-- Separates the contents by kind and gives different answers for each.
+- Separates the contents by kind without being shown the split, and gives different answers for
+  each.
 - Explains why shared logic at build time undercuts independent deployment.
 - Defines ownership in terms someone could act on tomorrow, including version visibility.
 - Attacks the cost of upgrading rather than the willingness of teams to upgrade.

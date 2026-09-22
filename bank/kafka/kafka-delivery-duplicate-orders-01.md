@@ -67,6 +67,7 @@ twice, then key the effect so a repeat lands on the same row.
 - Says repeats are impossible now, so the report must be mistaken
 - Cannot say what a timed-out send leaves behind
 - Reaches for a nightly clean-up job and stops there
+- Recounts how duplicates were chased down at a previous job and never says what to do about these
 
 ## Answer bands
 
@@ -83,8 +84,8 @@ twice, then key the effect so a repeat lands on the same row.
 
 ### mid
 
-- Tells two records in the partition apart from one record read twice, and says what they would
-  look at to decide which it is.
+- Separates two records in the partition from one record read twice, and says, once asked what to
+  look at, how they would decide which it is.
 - Says the setting covers a resend made by that producer inside one process, and names a restart
   or the service's own retry as what escapes it.
 - Moves the fix into the handler or the table: a key on the event that a second pass lands on
@@ -96,8 +97,8 @@ twice, then key the effect so a repeat lands on the same row.
   which step made the copy.
 - Says what the group does when the broker it talks to for that goes away, and which work in
   flight gets done again by somebody else.
-- Weighs what a second copy actually costs the business before deciding how much machinery to
-  add.
+- Weighs, without being asked to, what a second copy costs the business before deciding how much
+  machinery to add.
 
 ## Follow-ups
 

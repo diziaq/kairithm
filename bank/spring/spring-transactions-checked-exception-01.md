@@ -61,6 +61,8 @@ write a test that throws it deliberately and asserts the table is empty.
 - Says the database should have rolled back on its own
 - Adds a try/catch that swallows the failure, and believes that fixes it
 - Names the attribute for declaring rollback failures but cannot say what the default was
+- Sets out declaring the rollback failures against converting at the boundary, and will not say
+  which one the codebase should adopt
 
 ## Answer bands
 
@@ -78,7 +80,8 @@ write a test that throws it deliberately and asserts the table is empty.
 
 - States the default precisely and explains that it is a framework convention, not a database
   rule.
-- Makes the rule uniform across the codebase instead of annotating one method.
+- Makes the rule uniform across the codebase without being asked what stops the next one,
+  instead of annotating one method.
 - Writes the test that fails deliberately and asserts on the table.
 
 ### lead

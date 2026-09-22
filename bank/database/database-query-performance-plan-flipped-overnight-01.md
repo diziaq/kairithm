@@ -76,6 +76,7 @@ crosses a threshold.
 - Proposes a new index without knowing which plan ran
 - Accepts the restart because it worked
 - Says the database picks a plan at random
+- Recounts how a plan flip was diagnosed at a previous job and never says what to do about Tuesday
 
 ## Answer bands
 
@@ -91,7 +92,8 @@ crosses a threshold.
   rather than calling it random.
 - Asks for the values used during the slow window and connects them to an uneven spread of data.
 - Says the restart worked because it discarded something, and identifies what.
-- Sets up capture so the next occurrence arrives with a plan attached.
+- Sets up capture without being asked what to switch on, so the next occurrence arrives with a
+  plan attached.
 
 ### lead
 

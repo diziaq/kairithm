@@ -71,6 +71,8 @@ application settings agree, refuse the 3 a.m. workaround, and leave a per-deploy
 - Blames the runtime warming up and proposes nothing measurable
 - Accepts night deploys as the answer
 - Cannot distinguish the signal that restarts a pod from the signal that routes traffic to it
+- Recounts how a warm-up problem was diagnosed on a previous platform, without saying what they
+  would change about this rollout
 
 ## Answer bands
 

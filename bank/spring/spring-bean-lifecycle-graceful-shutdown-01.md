@@ -60,6 +60,8 @@ so it is stopped before the pool, and turn on graceful shutdown, which is bounde
 - Adds a sleep before exit
 - Believes a daemon thread will be waited for
 - Thinks catching the signal is enough, with no account of what is still holding work
+- Tells the story of a deploy that dropped work at a previous job, and never says what they would
+  change about this shutdown
 
 ## Answer bands
 
@@ -76,14 +78,15 @@ so it is stopped before the pool, and turn on graceful shutdown, which is bounde
 ### mid
 
 - Explains the reverse teardown order and places the pool close on that timeline.
-- Points out that a thread created by hand is outside that order entirely.
+- Points out, once asked who is supposed to stop the worker, that a thread created by hand is
+  outside that order entirely.
 - Puts the worker under the container, or registers it so it is stopped before the pool.
 - Turns on graceful HTTP shutdown and knows it is bounded by a timeout.
 
 ### senior
 
 - Splits refusing new work from draining in-flight work, and orders the two.
-- Designs the queue work so that being cut mid-flight is recoverable, rather than relying on a
+- Volunteers that the queue work has to survive being cut mid-flight, rather than relying on a
   clean exit.
 - Ties the grace period in the deployment to the timeout in the application, and says what
   happens when they disagree.

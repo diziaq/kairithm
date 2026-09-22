@@ -61,6 +61,7 @@ or not anyone has read them.
 - Believes a record disappears once it has been read
 - Thinks the position lives only in the consumer's memory or on its disk
 - Cannot say what a brand new group does the first time it starts
+- Recounts a replay at a previous job and never says what to check on this consumer
 
 ## Answer bands
 
@@ -82,7 +83,8 @@ or not anyone has read them.
 - Says that setting only comes into play when there is no usable position, so something must have
   removed or invalidated one.
 - Checks whether positions were being recorded at all before the restart.
-- Treats the flood as its own defect and says what should have held it back.
+- Treats the flood as its own defect without being asked, and says what should have held it
+  back.
 
 ## Follow-ups
 

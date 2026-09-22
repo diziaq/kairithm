@@ -64,6 +64,8 @@ would falsify each guess.
 - Blames garbage collection or the network with no measurement
 - Asks for a profiler on production as the first step and stops when told no
 - Cannot say what they would look at first, only what might be wrong
+- Tells the story of a slow query they once found at another company, without saying what they
+  would check here
 
 ## Answer bands
 
@@ -82,7 +84,8 @@ would falsify each guess.
 
 - Orders the checks by how cheap they are and how much they would rule out.
 - Names the specific number that separates waiting for a connection from a slow query.
-- Treats the data volume difference as a first-class hypothesis, not an afterthought.
+- Treats the data volume difference as a first-class hypothesis before the row counts are put in
+  front of them, not as an afterthought.
 - Says what each observation would prove and what would falsify it.
 
 ### lead

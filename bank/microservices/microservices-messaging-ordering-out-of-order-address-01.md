@@ -66,6 +66,8 @@ cross, and put a count of discarded updates somewhere visible.
 - Accepts the single-file fix and discusses how to make it fast
 - Says the broker guarantees ordering and stops there
 - Adds a delay before processing so the earlier event has time to arrive
+- Lays out single-file handling, one path per customer and a handler that does not care, and
+  will not say which of them they would build
 
 ## Answer bands
 
@@ -79,7 +81,8 @@ cross, and put a count of discarded updates somewhere visible.
 
 - Makes the handler reject a stale update on its own, so correctness does not rest on arrival
   sequence.
-- Says where the guarantee stops holding and names at least one path that breaks it.
+- Says where the guarantee stops holding and names, before being shown one, at least one path
+  that breaks it.
 - Quantifies what the single-file proposal costs in throughput and in recovery time.
 
 ### lead

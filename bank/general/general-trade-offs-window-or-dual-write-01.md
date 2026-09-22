@@ -63,6 +63,7 @@ rows that do not divide cleanly should produce.
 - Assumes it will fit in the window because it ran quickly against a development database
 - Has no way back once either plan has started
 - Leaves removal of the old column as tidying up that somebody will get to
+- Lays out the window and the three weeks with the cost of each and will not pick one
 
 ## Answer bands
 
@@ -84,13 +85,14 @@ rows that do not divide cleanly should produce.
 - Asks for a timed run on a full-size copy before committing to either option.
 - Describes what the application sees while only some of the rows have been converted.
 - Names a way back from each plan if it goes wrong in the middle.
-- Points out that two copies of the same fact can end up disagreeing.
+- Points out, when asked what could go unnoticed, that two copies of the same fact can end up
+  disagreeing.
 
 ### senior
 
 - Breaks the longer plan into steps and says which of them can be undone and which cannot.
-- Keeps the two copies compared while both exist, and treats a mismatch as something to be
-  alerted on rather than audited later.
+- Keeps the two copies compared while both exist without being asked, and treats a mismatch as
+  something to be alerted on rather than audited later.
 - Sizes the window from a measured run and says what the team does when midnight arrives and the
   script is a third done.
 - Refuses to start until someone has decided what happens to the rows that do not split.

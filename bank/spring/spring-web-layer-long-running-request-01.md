@@ -73,6 +73,8 @@ a store holding job state, a worker to watch, and cleanup that can itself fall b
 - Hands the work to an in-memory pool, calls it asynchronous, and has no answer for a restart
 - Picks a live stream to the browser with no account of what closes an idle connection
 - Describes a redesign without ever saying what is guaranteed if the process dies mid-build
+- Sets out the held-open connection, the live stream and the recorded job with accurate
+  trade-offs, and will not say which one they would build
 
 ## Answer bands
 

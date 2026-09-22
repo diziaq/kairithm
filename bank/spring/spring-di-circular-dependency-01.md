@@ -62,6 +62,8 @@ only moves the failure to the first call. The real fix is a third collaborator o
   changed
 - Sets the property and moves on
 - Claims the container can always sort this out and the error is a regression
+- Sets out the property, the lazily resolved stand-in and the third collaborator with fair
+  trade-offs, and will not say which one they would merge
 
 ## Answer bands
 
@@ -73,12 +75,13 @@ only moves the failure to the first call. The real fix is a third collaborator o
 ### mid
 
 - Explains that neither object can be completed first when both are required at construction.
-- Knows that setting a field later allows a partly built object to be handed over.
+- Knows, when pushed on why the older version coped, that setting a field later allows a partly
+  built object to be handed over.
 - Suggests pulling the shared behaviour into a third collaborator.
 
 ### senior
 
-- Describes what the escape hatch actually leaves behind, and when that bites.
+- Raises unasked what the escape hatch actually leaves behind, and when that bites.
 - Explains what a lazily resolved stand-in changes: startup succeeds, the failure moves to the
   first call, and the object seen is not the target.
 - Reads the cycle as two services that are really one responsibility, and says which way to cut.

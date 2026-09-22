@@ -57,6 +57,7 @@ an alert on the rate, and a route back.
   failed
 - Does not distinguish an outage in a dependency from a single bad record
 - Leaves the topic with no owner and no alert
+- Describes several places the line could be drawn and will not write one of them down
 
 ## Answer bands
 

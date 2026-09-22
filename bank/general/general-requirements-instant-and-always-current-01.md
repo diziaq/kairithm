@@ -59,6 +59,7 @@ asks what appears when the three sources disagree or one is down.
 - Agrees to all three and plans to explain the shortfall after it is built
 - Goes straight to a technology as the answer without establishing what is needed
 - Treats "real time" as a well-defined requirement and never asks what it means here
+- Prices each of the three demands and will not tell product which one to give up
 
 ## Answer bands
 
@@ -72,7 +73,8 @@ asks what appears when the three sources disagree or one is down.
 
 - Asks who uses it and how often the numbers actually change.
 - Explains that keeping it fresh and keeping it fast pull against each other, with an example.
-- Proposes a refresh interval and asks whether that would be acceptable.
+- Proposes a refresh interval, when pushed for something buildable, and asks whether that would
+  be acceptable.
 
 ### senior
 
@@ -80,7 +82,7 @@ asks what appears when the three sources disagree or one is down.
   that.
 - Prices each of the three demands separately and shows which one is carrying the cost.
 - Offers a design where different figures have different ages, and the age is visible.
-- Raises what the dashboard does when the three sources disagree or one is down.
+- Raises unasked what the dashboard does when the three sources disagree or one of them is down.
 
 ### lead
 

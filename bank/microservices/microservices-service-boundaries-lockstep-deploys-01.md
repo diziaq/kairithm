@@ -61,6 +61,8 @@ it needs, or merging the two — and say what each makes worse.
 - Proposes caching as the answer with nothing about staleness
 - Recommends merging with no cost stated
 - Says the API should be versioned and stops
+- Puts three options up with honest costs and never says which one they would take to the two
+  teams
 
 ## Answer bands
 
@@ -85,7 +87,7 @@ it needs, or merging the two — and say what each makes worse.
 ### senior
 
 - Argues from the change history: what has been released together and why.
-- Is willing to recommend merging the two and can make the case in cost terms.
+- Recommends merging the two without waiting to be pushed, and makes the case in cost terms.
 - Considers other callers, team ownership and the migration path, not just the end picture.
 
 ## Follow-ups

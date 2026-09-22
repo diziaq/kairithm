@@ -67,6 +67,10 @@ stable key so a repeat cannot charge twice. Define the reconciliation for the ex
 - Proposes a two-phase commit across HTTP and the database without any account of the cost
 - Moves the remote call after the commit and stops, with no answer for a crash in between
 - Says "make it async" with no statement of what is now guaranteed
+- Tells the story of a Black Friday outage at a previous job, and never says what they would
+  change about this checkout method
+- Weighs a durable record of the intent, a commit across both systems and simply reordering the
+  two calls, and will not say which one they would build
 
 ## Answer bands
 

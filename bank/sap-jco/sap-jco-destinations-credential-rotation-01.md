@@ -65,6 +65,8 @@ failures can lock a shared account.
 - Puts the password in an environment variable and calls the requirement met
 - Assumes JCo notices the file or the vault changing by itself
 - Plans to restart all services on every rotation without saying what that does to running work
+- Weighs one shared service account against one per service, and will not say which they would
+  ask security for
 
 ## Answer bands
 

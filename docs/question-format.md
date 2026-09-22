@@ -31,7 +31,7 @@ sections are also what the interview screen renders directly.
 | `id` | slug | yes | Stable unique identity. Lower-case words joined by single hyphens. |
 | `schema_version` | integer | yes | Currently `2`. Version 1 cards still load; they simply have no pass mark. |
 | `title` | string | yes | Short label for lists, navigation and the scorecard. |
-| `category` | enum | yes | `general`, `java`, `spring`, `microservices`, `kafka`, `database`, `sap-jco`. Must match the directory. |
+| `category` | enum | yes | `general`, `java`, `spring`, `microservices`, `kafka`, `database`, `http`, `caching`, `security`, `sap-jco`. Must match the directory. |
 | `topic` | string | yes | Narrower area inside the category: `concurrency`, `transactions`, `delivery-semantics`. |
 | `level` | enum | yes | `junior`, `mid`, `senior`, `lead`. The seniority **the question** aims at. |
 | `tags` | list | no | Free-form. Used for filtering, and to chain related cards — see below. |
@@ -185,6 +185,50 @@ Accepted:
 The check is crude on purpose: a bullet made only of verdict words (`good`, `solid`,
 `understanding`, `competent`, …), or shorter than three words, is an error. If a real bullet is
 caught by it, the bullet is probably still too vague to be useful six months later.
+
+### Where two bands could say the same words, the boundary is who raised it
+
+Two candidates can end up saying the same words. What separates them is whether the interviewer
+had to ask. So the higher band's bullets should say the point came **unprompted**, and the lower
+band's should allow that it came out **after a follow-up**.
+
+Usually that pair is `mid` and `senior`. On a card whose top band is `mid` it is `junior` and
+`mid`. What matters is not which two bands they are, but that a candidate at the lower one could
+plausibly have reached the same words with help. Where the higher band knows something the lower
+one simply does not, this does not apply at all — see below.
+
+```markdown
+### mid
+
+- Names the window between the write and the offset commit once asked what happens on a crash.
+
+### senior
+
+- Raises the window between the write and the offset commit before being asked, and says which
+  side of it the guarantee covers.
+```
+
+This is not a stylistic preference. It is the only band boundary an interviewer can score
+honestly from their own notes, because they know what they asked.
+
+**When it does not apply.** Most bands are separated by knowledge, not by initiative, and forcing
+this onto them makes the card worse. Leave it out where the higher band knows a mechanism the
+lower one has never met — no amount of prompting produces it — and where the `## Ask` already
+demands a recommendation out loud, because then nothing is left to volunteer. Roughly half the
+cards with two reachable bands should carry it; if every card in the bank says `unprompted`, the
+word has stopped doing any work and an interviewer's eye slides over it. Vary the wording, and
+mark only the bullet that carries the discriminating point.
+
+### Two weak signals worth naming by hand
+
+Both sound like competence and are easy to band too high. Where a card can plausibly draw them,
+put them in `## Weak signals` in the card's own words:
+
+- **Retrospective wisdom.** Recounts how a past incident was diagnosed, without saying what they
+  would do about the situation in front of them. The story is real; the transfer is missing.
+- **Options without a recommendation.** Lists three approaches with accurate trade-offs and stops
+  there. At `senior` and above the recommendation *is* the answer — a candidate who will not pick
+  one has not finished. (Naming what would change their mind counts as picking one.)
 
 ---
 

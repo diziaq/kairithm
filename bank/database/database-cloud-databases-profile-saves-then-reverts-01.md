@@ -94,7 +94,8 @@ nobody has run a restore, so we time one to find out.
   instance into the live one.
 - Points out the new instance is stale for every other table, so cutting over loses a day of work.
 - Asks how big the database is, because that is what the wait depends on.
-- Says nobody knows how long it runs because nobody has done it, and proposes timing one.
+- Says, once asked for a number, that nobody knows how long it runs because nobody has done it,
+  and proposes timing one.
 
 ### senior
 
@@ -103,8 +104,8 @@ nobody has run a restore, so we time one to find out.
 - Names what the new instance does not inherit — its own endpoint name, the default parameter and
   security settings — and what that means for pointing anything at it.
 - Writes the sequence down so somebody else can run it at 03:00 without them.
-- Says what would be different if this had been found on day nine instead, or if a column had been
-  dropped rather than rows deleted.
+- Raises unasked what would be different if this had been found on day nine instead, or if a
+  column had been dropped rather than rows deleted.
 
 ## Follow-ups
 

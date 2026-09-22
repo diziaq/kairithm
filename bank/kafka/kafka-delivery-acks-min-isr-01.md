@@ -69,6 +69,7 @@ paying caller does with a refused write, and who is allowed to accept less.
 - Uses the number of copies and the confirmation setting interchangeably
 - Believes `acks=all` waits for every copy in the assignment
 - Cannot say what happens when the in-sync set falls below the minimum
+- Sets out what each setting promises and will not say whether they would sign the topic off
 
 ## Answer bands
 

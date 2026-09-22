@@ -82,7 +82,8 @@ time to act.
 
 ### senior
 
-- Sets a point at which waiting stops and the alternative starts, and says so to both sides.
+- Sets a point at which waiting stops and the alternative starts, before anyone tells them it is
+  not coming, and says so to both sides.
 - Treats escalation as a joint act with the other team rather than a report against them.
 - Looks at whether the dependency should exist at all, and what would remove it for next time.
 

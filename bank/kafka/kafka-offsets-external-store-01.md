@@ -59,6 +59,7 @@ anything reading the group's recorded position go blind, so say what replaces th
 - Calls the result exactly-once with no qualification
 - Forgets that work moves between members, so the stored position has to be re-read
 - Does not notice that any monitoring breaks
+- Weighs the arrangement both ways and never says whether they would let the team do it
 
 ## Answer bands
 

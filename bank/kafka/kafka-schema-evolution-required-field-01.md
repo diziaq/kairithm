@@ -76,12 +76,13 @@ the shape they were written in.
 
 - Says an addition is only safe in one direction, and names which direction failed here.
 - Points out that how the consumer decodes a record is what decided the outcome, not the topic.
-- Says the topic still holds records in the old shape that have to keep working.
+- Says, when asked whether a rollback settles it, that the topic still holds records in the old
+  shape.
 
 ### senior
 
-- Gives the rule for the other direction too, and says what a reader needs for a field the older
-  records never carried.
+- Gives the rule for the other direction before being asked about it, and says what a reader needs
+  for a field the older records never carried.
 - Puts the check somewhere that rejects the change before it ships, and says where that runs.
 - Points out that rolling the producer back leaves the offending records exactly where they are.
 

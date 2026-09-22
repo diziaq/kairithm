@@ -174,8 +174,10 @@ What reading found, and a machine could not:
 Two cross-category duplicates survived their own reviews because each reviewer was told not to
 touch the other card, and had to be resolved afterwards: a microservices cascade card that was a
 Spring card with a different label, and a JCo pooling card that had drifted onto the
-microservices autoscaling card's ground. Both are now distinct; the closest pair in the bank fell
-from 0.198 to 0.170 after the pass.
+microservices autoscaling card's ground. Both are now distinct. The shared-vocabulary score is no
+evidence either way here: neither resolved pair was anywhere near the top of that ranking before
+the pass, and the bank's maximum was unchanged by it. That is the point — the mechanical check
+could not see either duplicate, which is why they survived until somebody read the cards.
 
 Ten SAP/JCo cards carried `NEEDS-REVIEW`. Four were resolved with verified answers, one new flag
 was added for a claim that had been asserted without basis, and the rest were resharpened to name
@@ -404,6 +406,88 @@ lives.
 
 The brief asks for about six across two topics. Four topics exercise the topic filter and the
 adaptive rule that prefers an uncovered tag. The questions are real ones, not placeholders.
+
+### A pile of articles was used as a map of what to cover, and as a source of nothing
+
+A directory of system-design articles was reviewed for material the bank was missing. Read as a
+syllabus it was valuable: it showed three subjects the bank had no cards for at all — security,
+caching and HTTP — and two more, load balancing and rate limiting, that existing cards already
+*depended* on without any card asking about them. A balancer cutting a request at sixty seconds
+and rate limiting offered as the answer to a noisy tenant both appear in cards written months
+earlier, with nothing behind them.
+
+Read as a reference it was unreliable. Checking it against primary documentation turned up a
+leftmost-prefix rule stated universally, a B+ tree fanout off by two orders of magnitude, an
+InnoDB setting described as on when it is off by default in MySQL 8.4, a cache-aside fix that
+does not work, the OWASP Top 10 from 2021 presented as current, `fd00::/8` for a range that is
+`fc00::/7`, a query cache called deprecated when it was removed, and a patent claimed live that
+has expired. Three of its PostgreSQL treatments agree with each other, which means nothing: they
+share one generating prompt.
+
+So the authoring agents were given a written brief stating that the articles are a map of what to
+cover and not an authority on what is true, listing every error found, and requiring every claim
+on a card to be verified against the vendor's own documentation. No card cites an article. The
+agents then found three further errors nobody had catalogued — among them that an EC2 instance
+accepts both metadata service versions by default, so the article's advice to "use IMDSv2"
+mitigates nothing until token usage is set to `required`.
+
+The best thing the articles produced was a wrong answer. The cache-aside fix they recommend,
+`SET key value EX ttl NX`, fails precisely because the invalidating delete leaves the key absent,
+which is the one state that write is waiting for. It is now the trap on the card about that race:
+a weak signal, a follow-up offered aloud, and an explanation in the notes. A plausible wrong fix
+that a competent person would actually propose is worth more than a correct paragraph.
+
+### Fifty-three new cards, and one duplicate that was nobody's fault but mine
+
+Five agents wrote the new categories in parallel, each owning its own directories and a disjoint
+`order` range so they could not collide on disk. They could still collide on *subject*, and they
+did: two agents were briefed to write a lead card about which traffic you shed when you cannot
+serve everyone, because the same idea looked new from two different directions. Both cards were
+good and they were the same question.
+
+The fix was not to delete one. The existing card already contained a better card it was not
+using — recovery appeared once as a follow-up and once as a band bullet. Restoring service after
+two hours of shedding is a separate problem with its own concrete wrong answer ("the database is
+healthy, take the limit off"), so the HTTP card was re-pointed there and the microservices card
+kept the original question. The pair now reads as a sequence, and each card's notes tell the
+interviewer not to use both in one session.
+
+A shared-vocabulary scan across all 32,131 card pairs afterwards found no other new collision.
+The closest pair involving a new card scores 0.198 — two microservices failure-handling cards the
+author had already compared deliberately — and it sits below the top of the ranking, which is
+still two older kafka cards at 0.233. Note that this scan is not comparable with the figure
+quoted in the earlier reading pass; it weighs different fields.
+
+### The band boundary an interviewer can actually score
+
+Rating an answer against a band works when the bands differ by something the interviewer
+witnessed. Much of the bank differed by depth instead, which sounds scoreable and is not: two
+candidates reach the same sentence, one after four minutes of silence and one after being asked
+three questions, and the bands give the interviewer no way to record the difference.
+
+So where two adjacent bands could produce the same words, the boundary is now **who raised it** —
+the higher band says the point arrived unprompted, the lower band allows that it came out after a
+follow-up. This is the only band boundary an interviewer can score honestly from their own notes,
+because whatever else they are unsure of, they know what they asked.
+
+The rule matters less than the exception. Most bands are separated by knowledge, not initiative:
+a candidate who has never met the JVM's freeze at end-of-construction, or tRFC's lack of ordering
+across units, will not produce either under any amount of prompting, and a marker there would
+imply they might. Cards whose `## Ask` already demands a recommendation have nothing left to
+volunteer. Six agents applied the change to about half the eligible cards and were asked to report
+what they declined; those reports are the part worth reading. One of them found that the split on
+a retries card is real but sits between `junior` and `mid` rather than `mid` and `senior`, which a
+mechanical pass would have mislabelled every time.
+
+Two weak signals were named by hand at the same time, because both sound like competence and both
+get banded too high: **retrospective wisdom** — a true and well-told story about a past incident,
+with nothing said about the situation in front of them — and **options without a recommendation**,
+where at senior and above the recommendation is the answer, and naming what would change their
+mind counts as choosing.
+
+The failure mode of this change is its own success. If every card says `unprompted`, the word has
+stopped doing work and an interviewer's eye slides over it, so the wording is varied deliberately
+and the frequency was measured afterwards rather than assumed.
 
 ## Choices where the brief was open
 

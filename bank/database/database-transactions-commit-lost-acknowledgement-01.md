@@ -71,6 +71,7 @@ transaction as the payout, and have the second call return that outcome instead 
 - Suggests a select for an existing payout before inserting, and stops there
 - Says the client should simply not try again
 - Reaches for a distributed transaction spanning the payment provider without costing it
+- Tells the story of a double payout at a previous job and never says what they would build here
 
 ## Answer bands
 
@@ -83,7 +84,8 @@ transaction as the payout, and have the second call return that outcome instead 
 
 - Puts the marker in the same transaction as the payout, so the two cannot disagree.
 - Says where the reference comes from and why the server cannot invent it.
-- Describes what the second call returns, including when the first is still in flight.
+- Describes what the second call returns, and raises the case where the first is still in flight
+  before being asked about it.
 - Explains why widening the transaction does not close the window.
 
 ### lead

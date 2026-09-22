@@ -58,6 +58,8 @@ job logs on as, and the function module, and check whether it still fails now.
 - "SAP was down" with no evidence
 - Re-runs immediately and cannot say what the first run got as far as
 - Escalates without a timestamp, a user or a function module name
+- Recounts how a past night-time failure was chased down and never says what to send the SAP team
+  today
 
 ## Answer bands
 
@@ -75,7 +77,8 @@ job logs on as, and the function module, and check whether it still fails now.
 
 - Routes the ticket to the right owner from the error class and says why.
 - Establishes whether it is reproducible now before escalating, and says what the re-run risks.
-- Names what is missing from the log and fixes that as part of the ticket.
+- Names what is missing from the log without waiting to be asked, and fixes that as part of the
+  ticket.
 
 ## Follow-ups
 

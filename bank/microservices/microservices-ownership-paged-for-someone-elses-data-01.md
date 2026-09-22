@@ -60,6 +60,8 @@ alert on the data so a bad row is found the day it lands.
 - "The import team should be more careful"
 - Adds a null check in checkout and considers the incident closed
 - Moves the pager to the catalogue team and changes nothing else
+- Tells the story of a three-in-the-morning page at a previous job and never says what to change
+  here
 
 ## Answer bands
 

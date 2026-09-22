@@ -64,6 +64,7 @@ pick one for the estate, and say what each costs when a topic is widened.
 - Says transactions make it safe, with no account of what identifies a producer
 - Builds the id from the hostname or a random value and sees no problem
 - Believes the orchestrator's decision is enough to stop the old process writing
+- Puts the naming schemes side by side and will not say which one the estate should run
 
 ## Answer bands
 

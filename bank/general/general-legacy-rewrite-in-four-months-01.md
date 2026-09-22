@@ -56,6 +56,8 @@ the pause in feature work for whoever owns the roadmap.
 - Approves it because the team is enthusiastic and the old code is bad
 - Accepts the four months without asking what it is built on
 - Plans a single switchover at the end with no way back
+- Lists what a rewrite costs and what replacing it piece by piece costs, and will not say yes or
+  no
 
 ## Answer bands
 

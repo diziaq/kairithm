@@ -86,7 +86,8 @@ rejected; and retention is set from how long a client may still be retrying.
 
 ### senior
 
-- Handles the in-flight case explicitly with a rule the store enforces, not a read-then-write.
+- Handles the in-flight case before anyone raises it, with a rule the store enforces rather than
+  a read-then-write.
 - Treats the stored records as an operational concern: growth, cleanup, and what breaks if the
   cleanup job stops.
 - Says which endpoints do not need any of this, and why paying for it everywhere is wasteful.

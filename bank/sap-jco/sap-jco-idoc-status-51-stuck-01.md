@@ -63,6 +63,8 @@ first to group the three hundred, separating data causes from setup causes.
 - Treats re-sending as free
 - Cannot say whether the business data is inside SAP already
 - Asks the ABAP team to "delete and re-import" without considering what has been posted
+- Sets out re-sending and reprocessing with accurate trade-offs, and will not tell the business
+  which one to do
 
 ## Answer bands
 
@@ -85,7 +87,8 @@ first to group the three hundred, separating data causes from setup causes.
 ### senior
 
 - Names the second population — documents that never arrived at all — and where those live.
-- Asks how the failure went unseen all night and treats that as the actual defect.
+- Asks, without being pointed at it, how the failure went unseen all night, and treats that as
+  the actual defect.
 - Says who owns which class of error and how a fixed one gets back into flight safely.
 
 ## Follow-ups

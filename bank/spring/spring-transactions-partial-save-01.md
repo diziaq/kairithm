@@ -63,6 +63,7 @@ the failure undoes both; after that a failing second save leaves both tables emp
 - Believes the database groups consecutive statements on its own
 - Catches the failure, logs it, and returns normally
 - Puts the annotation on the repository interface and cannot say what changed
+- Names the places the boundary could be drawn and will not say where they would put it
 
 ## Answer bands
 
@@ -83,7 +84,8 @@ the failure undoes both; after that a failing second save leaves both tables emp
 - Explains that each data-access call opened its own boundary because none was already open.
 - Says the boundary belongs at the entry to the business operation and can say why putting it
   further out or further in is worse.
-- Points out that the failure still propagates, and separates that from what the tables hold.
+- Points out unasked that the failure still propagates, and separates that from what the tables
+  hold.
 - Writes the test that makes the second write fail and asserts the first table is empty.
 
 ## Follow-ups

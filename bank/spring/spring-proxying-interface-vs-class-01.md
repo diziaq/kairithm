@@ -75,14 +75,15 @@ finds nothing; the fix is an accessor, and the flip is global.
 
 - Explains that the bean is a stand-in satisfying the interface, not the concrete class.
 - Knows the property picks the other mechanism and why that satisfies the concrete type.
-- Suggests asking for the interface instead.
+- Suggests asking for the interface instead, once asked whether the property was the right fix.
 
 ### senior
 
 - Explains that state lives on the real object and only method calls are forwarded, so the
   field read after the flip finds nothing.
 - Says the right fix is an accessor, and the field read was reaching past the bean's API.
-- Notes the flip is global and changes beans nobody inspected.
+- Notes, before anyone asks what the flip costs elsewhere, that it is global and changes beans
+  nobody inspected.
 
 ### lead
 

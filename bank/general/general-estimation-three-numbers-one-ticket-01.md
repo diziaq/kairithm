@@ -60,6 +60,7 @@ the ticket.
 - Takes the smallest because the team should be ambitious, or the largest to be safe
 - Records whatever the most experienced person in the room said and moves on
 - Splits the difference to end the meeting
+- Tells the story of a badly estimated ticket elsewhere and never handles the three numbers here
 
 ## Answer bands
 
@@ -79,14 +80,15 @@ the ticket.
 
 - Asks what each person pictured doing, and chases the specific item one of them saw and another
   did not.
-- Checks that all three mean the same thing by finished, naming what that includes here.
+- Checks, once the room is pushed on it, that all three mean the same thing by finished, and
+  names what that includes here.
 - Splits the ticket so the agreed part is separate from the contested part.
 - Writes down what the three of them disagreed about instead of leaving it in the room.
 
 ### senior
 
-- Says the number is worth nothing until the disagreement is resolved, and is willing to say that
-  to the room.
+- Says unasked that the number is worth nothing until the disagreement is resolved, and is
+  willing to say that to the room.
 - Goes back to whoever revised their number after hearing the others, and asks what they dropped.
 - States what would have to be true for the smallest number, and proposes the cheapest way to find
   that out before anyone commits.

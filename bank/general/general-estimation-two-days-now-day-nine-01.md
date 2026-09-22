@@ -45,6 +45,8 @@ uncertain — instead of promising tomorrow again.
 - Says they will be done tomorrow, having said that on days four through eight
 - Blames the estimate for being wrong, with nothing learned from it
 - Waits for someone to ask
+- Describes an overrun at a previous job in detail and never says what they do about this one
+- Sets out continuing, shrinking and stopping and will not say which one they would put forward
 
 ## Answer bands
 

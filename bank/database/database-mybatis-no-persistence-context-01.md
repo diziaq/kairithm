@@ -85,7 +85,8 @@ of loaded rows: write explicitly, read once, and assert on the row.
 ### senior
 
 - Frames the absence as the trade the team accepted, and names what they got in return.
-- Rejects hand-building a register of loaded rows and lists what it would then owe.
+- Rejects hand-building a register of loaded rows before anyone proposes it, and lists what it
+  would then owe.
 - Says where the unit of work boundary sits relative to each write, and what an exception between
   two writes leaves behind.
 - Asks what test would have caught the first bug, and moves the assertion onto the row.

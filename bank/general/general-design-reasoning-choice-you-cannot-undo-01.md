@@ -63,14 +63,15 @@ trigger and a named owner.
 
 - Lists what the data looks like and how it will be read and written.
 - Compares two options on concrete criteria rather than popularity.
-- Says the team's existing experience should count.
+- Says, when pushed on it, that the team's existing experience should count.
 
 ### senior
 
 - Sorts the decision into the parts that are cheap to change and the parts that are not.
 - Identifies the specific unknowns that would change the answer and how to reduce them quickly.
 - Contains the choice behind a boundary so that changing it later touches a known amount of code.
-- Names what the team can actually operate, not just what performs best on paper.
+- Brings up what the team can actually operate, not just what performs best on paper, without
+  being asked to weigh that.
 
 ### lead
 

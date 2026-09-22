@@ -55,6 +55,8 @@ twenty clean runs prove nothing. Names `synchronized` or an atomic type as the f
 - "Threads are unpredictable" with no account of which steps interleave
 - Reaches straight for `synchronized` on the whole method without saying what it protects
 - Believes `++` on an `int` cannot be interrupted because it is one character
+- Weighs a lock against an atomic type accurately and will not say which one they would put in
+  this code
 
 ## Answer bands
 

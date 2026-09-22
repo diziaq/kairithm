@@ -61,6 +61,7 @@ and fixes it in the build so the contract ships once.
 - Casts through `Object`, or reaches for reflection or serialisation to get around it
 - Blames the IDE or a stale build directory
 - Says the path is wrong, with no account of which copy wins and why
+- Recalls untangling duplicate jars at a previous job and never says what changes in this build
 
 ## Answer bands
 

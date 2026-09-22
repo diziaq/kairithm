@@ -92,8 +92,8 @@ sustained, and note a held connection occupies something on the far side.
 
 - States what each number bounds, and which of them explains the logon volume at this load.
 - Walks one wave of forty requests through the pool and says how many of them log on.
-- Chooses the idle count from the load the service really sustains, and says what a connection
-  held open costs the far side.
+- Chooses the idle count from the load the service really sustains, and says, once asked whose
+  resource it is, what a connection held open costs the far side.
 
 ### senior
 
@@ -101,8 +101,8 @@ sustained, and note a held connection occupies something on the far side.
   by argument.
 - Says what the pool does when traffic falls away for an hour and then returns, and what that
   costs the first requests back.
-- Treats the number as something agreed with whoever owns the SAP instance rather than a local
-  tuning decision.
+- Brings up, before anyone asks who has to be consulted, that the number is agreed with whoever
+  owns the SAP instance rather than settled as a local tuning decision.
 - Separates a burst that wants headroom from a steady load that wants a floor, and says which
   this is.
 

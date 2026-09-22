@@ -61,6 +61,8 @@ life of the process, so it failed on the first call; ask for that one entry, not
 - Asks for wide authorisations to unblock the release
 - Believes the interface description ships with the client library
 - Cannot explain why a function module they never call appears in their error
+- Weighs asking for the narrow authorisation against describing the interface locally, and will
+  not say which one they would take
 
 ## Answer bands
 

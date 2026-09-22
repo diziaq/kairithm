@@ -69,12 +69,14 @@ who is alerted and on what, and what the route back into the flow is.
 ### mid
 
 - Calls the forty thousand records a silent failure rather than a success.
-- Lists what has to travel with a failed record for anyone to act on it later.
+- Says, when asked what is stored beside a failed record, what has to travel with it for anyone to
+  act on it later.
 - Asks who is alerted, and what the route back into the flow looks like.
 
 ### senior
 
-- Asks whether this is one defect repeated or many, and changes the plan on the answer.
+- Asks without being prompted whether this is one defect repeated or many, and changes the plan on
+  what comes back.
 - Says why a bulk replay after six months may cause more damage than the original failure.
 - Puts an alert on the arrival rate and says what the first responder is meant to do with it.
 

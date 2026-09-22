@@ -49,12 +49,17 @@ answer cleared it.
 ## Weak signals
 
 - Optional. The memorised, shallow or actively wrong answers you hear often.
+- Tells the story of a past incident without saying what they would do about this one.
+- Lists the options with accurate trade-offs and will not pick one.
 
 ## Answer bands
 
 Include only the bands that are meaningful for this card. Describe observable behaviour —
 what the candidate says or does — never a verdict. "Excellent understanding" is rejected by
 the validator.
+
+Across `mid` and `senior`, the discriminator is **who raised the point**: at `senior` it comes
+unprompted, at `mid` it comes after a follow-up.
 
 ### weak
 
@@ -66,16 +71,16 @@ the validator.
 
 ### mid
 
-- Explains the main trade-offs and names a failure case from experience.
+- Names the main trade-off once asked what would go wrong, and gives a failure case.
 
 ### senior
 
-- Explains the underlying mechanism, not the API surface.
-- Discusses what happens under load or during a failure.
+- Raises the underlying mechanism before being asked, not the API surface.
+- Says what happens under load or during a failure without being prompted for it.
 
 ### lead
 
-- Chooses between alternatives from stated constraints.
+- Chooses between alternatives from stated constraints, and says which one.
 - Explains the maintenance cost of each option.
 
 ## Follow-ups

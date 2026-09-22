@@ -83,8 +83,8 @@ what the order screen must answer in and keep the editable copy where it is.
 
 - Describes data held in large blocks that are rewritten rather than altered in place, and prices
   the edit against that.
-- Asks what the order screen must answer in, and compares that with what an analytical engine
-  takes to answer anything at all.
+- Asks, before the budget is put to them, what the order screen must answer in, and compares that
+  with what an analytical engine takes to answer anything at all.
 - Explains how the arrangement of the table on disk decides what a filter can skip, and why a
   single-id fetch gains little from it unless the table is arranged around that id.
 - Names what is actually billed and how the proposed traffic interacts with it.

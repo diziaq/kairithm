@@ -63,6 +63,7 @@ a release, before approving.
 - Justifies it with the 80ms alone
 - Picks the size because it is a round number
 - Treats invalidation as an afternoon's work
+- Lists everything that could go wrong with the cache and never says whether they are approving it
 
 ## Answer bands
 

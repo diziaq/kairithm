@@ -55,6 +55,7 @@ lines. Matching on 14:32 across four machines is guesswork, because their clocks
 - Matches on timestamps across four services and treats the result as certain
 - "I would look in the logs" with no answer to what they would search for
 - Assumes every service logs every request
+- Describes how a request was traced at a previous job and never says how to find this order
 
 ## Answer bands
 

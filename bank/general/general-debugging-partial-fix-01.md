@@ -63,7 +63,8 @@ would confirm it.
 ### mid
 
 - States a hypothesis for why some cases survived and says what evidence would confirm it.
-- Compares the surviving failures on concrete dimensions rather than by their message.
+- Compares the surviving failures on concrete dimensions, once asked what they have in common,
+  rather than by their message.
 - Recognises that an identical log line can be produced by more than one path.
 - Says what they would add to the error record so the next split is visible without this work.
 
@@ -72,8 +73,8 @@ would confirm it.
 - Reasons about how the first diagnosis was arrived at and what it was never able to exclude.
 - Asks whether the eighty are a smaller version of the same fault or a rarer, worse one, and
   lets the answer set the priority.
-- Notices that a partial drop can also come from traffic shifting rather than from the change,
-  and checks that first.
+- Notices without being asked that a partial drop can also come from traffic shifting rather than
+  from the change, and checks that first.
 
 ## Follow-ups
 

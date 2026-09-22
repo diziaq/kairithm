@@ -63,6 +63,8 @@ anything, and sequences the break for consumers.
 - "Wrap everything" as a policy
 - Returns an empty object instead, so the caller cannot tell the difference
 - Changes the signature and updates every caller to unwrap immediately, restoring the original bug
+- Lays out what wrapping the return type would and would not fix, and never says whether the
+  change should go in
 
 ## Answer bands
 

@@ -96,8 +96,8 @@ told.
 
 ### senior
 
-- Distinguishes the engines: names one where the second writer is refused and one where the write
-  is silently lost.
+- Distinguishes the engines before either is put to them: names one where the second writer is
+  refused and one where the write is silently lost.
 - Costs a held lock on a busy row against a conditional write with a repeat, at a stated rate.
 - Questions whether a stored total is the right shape, and says what moving away would take.
 

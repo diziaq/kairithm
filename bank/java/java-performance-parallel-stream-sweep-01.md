@@ -60,6 +60,8 @@ what would have had to be true, and that nobody checked.
 - "Parallel is faster on a multi-core machine"
 - Fixes the wrong total by locking around the accumulation and keeps the parallelism
 - Talks only about how big the collection is, never about what the elements do
+- Recalls a shared pool starving unrelated work at a previous job and never says what happens to
+  this sweep
 
 ## Answer bands
 
@@ -85,8 +87,8 @@ what would have had to be true, and that nobody checked.
 
 - Separates the correctness fault from the two performance faults and treats them differently.
 - Says the result being right in testing is weak evidence, and why.
-- Proposes reverting by default and requiring a measurement per site, rather than fixing case by
-  case.
+- Reaches for reverting the whole sweep before being asked what to do about it, and requires a
+  measurement per site rather than a repair case by case.
 
 ## Follow-ups
 

@@ -83,8 +83,8 @@ whole class that way makes the subclass impossible, so that one fails loudly at 
 ### senior
 
 - Derives the rule for other unoverridable shapes instead of listing them.
-- Points out the test suite proved nothing because it never provoked a rollback, and says what
-  the test should assert.
+- Notices for themselves that the test suite proved nothing because it never provoked a
+  rollback, and says what the test should assert.
 - Says which of the two mechanisms was in play and why the class having no interface chose it,
   rather than treating the keyword as the whole cause.
 

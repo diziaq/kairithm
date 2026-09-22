@@ -61,6 +61,8 @@ environment its own destination name so a test run cannot point at production.
 - Thinks the destination name itself identifies the system
 - Would fix it by committing the file
 - Has no answer for how anyone would notice they were pointed at the wrong system
+- Recounts how a run against the wrong system was caught at a previous job and never says what
+  to change here
 
 ## Answer bands
 
@@ -79,7 +81,8 @@ environment its own destination name so a test run cannot point at production.
 - Describes how the configuration is delivered per environment and where the secret comes from.
 - Makes the target system visible at startup, and can say what would have caught the production
   accident before an hour had passed.
-- Points out the non-production account should not have been able to do damage anyway.
+- Points out before being asked that the non-production account should not have been able to do
+  damage anyway.
 
 ## Follow-ups
 

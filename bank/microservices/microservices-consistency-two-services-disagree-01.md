@@ -59,6 +59,8 @@ go count how many others are in the same state.
 - Picks whichever service looks more authoritative to them and moves on
 - Replays the events and calls it fixed without asking how many were lost
 - Proposes a shared table both services read
+- Describes an earlier job where two copies drifted apart and never says what happens to the
+  customer who is locked out now
 
 ## Answer bands
 

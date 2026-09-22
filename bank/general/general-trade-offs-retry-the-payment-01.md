@@ -61,6 +61,7 @@ spacing and a cap on the attempts.
 - Assumes a timeout means the operation did not happen
 - Adds attempts in a tight loop with no limit
 - Says the provider will handle it, without asking how
+- Explains what each of the two choices costs and will not take a side
 
 ## Answer bands
 

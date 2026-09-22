@@ -65,6 +65,8 @@ stops exercising. Leaves an owner and a failing check behind.
 - Takes the in-memory database as the plan, with nothing said about the SQL it will not run
 - Buys a bigger build machine and stops there
 - Moves the slow tests to a nightly run and calls it solved, without saying who reads the result
+- Weighs the shared container, the substitute engine and the split suite evenly and never says
+  what gets done first
 
 ## Answer bands
 

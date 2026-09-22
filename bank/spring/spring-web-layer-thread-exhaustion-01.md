@@ -70,6 +70,8 @@ the cap.
 - Blames garbage collection with the CPU at eight percent
 - Proposes rewriting on a reactive stack as the first move
 - Suggests retrying the slow call
+- Describes a thread-pool outage from a previous job, and never says what they would do about
+  this dependency
 
 ## Answer bands
 

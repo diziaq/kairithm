@@ -66,6 +66,8 @@ collection fetch with paging loses the page boundary, so assert the query count 
 - Adds a cache in front of the endpoint
 - Raises the pool, the page size, or the timeout
 - Times the endpoint once after the change and calls that verification
+- Explains fetching together, batching and a narrower select with accurate trade-offs, and will
+  not say which one they would merge
 
 ## Answer bands
 
@@ -86,7 +88,7 @@ collection fetch with paging loses the page boundary, so assert the query count 
   for this endpoint.
 - Knows paging plus a collection fetch loses the page boundary and what the framework does then.
 - Asserts the query count in a test so it cannot regress.
-- Asks whether the endpoint should be returning this shape at all.
+- Asks, without being prompted, whether the endpoint should be returning this shape at all.
 
 ### lead
 

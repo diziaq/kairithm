@@ -73,6 +73,7 @@ code only its author can read, and sets the bar it must clear on real data.
 - Writes the arrays because it is the most interesting piece of work on the table
 - Treats moving the table out of the process as purely an infrastructure change
 - Argues from the total size rather than from the per-row cost
+- Prices all three proposals accurately and leaves the choice of which one to build to the team
 
 ## Answer bands
 

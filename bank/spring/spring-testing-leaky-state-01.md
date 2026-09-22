@@ -58,6 +58,8 @@ addresses the cause; the change in the pull request does not.
 - Accepts the pull request because the suite is green
 - Suggests forcing an execution order
 - Blames flakiness in general with no attempt to find the shared state
+- Lists everything the two tests could be sharing without saying what they would do about the
+  pull request
 
 ## Answer bands
 
@@ -70,10 +72,11 @@ addresses the cause; the change in the pull request does not.
 
 - Says the tests are sharing state, most likely rows in the database.
 - Knows a test can be made to roll back its writes.
+- Answers the question that was asked: says whether the pull request should go in, and why.
 
 ### mid
 
-- Explains that the suite is only green for one ordering and that is not isolation.
+- Explains unprompted that the suite is only green for one ordering and that is not isolation.
 - Reproduces by running the pair together and names the actual leak.
 - Points out what the proposed annotation costs the whole suite, and that it treats a symptom.
 

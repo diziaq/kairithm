@@ -66,6 +66,8 @@ the bytes never landed, and asks what the upload step then found.
 - Offers "never put code in `finally`" as a rule, with no account of what happened here
 - Accepts the disk as the cause, which is what the team already did
 - Logs the close failure and considers the incident explained
+- Tells the story of an error swallowed at a previous job and never says what this export should
+  write when it dies
 
 ## Answer bands
 
@@ -97,7 +99,8 @@ the bytes never landed, and asks what the upload step then found.
   show for that morning not to happen.
 - Says what the job should do with output it cannot vouch for: where it writes it, when it renames
   it, what tonight's run finds left over.
-- Goes looking for the same shape across the codebase instead of fixing the one file.
+- Goes looking for the same shape across the codebase without being asked, instead of fixing the
+  one file.
 
 ## Follow-ups
 

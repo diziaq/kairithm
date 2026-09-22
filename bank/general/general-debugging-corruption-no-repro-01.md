@@ -56,6 +56,8 @@ a continuous check over the data first so the next one is found in minutes inste
 - Proposes a scheduled job that quietly repairs the rows
 - Says it must be a database problem and stops there
 - Waits for it to happen again with no change to what will be captured when it does
+- Tells the story of a corruption bug found at a previous job and never says what to do about
+  these records
 
 ## Answer bands
 
@@ -68,14 +70,16 @@ a continuous check over the data first so the next one is found in minutes inste
 ### mid
 
 - Examines the damaged records for a shared account, time, or entry point.
-- Names one plausible mechanism and how they would test it.
+- Names one plausible mechanism, once asked what could produce that state, and how they would
+  test it.
 - Adds targeted instrumentation on the specific write rather than everywhere.
 
 ### senior
 
 - Reduces the space by asking what code can write that combination at all.
 - Lists competing mechanisms and, for each, the evidence that would rule it out.
-- Builds detection first so the interval between the fault and the investigation collapses.
+- Builds detection first without being asked, so the gap between the fault and the hunt for it
+  collapses.
 - Keeps repairing the data and finding the cause as two separate pieces of work.
 
 ### lead

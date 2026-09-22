@@ -65,6 +65,8 @@ and which option needs a database running to test.
 - Claims the choice removes the need for anyone on the team to read SQL
 - "It is all behind an interface, so we can swap it later"
 - Treats the twenty plain screens as the hard part and the dozen reports as a detail
+- Compares the approaches fairly, option by option, and never says which one this service should
+  use
 
 ## Answer bands
 

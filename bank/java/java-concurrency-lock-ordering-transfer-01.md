@@ -69,6 +69,9 @@ coarse lock and a bounded attempt, naming what each costs.
 - Adds a timeout without saying what the caller is told when it expires
 - Restarts the service and closes the ticket, because there is nothing in the log to chase
 - Concludes that the method needs more locking, or wraps a wider block
+- Describes the ordering rule, the coarse lock and the bounded attempt fairly and will not say
+  which one goes in
+- Tells the story of two threads freezing at a previous job and never comes back to these accounts
 
 ## Answer bands
 
@@ -88,16 +91,16 @@ coarse lock and a bounded attempt, naming what each costs.
 
 - Builds the pair of concurrent transfers that produces the cycle and walks both threads through it.
 - Asks for a dump from the stuck process and says what it expects to see in it.
-- Weighs an ordering rule against one coarse lock and against a bounded attempt, and says what each
-  costs in throughput or in a failure the caller now sees.
+- Weighs an ordering rule against one coarse lock and against a bounded attempt, and, when pushed,
+  says what each costs in throughput or in a failure the caller now sees.
 - Points out that the absence of errors is a property of this fault, so an alarm on errors will
   never fire for it.
 
 ### senior
 
 - Puts the rule behind a single entry point so a new caller cannot reintroduce the cycle.
-- Asks what else is held, or acquired, inside the region and treats a slow call in there as the
-  same class of problem.
+- Asks before anybody raises it what else is held, or acquired, inside the region, and treats a
+  slow call in there as the same class of problem.
 - Decides what the caller is told when an attempt gives up, and treats that as a product question
   rather than a default.
 

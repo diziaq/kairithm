@@ -59,6 +59,7 @@ rather than fixing it.
 - Makes the sleep longer and closes the ticket
 - Blames the build hardware and stops
 - Deletes the test
+- Weighs the rerun against fixing the test and will not say whether the annotation should stay
 
 ## Answer bands
 
@@ -76,7 +77,7 @@ rather than fixing it.
 
 ### mid
 
-- Asks whether the code or the test is at fault before touching either.
+- Asks of their own accord whether the code or the test is at fault, before touching either.
 - Replaces the wait with something that finishes as soon as the work does, and fails loudly after a
   ceiling.
 - Talks about what a rerun does to everyone's trust in the suite, and what it would cost to keep.

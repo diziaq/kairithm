@@ -60,6 +60,8 @@ where both shapes exist, with owners across the forty.
 - "Records are immutable, so changing one is safe"
 - Adds the component and asks everybody to rebuild on the same day
 - Gives the new component a default value and assumes nothing else is affected
+- Sets out a separate type, a factory alongside the old shape and a version bump with equal
+  warmth, and will not say which one the pull request should become
 
 ## Answer bands
 
@@ -74,7 +76,8 @@ where both shapes exist, with owners across the forty.
 - Enumerates what the change does to the generated members and to anything compiled earlier.
 - Separates consumers that rebuild often from those that do not, and says which failure each sees.
 - Offers a route that lets both shapes exist during a window.
-- Raises that equality changes meaning, and looks for where these values are compared or keyed.
+- Raises, without being prompted, that equality changes meaning, and looks for where these values
+  are compared or keyed.
 
 ### lead
 

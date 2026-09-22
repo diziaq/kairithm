@@ -72,6 +72,7 @@ what finance can tolerate, and say who watches the second pass and how it is sig
 - Reaches for deleting or recreating the topic
 - Treats a second pass as free because the records are still there
 - Cannot say what the table looks like halfway through
+- Sets the two routes back beside each other and will not say which one they would take
 
 ## Answer bands
 

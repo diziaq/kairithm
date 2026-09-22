@@ -85,8 +85,8 @@ quietly.
 
 ### senior
 
-- Treats the cache as deliberate — the alternative is a remote lookup per call — and weighs the
-  refresh against that.
+- Treats the cache as deliberate rather than waiting to be asked why it is there — the
+  alternative is a remote lookup per call — and weighs the refresh against that.
 - Says how a changed interface should be rolled out so no running consumer breaks.
 - Points out the cache is shared by everything pointing at that SAP system, so a refresh is not
   a private act and has to be timed accordingly.

@@ -59,6 +59,7 @@ asked for, or name the one wanted at that single point.
 - Deletes one of the two beans without asking what it was for
 - Says the container wires by name and stops there
 - Cannot say why the application fails at startup rather than at the first request
+- Sets out the ways out with their consequences and will not say which one they would use here
 
 ## Answer bands
 
@@ -76,7 +77,7 @@ asked for, or name the one wanted at that single point.
 
 - Separates picking a default for the whole application from picking one at a single place.
 - Suggests taking both where the two are meant to coexist, and says who decides at call time.
-- Notes that the failure lands at startup, which is the cheapest place for it to land.
+- Volunteers that the failure lands at startup, which is the cheapest place for it to land.
 
 ## Follow-ups
 

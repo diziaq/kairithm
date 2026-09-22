@@ -58,6 +58,7 @@ work off the loop, before raising any timeout.
 - Raises the timeout without finding out what the handler is doing
 - Confuses the background heartbeat with the main loop
 - Does not connect one pod's exit to the other pods pausing
+- Tells the story of a pod that flapped at a previous job and never says where to look on this one
 
 ## Answer bands
 

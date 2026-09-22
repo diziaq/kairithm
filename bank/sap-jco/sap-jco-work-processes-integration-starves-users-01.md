@@ -64,6 +64,8 @@ the data must be rather than from the load graph, and say what is delayed when t
 - Agrees to move it to the night without asking what depends on the data during the day
 - Argues the integration is more important than the users
 - Has no measurements and negotiates on impressions
+- Brings every lever to the meeting with fair trade-offs, and will not say which one they are
+  offering Basis
 
 ## Answer bands
 

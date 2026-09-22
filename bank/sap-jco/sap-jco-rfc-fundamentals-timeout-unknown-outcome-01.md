@@ -64,6 +64,8 @@ only safe if the ABAP side refuses a second use of that reference.
 - "It timed out, so it did not happen"
 - Retries automatically on any error, with nothing preventing a duplicate
 - Proposes a longer timeout as the answer to the supervisor's question
+- Recounts how a duplicate posting was tracked down at a previous job, and never answers the
+  supervisor's question about this one
 
 ## Answer bands
 
@@ -78,8 +80,8 @@ only safe if the ABAP side refuses a second use of that reference.
 - Uses a caller-supplied reference so the check is exact, not a fuzzy search by date and amount.
 - Says where the duplicate protection has to live for a retry to be safe, and who has to build
   it.
-- Treats the failure as routine and designs the recovery path, including who looks at the ones
-  that stay unresolved.
+- Treats the failure as routine and designs the recovery path of their own accord, including who
+  looks at the ones that stay unresolved.
 
 ### lead
 

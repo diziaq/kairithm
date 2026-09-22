@@ -70,6 +70,8 @@ told.
 - Sets an ordering number and calls it done, with no test
 - Believes the two annotations are independent
 - Cannot say why retrying inside the same unit of work cannot work
+- Sets out the ordering number, the two-bean split and driving the boundary in code, and will not
+  say which one they would require
 
 ## Answer bands
 
@@ -84,7 +86,8 @@ told.
   returning a fallback from inside the boundary could not rescue it.
 - Puts the retry outside by splitting the method across two beans, or by driving the unit of
   work explicitly inside the retried block.
-- Specifies the test: provoke the failure twice, assert separate attempts reached the database.
+- Specifies the test before being asked for it: provoke the failure twice, assert separate
+  attempts reached the database.
 
 ### lead
 

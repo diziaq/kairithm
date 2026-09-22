@@ -69,6 +69,8 @@ recording it, and ask the warehouse for a reference it can match a repeat on.
 - Wraps the outside calls in the database transaction
 - Moves the email to the end and calls it solved
 - Assumes the warehouse will add a dedupe feature because it is the obvious thing to do
+- Prices the second email and the second pallet side by side and never says which one gets the
+  work
 
 ## Answer bands
 
@@ -84,7 +86,8 @@ recording it, and ask the warehouse for a reference it can match a repeat on.
   of what still has to happen.
 - Says what each crash point leaves behind, including a crash after the warehouse call and before
   recording it.
-- Asks the warehouse for a matching reference and has a plan for the answer being no.
+- Asks the warehouse for a matching reference and, without being told they will refuse, has a
+  plan for the answer being no.
 - Trades the cost of a repeat against the cost of the machinery, per effect.
 
 ### lead

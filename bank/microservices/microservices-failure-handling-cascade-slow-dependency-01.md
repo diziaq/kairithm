@@ -77,6 +77,7 @@ still waiting for.
 - Adds retries as the fix
 - Proposes scaling out, with no account of why more instances each fill up the same way
 - Fixes only the service that touches the dependency and has nothing to say about its callers
+- Recounts a cascade at a previous employer and never gets to the call graph in front of them
 
 ## Answer bands
 
@@ -88,8 +89,8 @@ still waiting for.
 
 ### senior
 
-- Traces held capacity to an exhausted allocation to unrelated traffic failing, then repeats the
-  argument one hop out and shows it still holds.
+- Traces held capacity to an exhausted allocation to unrelated traffic failing, then carries the
+  argument one hop out themselves and shows it still holds.
 - Bounds the blast radius with a per-dependency ceiling at each hop, and says what happens to the
   calls above it.
 - Chooses to reject quickly under overload and justifies it specifically as what stops the failure

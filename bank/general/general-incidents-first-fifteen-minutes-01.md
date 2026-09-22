@@ -54,6 +54,8 @@ happening.
 - Restarts everything first and cannot say what that would have told them
 - Never mentions telling anybody
 - Treats "no deploy" as proof the system did not change
+- Walks through an incident they once ran and never says what they would do in the next fifteen
+  minutes
 
 ## Answer bands
 
@@ -79,7 +81,8 @@ happening.
 ### senior
 
 - Sets an explicit decision point — if this is not better by a given time, we do X.
-- Names what evidence they want to preserve before an action destroys it.
+- Names, before anyone proposes an action, what evidence they want to preserve before it is
+  destroyed.
 - Talks about the cost of the outage in customer terms and lets that drive how aggressive the
   mitigation is.
 

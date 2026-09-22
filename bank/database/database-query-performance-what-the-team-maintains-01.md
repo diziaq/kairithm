@@ -72,6 +72,8 @@ what the team will stop doing, and give each override a review date.
 - Proposes a dashboard without saying what decision it supports or who looks at it
 - Commits the team to reviewing every query before every release, with no estimate of the cost
 - Treats faster as always better, with no target to stop at
+- Lists the mechanisms they could put in place with fair costs and will not say which ones the
+  team actually runs
 
 ## Answer bands
 

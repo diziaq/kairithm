@@ -43,6 +43,7 @@ smaller function — and says why it would help.
 - Writes "please refactor" with nothing specific
 - Rewrites it themselves and pushes over the author's work
 - Blocks the change over formatting a tool could have fixed
+- Lists everything that could be clearer and will not say whether they would approve the change
 
 ## Answer bands
 

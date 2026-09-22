@@ -67,6 +67,8 @@ owner.
 - Proposes a review rule, a checklist or a lint that everyone has to remember
 - Says a real delete is never acceptable, and never addresses the legal request
 - Moves everything into archive tables without saying how anything reads back out
+- Sets keeping the row against removing it, table by table, and never says what the default
+  becomes
 
 ## Answer bands
 

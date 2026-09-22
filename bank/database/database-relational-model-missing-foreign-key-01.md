@@ -63,6 +63,8 @@ so they have to be dealt with before it will go on.
 - Says the application has a bug and stops, leaving the table as it is
 - Proposes the report skip rows it cannot resolve
 - Wants a nightly job that hunts for broken rows and deletes them
+- Names each thing the rule could do when a customer is removed and will not say which one this
+  table should have
 
 ## Answer bands
 

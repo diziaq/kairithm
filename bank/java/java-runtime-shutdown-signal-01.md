@@ -63,6 +63,8 @@ truncated responses and the repeated jobs as two separate defects.
 - Adds a hook that does a long clean-up and assumes it completes
 - Relies on an object's own clean-up when it is collected
 - Treats the duplicate jobs as fixed once the drain works
+- Describes a bad deploy at a previous job and never says what this service does in its thirty
+  seconds
 
 ## Answer bands
 
@@ -70,14 +72,15 @@ truncated responses and the repeated jobs as two separate defects.
 
 - Knows a hook can be registered and runs on the signal.
 - Suggests stopping new work and waiting for current work.
-- Does not raise the hard kill, the ordering, or the duplicates as a separate problem.
+- Comes to the hard kill, the ordering and the repeated jobs only as each one is put to them.
 
 ### senior
 
 - Describes the sequence accurately, including that hooks run together and in no defined order.
 - Says what happens when the platform kills the process at the deadline, and designs for it.
 - Orders the steps against routing, so the instance is taken out before it drains.
-- Separates the truncated responses from the duplicate jobs and treats them as two defects.
+- Separates the truncated responses from the duplicate jobs without being invited to, and treats
+  them as two defects.
 
 ### lead
 

@@ -76,11 +76,12 @@ and unit and language keys, so the conversion belongs in one place on the bounda
 
 - Names the internal versus external distinction and why the call was silent.
 - Extends it to the other field types that bite the same way.
-- Puts the conversion in one place and can say where.
+- Puts the conversion in one place, and names where once asked.
 
 ### senior
 
-- Decides where conversion belongs and defends it against the alternative.
+- Decides where conversion belongs before the question is put to them, and defends it against
+  the alternative.
 - Avoids hard-coded widths and says what would break on an upgrade.
 - Says how this class of defect gets caught before production, given it produces no error.
 

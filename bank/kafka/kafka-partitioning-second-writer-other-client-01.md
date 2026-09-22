@@ -84,7 +84,8 @@ written stays put and is repaired as data.
 
 ### mid
 
-- Asks what the new writer is built on, and whether the key is constructed the same way in both.
+- Asks what the new writer is built on, and concedes when asked that the key may not be the same
+  bytes in both.
 - Says the two writers may be putting one order in two places, leaving the reader with two halves
   of a total.
 - Looks at where one order's records actually sit before changing anything.
@@ -93,8 +94,8 @@ written stays put and is repaired as data.
 
 - States that the placement is computed inside the producing process, so agreement between
   writers is arranged rather than inherited.
-- Separates the two ways writers can disagree: different bytes for the key, and a different rule
-  applied to the same bytes.
+- Separates, before anyone points at the id, the two ways writers can disagree: different bytes
+  for the key, and a different rule applied to the same bytes.
 - Names what has to change in the new writer, and says the records already written do not move.
 - Says how the orders that are already split get put right, and how far back that reaches.
 

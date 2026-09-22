@@ -42,6 +42,8 @@ affected in the same period — before naming a cause.
 - Lists plausible causes without asking a single question about the report
 - Concludes there is no fault because it is fast now
 - Asks the customer to try again and closes the ticket when it works
+- Tells how a slow save was tracked down at a previous job and never says what to do with this
+  report
 
 ## Answer bands
 
@@ -62,8 +64,8 @@ affected in the same period — before naming a cause.
 - Splits the thirty seconds across the stages of the path and picks where to look first.
 - Distinguishes one slow request from a period when everything was slow, and says what each
   would imply.
-- Names what the logs do not currently record and what they would add so the next report is
-  answerable.
+- Names what the logs do not currently record without being asked, and what they would add so
+  the next report is answerable.
 
 ## Follow-ups
 

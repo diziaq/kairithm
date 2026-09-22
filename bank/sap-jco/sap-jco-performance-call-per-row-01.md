@@ -62,6 +62,8 @@ side owns.
 - Goes straight to a thread pool of two hundred with no thought for what is on the other side
 - Assumes the network is the problem without measuring
 - Asks the ABAP team to make the function module faster before knowing where the time is
+- Explains batching and parallelism with accurate trade-offs, and will not say which change they
+  would make first
 
 ## Answer bands
 
@@ -84,8 +86,8 @@ side owns.
 ### senior
 
 - Puts a number on the target and stops when it is reached.
-- Handles partial failure inside a batch so one row does not lose the other four hundred
-  ninety-nine.
+- Raises partial failure inside a batch before the question is put to them, so one row does not
+  lose the other four hundred ninety-nine.
 - Makes the run resumable and says what the second attempt must not repeat.
 
 ## Follow-ups

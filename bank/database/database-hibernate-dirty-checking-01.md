@@ -78,7 +78,8 @@ unit of work, so nobody compares it and the change is lost.
 ### mid
 
 - Places the write at the end of the unit of work rather than at the assignment.
-- Says the deleted call was doing nothing in the first method and is required in the second.
+- Says without being asked that the deleted call was doing nothing in the first method and is
+  required in the second.
 - Points out that a method meant only to read can still cause an update, and what that risks.
 - Asks where the boundary actually starts and ends before trusting either method.
 

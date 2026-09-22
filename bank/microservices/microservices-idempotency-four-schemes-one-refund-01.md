@@ -78,6 +78,8 @@ callers sending a stable reference first, and give the daily comparison an owner
   migration behind it
 - Keeps the row comparison because it has not caused a problem yet
 - Promises all four rewritten in the quarter without saying what is dropped to pay for it
+- Compares the four accurately and leaves the choice of what the quarter buys to whoever is
+  asking
 
 ## Answer bands
 

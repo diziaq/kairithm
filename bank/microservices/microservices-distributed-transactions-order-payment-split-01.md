@@ -72,8 +72,8 @@ that reference, and drives each one to paid or refunded without a human reading 
 
 ### senior
 
-- Lays out the sequence and states, for each crash point, what is on disk and what is true at the
-  provider.
+- Lays out the sequence unasked and states, for each crash point, what is on disk and what is
+  true at the provider.
 - Adds a separate process that finds unresolved attempts and drives them to an end state.
 - Makes the outside call safe to repeat and says what the provider needs from them for that.
 - Refuses to leave any state that only a human can interpret.

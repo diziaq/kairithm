@@ -65,6 +65,8 @@ discarded the pool at the first refusal, and four hours with no alert is a secon
 - Concludes the provider's failover did not work and a support ticket is the answer
 - Proposes restarting the service on any burst of errors, with no account of what broke
 - Accepts 32 seconds as the whole story and calls the four hours a coincidence
+- Recounts how a failover was diagnosed at a previous job and never says what they would change
+  about this service
 
 ## Answer bands
 
@@ -87,7 +89,8 @@ discarded the pool at the first refusal, and four hours with no alert is a secon
 - Describes the exact symptom the application saw — writes refused by a machine that is now a
   reader — and why a pool does not judge such a connection to be dead.
 - Names what should have discarded the pool at the first refusal, and where that logic belongs.
-- Treats four hours with no response as its own defect, not a detail of the same one.
+- Brings up, while still describing the failure, that four hours with no response is its own
+  defect and not a detail of the same one.
 
 ### lead
 

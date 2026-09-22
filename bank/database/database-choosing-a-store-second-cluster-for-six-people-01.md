@@ -63,6 +63,8 @@ that reopens it.
 - Refuses it because the team should keep things simple
 - Compares only the monthly bill of the two options
 - Decides without asking what the reporting queries are
+- Weighs the hosted fee against the work of running it themselves and never says whether they
+  would approve it
 
 ## Answer bands
 

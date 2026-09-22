@@ -73,7 +73,8 @@ on a Friday night, and who works the queue when the refund fails.
 
 - Distinguishes the reversible steps from the one that is not, and designs the sequence around it.
 - Moves every validation ahead of the irreversible step and says what that costs.
-- Follows the compensating actions through their own failure cases to a defined end state.
+- Follows the compensating actions through their own failure cases to a defined end state,
+  without being asked what happens when the refund itself fails.
 
 ### lead
 

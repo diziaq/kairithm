@@ -57,6 +57,7 @@ for a number behind the performance argument.
 - Agrees because it is faster and the other team is competent
 - Proposes a nightly copy with no account of what stale data does to the consumer
 - Treats database permissions as the whole of the question
+- Sets direct writes, an endpoint and a copy side by side and will not say what they propose
 
 ## Answer bands
 
@@ -69,7 +70,8 @@ for a number behind the performance argument.
 ### mid
 
 - Asks what the other team actually does with the data.
-- Notices that changing the table becomes harder once someone else depends on it.
+- Notices, once asked what happens at the next change of column, that the table becomes harder to
+  change.
 - Proposes an endpoint or a copy instead, and names the cost of each.
 
 ### senior
@@ -79,7 +81,7 @@ for a number behind the performance argument.
 - Treats the table shape as an interface the moment it is shared, and says what that costs at the
   next migration.
 - Tests the performance argument with a number before accepting it as a reason.
-- Offers ownership as a variable, not a given.
+- Raises moving ownership themselves, rather than waiting to be asked who should own the data.
 
 ### lead
 

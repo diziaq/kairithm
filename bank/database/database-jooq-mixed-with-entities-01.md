@@ -81,7 +81,8 @@ stale, and the flush at the end writes the old value back over it.
 
 - Asks whether the two share a connection and says what each answer would mean.
 - Explains why the entity side pushes changes out for its own queries and not for this one.
-- Says the stale object can carry the old value back to the database at the end of the method.
+- Volunteers that the stale object can carry the old value back to the database at the end of the
+  method.
 - Puts the rule at a boundary — which rows each path owns — instead of at every call site.
 - Names what would catch it: a fresh read in a test, not an assertion on the object.
 

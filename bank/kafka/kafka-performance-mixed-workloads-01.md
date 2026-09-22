@@ -60,6 +60,7 @@ writing with an owner, and measure where the fifty milliseconds goes before chan
 - Changes one setting in the shared library and declares it solved
 - Treats the fifty milliseconds as a single number with no breakdown
 - Never considers that the two loads compete for the same hardware
+- Sets separate topics, a cap and separate hardware side by side and will not say which comes first
 
 ## Answer bands
 

@@ -60,6 +60,7 @@ a removal rule with an owner.
 - Calls for an explicit collection or a bigger maximum heap as the fix
 - "Java manages memory, so it cannot leak"
 - Accepts the weak variant without asking what the values point at
+- Describes a leak they once found in a heap dump and never says what happens to this map
 
 ## Answer bands
 
@@ -84,7 +85,8 @@ a removal rule with an owner.
 
 ### senior
 
-- Asks what the map is for before choosing a structure, and is prepared to delete it.
+- Asks of their own accord what the map is for before choosing a structure, and is prepared to
+  delete it.
 - Reads the dump by retention, and can say which root to cut.
 - Adds a way to see the growth before the next failure rather than after it.
 

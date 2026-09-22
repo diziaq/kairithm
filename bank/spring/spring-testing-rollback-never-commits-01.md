@@ -99,8 +99,9 @@ end of a unit of work, which this test is built never to reach.
 - Separates the two symptoms and says which tests should keep rolling back and which need a real
   commit, rather than changing the rule for everybody.
 - Says what a committing test costs the suite and how its rows get removed afterwards.
-- Points out that an assertion which happens to issue a query pushes the writes out by itself,
-  which is why the same mistake is caught in one place and missed in another.
+- Points out, without being asked, that an assertion which happens to issue a query pushes the
+  writes out by itself, which is why the same mistake is caught in one place and missed in
+  another.
 - Names what else a rolled-back test silently skips, beyond the two symptoms in front of them.
 
 ## Follow-ups

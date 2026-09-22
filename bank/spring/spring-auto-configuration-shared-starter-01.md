@@ -68,6 +68,8 @@ in front of forty services, and replace breaking changes in a patch with a depre
 - Proposes pinning every consumer to a fixed version forever
 - Registers beans unconditionally and tells consumers to exclude them one by one
 - Has no story for testing the library other than deploying it
+- Lists the ways a consumer could be given control of a bean, with fair trade-offs, and will not
+  say which one the starter should offer
 
 ## Answer bands
 

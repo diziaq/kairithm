@@ -54,6 +54,7 @@ repayment an owner and a slot.
 - Always ship it, and assumes the cleanup will happen because everyone agrees it should
 - Takes the decision alone and does not tell anyone what was traded away
 - Calls the shortcut temporary with no date attached
+- Sets the shortcut and the three extra weeks side by side and will not say which they would do
 
 ## Answer bands
 
@@ -61,12 +62,13 @@ repayment an owner and a slot.
 
 - Explains the choice to their manager and asks for a decision.
 - Suggests the shortcut with a ticket raised to fix it afterwards.
-- Names one or two concrete risks of shipping as it is.
+- Names one or two concrete risks of shipping as it is, once asked what could go wrong.
 
 ### senior
 
 - Asks what the date is protecting, and looks for a smaller version that protects the same thing.
-- Separates cosmetic debt from the kind that leaks into data or into a public surface.
+- Separates, without being given an example, cosmetic debt from the kind that leaks into data or
+  into a public surface.
 - States the price of the shortcut in time and risk, and puts the decision in front of the person
   who owns the date.
 - Gives the repayment an owner and a slot, not an intention.

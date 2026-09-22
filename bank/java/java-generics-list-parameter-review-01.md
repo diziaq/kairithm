@@ -75,7 +75,8 @@ forbidding additions.
 ### mid
 
 - States the rule about subtyping between parameterised types and gives the counterexample.
-- Chooses the signature from what the method does to the elements, reading versus adding.
+- Chooses the signature from what the method does to the elements — reading versus adding —
+  before anyone asks.
 - Says where the failure would surface with the colleague's version, and when.
 
 ## Follow-ups

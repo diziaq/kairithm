@@ -68,14 +68,16 @@ the second attempt fails as well.
 ### mid
 
 - States that the delayed record is applied out of sequence for its account.
-- Names the kind of update this breaks and the kind it does not.
+- Names, once given an example of a relative change, the kind of update this breaks and the kind
+  it does not.
 - Asks what happens when the second attempt fails too.
 
 ### senior
 
 - Puts a condition on the pattern: safe when an update carries the whole value and the reader can
   reject a stale one.
-- Offers the alternative of holding everything for that account back instead, and prices it.
+- Offers unasked the alternative of holding everything for that account back instead, and prices
+  it.
 - Asks whether the failure was temporary at all, and what stops a permanent one circling forever.
 
 ## Follow-ups

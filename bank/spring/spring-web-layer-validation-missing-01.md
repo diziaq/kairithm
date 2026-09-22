@@ -75,7 +75,7 @@ gets a client error instead of a `201`.
 
 - Explains that the check runs before the handler, so the method body never executes.
 - Knows the checking library is a separate dependency from the web starter.
-- Asks why the column allowed a null, and treats that as a second defect.
+- Asks, of their own accord, why the column allowed a null, and treats that as a second defect.
 - Adds a test that posts the bad body and asserts on the status.
 
 ## Follow-ups

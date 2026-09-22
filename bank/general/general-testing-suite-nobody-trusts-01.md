@@ -76,7 +76,8 @@ an owner and a deadline, and goes looking for the defect that already escaped.
 ### mid
 
 - Looks at the actual failures in today's run before deciding anything about the release.
-- Collects which tests fail and how often, and works on the worst offenders first.
+- Collects which tests fail and how often, once asked where they would start, and works on the
+  worst offenders first.
 - Says what made each one unreliable instead of making it pass.
 
 ### senior
@@ -85,8 +86,8 @@ an owner and a deadline, and goes looking for the defect that already escaped.
   out on no evidence, and says what they would put in its place for today.
 - Sets the worst offenders aside to restore the signal at once, with a deadline and an owner on
   each, and a rule for what happens to one nobody comes back to.
-- Goes looking for the defect that already escaped through the habit, and uses it as the argument
-  for the work.
+- Goes looking, before anyone suggests it, for the defect that already escaped through the habit,
+  and uses it as the argument for the work.
 - Prefers a smaller suite the team believes to a larger one it does not, and says what is given
   up by that.
 

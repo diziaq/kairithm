@@ -81,6 +81,8 @@ the standbys named in `synchronous_standby_names`.
 - Treats all the commit settings as one switch labelled "safer"
 - Says the setup is eventually consistent as though that settled the matter
 - Takes the ticket as written because it sounds like the strong option
+- Lays out sending the read to the primary, waiting for the standby and a bounded window, and will
+  not say which one this screen gets
 
 ## Answer bands
 
@@ -97,7 +99,8 @@ the standbys named in `synchronous_standby_names`.
   separates that from merely having the data safe there.
 - Ties the fix to the position of the actual write, or to a bounded window, and says what happens
   when the standby is far behind.
-- Points out nothing is logged when this happens and adds the measurement.
+- Points out without being asked that nothing is logged when this happens, and adds the
+  measurement.
 
 ### lead
 

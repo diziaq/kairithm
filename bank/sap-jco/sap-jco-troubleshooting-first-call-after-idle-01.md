@@ -72,6 +72,8 @@ and expire pooled connections well before it; only repeat calls that are harmles
 - Wraps every call in a blanket retry and closes the ticket
 - Blames SAP because the word SAP is in the error
 - Restarts the service every morning, or enlarges the pool, as the remedy
+- Tells the story of a firewall dropping idle connections at a previous job, and never says what
+  they would change about this pool
 
 ## Answer bands
 
@@ -91,8 +93,8 @@ and expire pooled connections well before it; only repeat calls that are harmles
 ### senior
 
 - Separates a failure before the call was accepted from one after, and handles them differently.
-- Says what the service should record so the next occurrence is answerable without the SAP or
-  network teams.
+- Says, without waiting to be asked, what the service should record so the next occurrence is
+  answerable without the SAP or network teams.
 - Keeps the pool setting and the firewall rule tied together, and names where that is written
   down and who reviews it.
 

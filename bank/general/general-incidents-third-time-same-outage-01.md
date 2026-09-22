@@ -58,6 +58,7 @@ team stops doing to make room.
 - Concludes the team needs to be more careful
 - Proposes a rewrite as the answer without costing it
 - Treats the write-ups as the deliverable and never asks whether anything changed
+- Retells a repeating outage from a previous job and never says what this team should change
 
 ## Answer bands
 

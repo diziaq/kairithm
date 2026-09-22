@@ -83,8 +83,8 @@ behind the copy runs at its worst.
 
 ### senior
 
-- Treats the acceptable delay as a per-consumer decision and names one consumer with a tighter
-  requirement.
+- Treats the acceptable delay as a per-consumer decision and names, without being handed one, a
+  consumer with a tighter requirement.
 - Describes what happens when the copy falls badly behind, and what the system does then.
 - Says what the interface should promise, and makes that a deliberate product decision.
 

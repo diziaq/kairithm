@@ -85,7 +85,8 @@ constrain the column so the value cannot come back.
 
 - Works the predicate through term by term and says exactly which comparison is neither true nor
   false.
-- Explains why the positive and negative forms behave differently, instead of calling both unsafe.
+- Explains, before the positive form is put to them, why it behaves differently from the negative
+  one, instead of calling both unsafe.
 - Fixes the column so the value cannot reappear, not only the one query.
 - Says what the aggregates in the same report are quietly doing with those rows.
 

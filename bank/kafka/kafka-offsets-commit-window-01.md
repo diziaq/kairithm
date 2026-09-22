@@ -59,6 +59,7 @@ is a write that lands on the same row instead of a new one.
 - Proposes recording after every single record as a complete fix
 - Believes an automatic commit confirms that the records were handled
 - Suggests a nightly clean-up job and stops there
+- Lays out duplicate rows against missing rows and will not say which the team should take
 
 ## Answer bands
 
@@ -78,8 +79,8 @@ is a write that lands on the same row instead of a new one.
 ### senior
 
 - Puts a bound on the damage: at most one batch, set by how often the position is recorded.
-- Offers the mirror-image failure — recording first and losing rows — and asks which one the
-  business can live with.
+- Raises the mirror-image failure before it is put to them — recording first and losing rows — and
+  asks which one the business can live with.
 - Says where the natural identity of the row comes from, rather than inventing a new column.
 
 ## Follow-ups

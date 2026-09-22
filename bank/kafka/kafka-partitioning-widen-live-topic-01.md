@@ -58,19 +58,22 @@ to be told and what they change, and say how it is backed out.
 - Treats it as a one-line admin command with no effect on readers
 - Believes existing records are redistributed when the count grows
 - Cannot say what a reader holding per-key state would do with the same key arriving elsewhere
+- Sets growing this topic beside a replacement at the new width and will not say which to do
 
 ## Answer bands
 
 ### mid
 
 - Says the count can only be raised, and that new records for a key may land somewhere new.
-- Notes that a reader keeping something per key will now see that key from two places.
+- Notes, once asked what a reader holding a running total would see, that a key now arrives from
+  two places.
 
 ### senior
 
 - Walks one key through the change and says where each of its records sits before and after.
 - Asks what state each reader keeps, and what a drain or a cutover would have to look like.
-- Questions whether the width is the real limit before agreeing to change it at all.
+- Questions, without being asked to justify it, whether the width is the real limit before
+  agreeing to change anything.
 
 ### lead
 

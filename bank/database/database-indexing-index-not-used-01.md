@@ -79,8 +79,8 @@ generated column in MySQL 8, or store the address already normalised and compare
 
 ### senior
 
-- Generalises to the other predicate shapes that put a query outside an index and produces two
-  from memory.
+- Generalises to the other predicate shapes that put a query outside an index, producing two from
+  memory before either is put to them.
 - Says which repairs change the behaviour of rows already stored and which leave them alone.
 - Separates an index that cannot serve the query from one that could and is skipped anyway, and
   gives a reason for the second.

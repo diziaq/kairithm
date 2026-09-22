@@ -56,6 +56,7 @@ customer their payment is being confirmed rather than claim it failed.
 - "It timed out, so it failed" with nothing further
 - Immediately calls it again to be sure, with no mention of what that does to a card
 - Shows the user a definite failure and moves on
+- Names both outcomes the timeout leaves open and will not say what the code should do next
 
 ## Answer bands
 
@@ -74,7 +75,8 @@ customer their payment is being confirmed rather than claim it failed.
 ### mid
 
 - Walks the three places the request could have stopped and says what each leaves behind.
-- Wants a way to ask the payment side about this order before deciding anything.
+- Looks for a way to ask the payment side about this order before anyone suggests it, rather
+  than deciding without one.
 - Puts the order in a pending state with a follow-up path rather than guessing.
 
 ## Follow-ups

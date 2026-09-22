@@ -66,6 +66,7 @@ documents may now cross, alert on error and age, and name who may skip an entry.
 - Removes ordering entirely without checking what depended on it
 - Proposes a person checking the monitor every morning as the control
 - Suggests deleting the stuck entry as standard practice
+- Tells the story of a blocked queue at another site, and never says what changes for this flow
 
 ## Answer bands
 

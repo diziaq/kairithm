@@ -66,6 +66,8 @@ No lock across a person's thinking time, and watch the conflict rate.
 - Locks the row while the agent has the screen open
 - Retries the conflicting write in a loop with no bound and no re-read
 - Treats the burst of failures as noise to be suppressed
+- Sets out the counter, the row lock and a merge screen with fair trade-offs, and will not say
+  which one the agents get
 
 ## Answer bands
 

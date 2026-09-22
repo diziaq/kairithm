@@ -60,6 +60,8 @@ agreement.
 - Emails everyone, waits two weeks, deletes it
 - Treats a version bump as free and creates a new version for one field
 - Assumes silence means consent with no escalation path
+- Sets out holding the field and breaking the consumer as equally reasonable and never says which
+  one happens on the day
 
 ## Answer bands
 
@@ -71,7 +73,7 @@ agreement.
 
 ### senior
 
-- Builds the evidence deliberately and says what it can and cannot prove.
+- Builds the evidence deliberately and volunteers what it can and cannot prove.
 - Sets a window sized from how consumers actually work, including jobs that run monthly.
 - Says what happens on the deadline day, in both directions.
 

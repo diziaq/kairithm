@@ -72,6 +72,8 @@ threshold and an owner.
 - Schedules a nightly restart and closes the ticket
 - Raises the pool limit to buy time with no plan behind it
 - Cannot say which resource is being held or by whom
+- Describes a connection leak they once chased at another company, and never says how they would
+  run this one down
 
 ## Answer bands
 

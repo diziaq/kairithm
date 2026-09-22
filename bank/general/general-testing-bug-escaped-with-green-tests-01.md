@@ -46,6 +46,7 @@ and keeps the new test in the suite afterwards.
 - Concludes that the tests are useless and should be deleted
 - Writes a test that passes before the fix and does not notice
 - Answers only with a coverage percentage
+- Recounts how a bug escaped at a previous job and never says what to do about these tests
 
 ## Answer bands
 
@@ -67,7 +68,8 @@ and keeps the new test in the suite afterwards.
 - Reconstructs the customer's actual input rather than a convenient one.
 - Asks whether the test belongs at the level where the fault lives, or higher up where the
   interaction is.
-- Looks for the sibling cases that would fail for the same reason and covers them too.
+- Raises the sibling cases that would fail for the same reason before anyone points at them,
+  and covers them too.
 
 ## Follow-ups
 

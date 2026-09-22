@@ -58,6 +58,7 @@ answers.
 - Blames the dependency's capacity and leaves the callers out of the story
 - Suggests more retries, or a longer fixed wait, as the fix
 - Says the dependency should just scale up before it restarts
+- Recounts a similar collapse at a previous job and never says what these callers should change
 
 ## Answer bands
 

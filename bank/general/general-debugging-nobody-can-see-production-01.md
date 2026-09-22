@@ -64,6 +64,7 @@ changes, and who owns it afterwards.
 - Proposes working from real customer records after being told that is not available
 - Spends the quarter on the bug currently in front of the team and changes nothing about the
   next one
+- Sets the possible investments beside each other and will not say which one gets the quarter
 
 ## Answer bands
 

@@ -76,8 +76,8 @@ real call site.
 
 ### mid
 
-- Names at least two distinct ways the number can be wrong: the compilation state, and the work
-  being optimised away or constant-folded.
+- Names, once pressed for a second objection, two distinct ways the number can be wrong: the
+  compilation state, and the work being optimised away or constant-folded.
 - Asks for repeats and some measure of spread rather than a single figure.
 - Wants the input to look like production input.
 
@@ -85,8 +85,8 @@ real call site.
 
 - Explains why an unused result licenses the compiler to remove the computation, and what a sink
   changes.
-- Separates "this microbenchmark is unsound" from "this path does not matter", and asks the second
-  question first.
+- Separates "this microbenchmark is unsound" from "this path does not matter", and puts the second
+  question first without being invited to.
 - Says what they would accept as evidence instead, including measuring the endpoint under load.
 
 ## Follow-ups

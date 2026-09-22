@@ -66,6 +66,8 @@ load test against a slow dependency, explicit limits per class of work, and a wa
 - "Virtual threads are faster" with no account of what changed
 - Puts the virtual threads into a fixed-size pool to get the old behaviour back
 - Reads a rising thread count as the fault itself
+- Sets out shedding, queueing and degrading side by side and will not say which one this service
+  should do
 
 ## Answer bands
 
@@ -77,7 +79,7 @@ load test against a slow dependency, explicit limits per class of work, and a wa
 
 ### senior
 
-- Explains that the pool was doing admission control as a side effect, and that this was never
+- Volunteers that the pool was doing admission control as a side effect, and that this was never
   written down anywhere.
 - Traces the harder degradation to queueing moving to the next bounded resource.
 - Has a hypothesis for the slower endpoint involving what the request does while it waits.

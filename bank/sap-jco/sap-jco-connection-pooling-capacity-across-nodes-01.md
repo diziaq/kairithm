@@ -78,6 +78,8 @@ bounded queue, each buying accuracy with a new dependency.
 - Divides twenty by twelve and considers the problem closed, with nothing said about exhaustion
 - Believes an exhausted pool is always a reason to raise the limit
 - Treats the pool number as a limit on what SAP will receive
+- Names every place the limit could be enforced, with accurate costs, and will not say which one
+  they would ship
 
 ## Answer bands
 

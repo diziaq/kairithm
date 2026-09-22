@@ -61,6 +61,7 @@ count, name who acts out of hours, and say who may declare a document dead.
 - Proposes a daily manual check of the monitor as the control
 - Routes everything to the integration team regardless of cause
 - Treats reprocessing and re-sending as interchangeable
+- Describes how a previous team ran their monitoring, and never says who owns these forty
 
 ## Answer bands
 

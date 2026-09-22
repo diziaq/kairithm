@@ -55,6 +55,8 @@ told the consuming teams, and removed the old name later.
 - "They should have handled it" and nothing further
 - Proposes a version number for the whole API as the only answer
 - Says the tests should have caught it, without saying whose tests
+- Recounts how a similar break was found at a previous job and never says what should have
+  happened on Tuesday
 
 ## Answer bands
 
@@ -74,7 +76,7 @@ told the consuming teams, and removed the old name later.
 
 - Describes a full sequence with a way to observe whether anyone still reads the old name.
 - Says where a check would live so that this fails in a pipeline rather than in production.
-- Addresses the two days of corrupted reports as work that also has to be done.
+- Raises the two days of corrupted reports unasked, as work that also has to be done.
 
 ## Follow-ups
 

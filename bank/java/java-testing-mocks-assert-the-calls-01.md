@@ -100,7 +100,8 @@ was buying, and deletes the ones buying nothing.
   here.
 - Points out that the stubs encode assumptions about other classes that nothing verifies, and says
   where that gets verified.
-- Reads five collaborators in one class as evidence about the design, not only about the tests.
+- Reads five collaborators in one class as evidence about the design without being pointed at it,
+  not only about the tests.
 - Starts where the real defect escaped and justifies leaving the rest alone for now.
 
 ## Follow-ups

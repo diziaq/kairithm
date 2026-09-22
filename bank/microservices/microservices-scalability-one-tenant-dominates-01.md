@@ -59,6 +59,8 @@ before offering it, and answer the case where nine hundred small tenants all do 
 - Scales up for the first of the month and calls it solved
 - Rate-limits everyone equally and does not notice the large tenant still wins
 - Proposes throttling the customer without anyone speaking to them
+- Lays out per-tenant limits, a separate lane for bulk work and a stack of their own, and will
+  not say which one they would do first
 
 ## Answer bands
 

@@ -62,6 +62,8 @@ interrupted.
 - Reaches straight for a cutover weekend
 - Proposes a distributed lock so both services can keep writing safely
 - Declares it must be fixed because sharing a database is against the rules
+- Makes the case for finishing it and the case for leaving it, and never says which one they
+  would take
 
 ## Answer bands
 

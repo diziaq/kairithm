@@ -59,6 +59,8 @@ carrying the product id, and fetch them separately.
 - Proposes an index over the array and expects the page to get faster, without noticing the whole
   record still travels
 - Blames MongoDB as a product rather than the shape that was chosen
+- Weighs keeping the reviews inside against moving them out and will not say which one this
+  catalogue should have
 
 ## Answer bands
 

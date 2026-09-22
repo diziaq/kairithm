@@ -58,6 +58,8 @@ partial result.
 - Believes JCo hands the call off and returns immediately
 - Answers only "raise the timeout" without asking what the ninety seconds are spent on
 - Cannot name anything that is consumed inside SAP while the call runs
+- Names both routes — make the call faster, or stop making the user wait — and will not say which
+  one they would take
 
 ## Answer bands
 

@@ -45,6 +45,8 @@ a timer, or at restart — rather than agreeing because memory is faster.
 - Cannot say what happens when the underlying data changes
 - Proposes restarting the service when the list is edited, and does not see that as a cost
 - Reaches for a large caching product for a list of countries
+- Weighs doing nothing, a timer and a refresh on write, and will not say which one they would
+  agree to
 
 ## Answer bands
 
@@ -62,8 +64,8 @@ a timer, or at restart — rather than agreeing because memory is faster.
 
 ### mid
 
-- Asks for evidence that this read is a meaningful part of the page time before changing
-  anything.
+- Wants evidence that this read is a meaningful part of the page time, and asks for it before
+  the question is put to them.
 - Points out that separate copies of the service will hold different versions at the same time.
 - Names who is hurt by a stale list and for how long, and lets that set the refresh interval.
 - Compares doing nothing, refreshing on a timer, and invalidating on write, with costs for each.

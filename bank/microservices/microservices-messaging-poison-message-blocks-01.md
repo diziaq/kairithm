@@ -55,6 +55,8 @@ not empty.
 - Catches the exception and swallows it
 - Deletes the message manually and considers the matter closed
 - Adds more attempts, or a longer wait, with no cap
+- Tells how a stuck queue was cleared at a previous job and never says what to do in the next ten
+  minutes
 
 ## Answer bands
 
@@ -75,7 +77,8 @@ not empty.
 - Separates a message that is permanently unhandleable from one failing for a temporary reason,
   and treats them differently.
 - Gives the set-aside pile an owner, an alarm and a way back into the flow.
-- Notices what the hour of backlog does to everything behind it when processing resumes.
+- Notices, before anyone raises it, what the hour of backlog does to everything behind it when
+  processing resumes.
 
 ## Follow-ups
 

@@ -57,6 +57,7 @@ and the next move before starting.
 - Pushes the untested one-liner straight to production because it is small
 - Insists on always rolling back, without asking what that does to data already written
 - Wakes nobody and tells nobody, because it is the middle of the night
+- Sets the rollback and the one-line change side by side and will not choose between them
 
 ## Answer bands
 
@@ -70,12 +71,14 @@ and the next move before starting.
 
 - Asks what the migration did and whether the previous version can still read the data.
 - Prefers the reversible option and says why.
-- Wants the change tested somewhere, or released to a slice of traffic, before the whole fleet.
+- Wants the change tested somewhere, or released to a slice of traffic, when asked what they
+  would do before the whole fleet sees it.
 
 ### senior
 
 - Frames the choice as the cost of being wrong on each path, not the probability of being right.
-- Produces a third option that stops the bleeding without either deploy.
+- Produces a third option that stops the bleeding without either deploy, before it is suggested
+  to them.
 - Sets a deadline and the next move before starting, so the decision is not remade under stress.
 - Says what state the system is in if the attempt half-succeeds, and how they would tell.
 

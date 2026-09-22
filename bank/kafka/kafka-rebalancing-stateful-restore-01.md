@@ -59,6 +59,7 @@ worth, and decide what the dashboard shows while a rebuild runs.
 - Proposes fewer partitions as the only lever
 - Treats the rebuild as fixed and unavoidable
 - Cannot say what should happen if the instance came back within ten seconds
+- Lists the ways to stop the movement and the ways to make a move cheap, and will not pick one
 
 ## Answer bands
 

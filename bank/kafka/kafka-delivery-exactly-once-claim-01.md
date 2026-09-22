@@ -58,6 +58,7 @@ on something the producer already had. Then ask what a repeat would actually cos
 - Believes a producer setting alone covers a write into another system
 - Cannot describe what a repeat would look like in the data
 - Says the guarantee holds because the team has never seen a repeat
+- Describes both workable shapes and will not say which one this pipeline should be built on
 
 ## Answer bands
 
@@ -70,15 +71,16 @@ on something the producer already had. Then ask what a repeat would actually cos
 ### mid
 
 - Asks about the ordering of the database write and the offset commit.
-- Describes what happens when the process dies in the window between them.
+- Describes, once the case is put to them, what happens when the process dies in the window
+  between the two.
 - Knows that making the write repeatable is one way out.
 
 ### senior
 
 - Puts the boundary in the right place and says what the guarantee covers on each side of it.
 - Describes both workable shapes and what each demands of the target schema.
-- Asks what the damage from a repeat actually is, and lets that set how much machinery is worth
-  building.
+- Asks of their own accord what the damage from a repeat actually is, and lets that set how much
+  machinery is worth building.
 - Treats the absence of reported incidents as weak evidence.
 
 ### lead

@@ -54,6 +54,7 @@ early.
 - Refuses to say anything without a full analysis
 - Doubles a guess and offers that as rigour, with no assumptions stated
 - Agrees to a date set by the stakeholder and plans to explain later
+- Recounts how badly a previous unfamiliar system went and never gives this stakeholder a number
 
 ## Answer bands
 

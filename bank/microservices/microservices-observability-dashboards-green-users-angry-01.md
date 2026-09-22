@@ -63,6 +63,7 @@ signal gets an owner, a rule for who is woken, and a date to check it still fire
 - Adds more dashboards
 - Blames the users or the support team's description
 - Alerts on every metric they can think of
+- Names several slices worth having and never says which one is switched off to pay for them
 
 ## Answer bands
 

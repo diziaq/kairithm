@@ -59,6 +59,8 @@ by it.
 - Raises the timeout and considers the ticket closed
 - Adds a client-side retry of the whole ten-minute call
 - Thinks the connection was dropped by the network
+- Sets out raising the limit, chunking the call and moving to background processing with fair
+  trade-offs, and will not say which one they would do
 
 ## Answer bands
 
@@ -80,7 +82,8 @@ by it.
 
 ### senior
 
-- Treats growth as the root cause and designs for the next tenfold, not for today.
+- Names growth as the root cause before anyone suggests it, and designs for the next tenfold,
+  not for today.
 - Makes the run resumable and says what a half-finished run leaves behind.
 - Brings the capacity conversation to Basis with numbers rather than with a request.
 

@@ -58,6 +58,8 @@ rather than only logged.
 - "You should never catch that type" as a rule, with no account of the damage here
 - Adds the stack trace and considers the review finished
 - Rethrows everything so one bad invoice stops the run, without saying that is a choice
+- Names the ways the failures could be handled and will not say which one the review should ask
+  for
 
 ## Answer bands
 
@@ -76,7 +78,8 @@ rather than only logged.
 ### mid
 
 - Separates a bug in the job from a failure of one invoice, and treats them differently.
-- Says continuing is a decision and names what the job should report when it does.
+- Says, without being led there, that continuing is a decision, and names what the job should
+  report when it does.
 - Wants the failed items retained so the next run or an operator can act, and wants the exit status
   to reflect reality.
 

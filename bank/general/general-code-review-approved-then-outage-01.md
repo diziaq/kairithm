@@ -57,6 +57,7 @@ and the context the reviewer had, not at the reviewer.
 - Adds a mandatory second approver
 - Writes a longer checklist and assumes it will be read
 - Blames the author, or blames the process without naming a mechanism
+- Tells the story of an outage at a previous job and never says what this team should change
 
 ## Answer bands
 
@@ -70,7 +71,8 @@ and the context the reviewer had, not at the reviewer.
 
 - Identifies what kind of defect it was and asks whether a test could have caught it.
 - Adds a regression test and a monitor for the symptom.
-- Notes that the change was large or lacked context, and asks for smaller changes.
+- Notes, once asked about the conditions of the review, that the change was large or lacked
+  context, and asks for smaller ones.
 
 ### senior
 
@@ -80,7 +82,8 @@ and the context the reviewer had, not at the reviewer.
   would have shown it early.
 - Examines the conditions of the review — size, context, load on reviewers — rather than the
   reviewer.
-- Asks why the failure took two weeks to appear and what that says about where the risk lives.
+- Asks, before anyone raises it, why the failure took two weeks to appear and what that says about
+  where the risk lives.
 
 ### lead
 

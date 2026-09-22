@@ -58,6 +58,7 @@ as the intermediate step.
 - Cannot name anything that gets harder after the split
 - Assumes a network call behaves like a local one
 - Says it will scale better without asking what is under load
+- Lists what the split buys and what it costs and will not say whether they would do it
 
 ## Answer bands
 
@@ -75,7 +76,8 @@ as the intermediate step.
 
 ### mid
 
-- Ties the decision to a specific problem and asks whether the split is the cheapest fix for it.
+- Ties the decision to a specific problem, once asked what the split is meant to solve, and asks
+  whether it is the cheapest fix for that.
 - Names what the interface would carry and where the data lives afterwards.
 - Describes what the user sees when one side is unavailable.
 - Offers the in-process version of the same separation as an intermediate step.
@@ -83,8 +85,8 @@ as the intermediate step.
 ### senior
 
 - Uses the shape of expected change to test the boundary: which features touch one side only.
-- Points out where a single unit of work becomes two, and what has to happen when the second
-  half does not.
+- Points out, before the case is put to them, where a single unit of work becomes two, and what
+  has to happen when the second half does not.
 - Prices the ongoing cost in people and paging, and says who is signing up for it.
 - States the conditions under which they would revisit the decision either way.
 

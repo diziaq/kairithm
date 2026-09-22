@@ -64,6 +64,8 @@ the code that allocates instead.
 - Sets a very large heap so collections happen less often, without discussing what each one then
   costs
 - Applies the whole list of flags at once and declares victory from one afternoon of graphs
+- Says accurately what each collector would buy and charge for, and will not say which change
+  they would let through
 
 ## Answer bands
 

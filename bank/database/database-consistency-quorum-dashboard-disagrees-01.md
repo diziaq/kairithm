@@ -89,7 +89,8 @@ told which figure carries a guarantee and as of when.
 
 - States the overlap condition and works it out for three copies with real numbers.
 - Says what the stricter setting costs in latency and in machines it can afford to lose.
-- Separates being behind from the fact that the panels are two reads at two moments.
+- Separates being behind from the fact that the panels are two reads at two moments, before that
+  is put to them.
 - Names how the second problem is fixed, and it is not a setting.
 
 ### lead

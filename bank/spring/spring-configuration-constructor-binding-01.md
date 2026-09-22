@@ -79,8 +79,8 @@ by a route where the framework creates it, then assert the bound values in a tes
 
 ### senior
 
-- Makes the service refuse to start on a missing or invalid value, and explains why failing at
-  startup beats failing at three in the morning.
+- Raises it themselves: the service should refuse to start on a missing or invalid value, and
+  failing at startup beats failing at three in the morning.
 - Knows a list from a higher source replaces rather than merges, and what that does to a partial
   override in one environment.
 - Tests the binding with the smallest thing that can bind, not the whole application.

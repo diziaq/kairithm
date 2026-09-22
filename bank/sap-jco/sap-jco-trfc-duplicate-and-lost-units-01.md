@@ -73,6 +73,8 @@ confirms.
 - Records the id first so nothing can slip through, without seeing what that does to a failure
 - Proposes checking for existing ids and then inserting, with no mention of two of them at once
 - Suggests comparing counts every morning as the fix
+- Weighs tracking the ids against making the posting itself repeatable, and will not say which
+  one this listener gets
 
 ## Answer bands
 

@@ -64,6 +64,8 @@ what matched and what stepped aside to see what else moved.
 - Fixes it by reapplying settings onto the new bean by hand, one at a time, until the tickets
   stop
 - Cannot say how to see which defaults are in effect
+- Recounts how a similar bean replacement was diagnosed at a previous job, without saying what
+  they would change about these endpoints
 
 ## Answer bands
 
@@ -80,13 +82,15 @@ what matched and what stepped aside to see what else moved.
 ### mid
 
 - Explains that the default is conditional on the application not defining its own.
-- Says the replacement lost all of Boot's configuration on it, not just the changed rule.
+- Says, once asked what else moved, that the replacement lost all of Boot's configuration on it,
+  not just the changed rule.
 - Uses the customisation hook instead of replacing the bean.
 - Knows where to read the list of what matched and what did not.
 
 ### senior
 
-- Treats it as a published contract change and asks who else is affected, including storage.
+- Raises it as a published contract change without being asked, and wants to know who else is
+  affected, including storage.
 - Says which test would have caught it and why the existing suite could not.
 - Generalises to the other beans with the same conditional shape.
 
